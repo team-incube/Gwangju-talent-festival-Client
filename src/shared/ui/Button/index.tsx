@@ -9,7 +9,9 @@ const Button = ({ children, className, onClick, isDisabled = false, ...props }: 
     <>
       <button
         className={cn(
-          `px-4 py-2 rounded-md text-sm whitespace-nowrap text-white ${isDisabled ? "bg-gray-300" : "bg-main-600"}`,
+          `px-4 py-2 h-[50px] rounded-md text-sm whitespace-nowrap text-white ${
+            isDisabled ? "bg-gray-300" : "bg-main-600"
+          }`,
           className
         )}
         onClick={onClick}
