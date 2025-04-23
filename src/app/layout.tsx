@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ToastProvider } from "@/shared/lib/ToastProvider";
+import "../shared/style/globals.css";
 
 export const metadata: Metadata = {
   title: "광주탈렌트페스티벌",
