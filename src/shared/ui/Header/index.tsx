@@ -1,8 +1,15 @@
+"use client";
+
 import { Logo } from "@/shared/asset/svg/Logo";
 import { cn } from "@/shared/utils/cn";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
+  const pathname = usePathname();
+  const isAuthPage =
+    pathname.startsWith("/signin") || pathname.startsWith("/signup");
+  if (isAuthPage) return null;
   return (
     <header className={cn("flex items-center py-[1rem] justify-around")}>
       <Link href="/">
