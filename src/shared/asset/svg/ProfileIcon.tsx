@@ -1,8 +1,17 @@
 import { SvgProps } from "@/shared/model/SvgProps";
 
-export const ProfileIcon = ({ size = 24, color = "#121212" }: SvgProps) => {
+export const ProfileIcon = ({
+  height = 24,
+  width = 24,
+  color = "#121212",
+}: SvgProps) => {
   return (
-    <svg width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={width}
+      height={height}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 6C13.93 6 15.5 7.57 15.5 9.5C15.5 11.43 13.93 13 12 13C10.07 13 8.5 11.43 8.5 9.5C8.5 7.57 10.07 6 12 6ZM12 20C9.97 20 7.57 19.18 5.86 17.12C7.61182 15.7462 9.77376 14.9996 12 14.9996C14.2262 14.9996 16.3882 15.7462 18.14 17.12C16.43 19.18 14.03 20 12 20Z"
         fill={color}

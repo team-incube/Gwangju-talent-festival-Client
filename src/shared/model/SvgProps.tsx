@@ -1,4 +1,5 @@
 export type SvgProps = {
-  size?: number;
+  height?: number;
+  width?: number;
   color?: string;
 };
