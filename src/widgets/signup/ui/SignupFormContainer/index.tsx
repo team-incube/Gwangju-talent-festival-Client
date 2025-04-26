@@ -7,10 +7,13 @@ import { useFormState } from "react-dom";
 import { authFormState } from "@/entities/user/lib/authFormState";
 import SubmitButton from "@/entities/user/ui/SubmitButton";
 import { handleSignupFormSubmit } from "@/widgets/signup/lib/handleSignupFormSubmit";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { toast } from "sonner";
+import { phoneNumberSchema } from "@/entities/user/model/schema";
 
 const SignupFormContainer = () => {
   const [codeSent, setCodeSent] = useState(false);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
 
   const initialState: authFormState = {
     values: { phoneNumber: "", verificationCode: "", password: "" },
@@ -21,6 +24,16 @@ const SignupFormContainer = () => {
   const formAction = useFormState(handleSignupFormSubmit, initialState)[1];
 
   const handleSendVerificationCode = () => {
+    const phoneNumber = phoneInputRef.current?.value || "";
+
+    const result = phoneNumberSchema.safeParse(phoneNumber);
+
+    if (!result.success) {
+      toast.error("올바른 전화번호 형식이 아닙니다.");
+      return;
+    }
+
+    toast.success("인증번호가 전송되었습니다.");
     setCodeSent(true);
   };
 
@@ -33,14 +46,9 @@ const SignupFormContainer = () => {
             <label className={cn("text-sm font-medium")}>전화번호</label>
             <div className={cn("flex items-end gap-8")}>
               <div className={cn("w-full")}>
-                <Input type="text" placeholder="전화번호를 입력해주세요." name="phoneNumber" />
+                <Input type="number" placeholder="전화번호를 입력해주세요." name="phoneNumber" ref={phoneInputRef} />
               </div>
-              <Button
-                className={cn("w-32 shrink-0 h-[50px]")}
-                type="button"
-                onClick={handleSendVerificationCode}
-                disabled={codeSent}
-              >
+              <Button className={cn("w-32 shrink-0 h-[50px]")} type="button" onClick={handleSendVerificationCode}>
                 {codeSent ? "재전송" : "인증번호"}
               </Button>
             </div>
@@ -49,7 +57,7 @@ const SignupFormContainer = () => {
           {codeSent && (
             <div>
               <Input
-                type="text"
+                type="number"
                 placeholder="인증번호를 입력해주세요."
                 label="인증번호 입력"
                 className={cn("mt-2")}
