@@ -1,8 +1,17 @@
 import { SvgProps } from "@/shared/model/SvgProps";
 
-export const RightArrow = ({ size = 24, color = "#121212" }: SvgProps) => {
+export const RightArrow = ({
+  height = 24,
+  width = 24,
+  color = "#121212",
+}: SvgProps) => {
   return (
-    <svg width={size} height={size} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={width}
+      height={height}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M7.37999 21.01C7.86999 21.5 8.65999 21.5 9.14999 21.01L17.46 12.7C17.5527 12.6075 17.6262 12.4976 17.6764 12.3766C17.7266 12.2556 17.7524 12.126 17.7524 11.995C17.7524 11.864 17.7266 11.7343 17.6764 11.6134C17.6262 11.4924 17.5527 11.3825 17.46 11.29L9.14999 2.97999C8.65999 2.48999 7.86999 2.48999 7.37999 2.97999C6.88999 3.46999 6.88999 4.25999 7.37999 4.74999L14.62 12L7.36999 19.25C6.88999 19.73 6.88999 20.53 7.37999 21.01Z"
         fill={color}
