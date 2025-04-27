@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 async function handleRequest(request: NextRequest, params: { path: string[] }, method: HttpMethod) {
   const path = params.path.join("/");
@@ -46,4 +46,8 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
 
 export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleRequest(request, params, "DELETE");
+}
+
+export async function PATCH(request: NextRequest, { params }: { params: { path: string[] } }) {
+  return handleRequest(request, params, "PATCH");
 }
