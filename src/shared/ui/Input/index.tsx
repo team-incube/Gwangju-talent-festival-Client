@@ -8,7 +8,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, placeholder, label, ...props }, ref) => {
     return (
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-8">
         <label className="text-body3b">{label}</label>
         <input
           className={cn(
