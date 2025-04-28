@@ -7,6 +7,7 @@ import { SloganFormState } from "@/entities/slogan/model/sloganFormState";
 import { handleSloganFormSubmit } from "@/entities/slogan/lib/handleSloganFormSubmit";
 import { Button, Input } from "@/shared/ui";
 import CountLength from "@/entities/slogan/ui/CountLength";
+import { useActionState } from "react";
 
 export default function SloganFormContainer() {
   const initialState: SloganFormState = {
@@ -22,7 +23,7 @@ export default function SloganFormContainer() {
     submitted: false,
   };
 
-  const formAction = useFormState(handleSloganFormSubmit, initialState)[1];
+  const formAction = useActionState(handleSloganFormSubmit, initialState)[1];
 
   return (
     <form
