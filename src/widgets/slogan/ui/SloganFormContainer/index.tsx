@@ -2,14 +2,15 @@
 
 import Search from "@/shared/asset/svg/Search";
 import { cn } from "@/shared/utils/cn";
-import { useFormState } from "react-dom";
 import { SloganFormState } from "@/entities/slogan/model/sloganFormState";
 import { handleSloganFormSubmit } from "@/entities/slogan/lib/handleSloganFormSubmit";
 import { Button, Input } from "@/shared/ui";
 import CountLength from "@/entities/slogan/ui/CountLength";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 export default function SloganFormContainer() {
+  const [sloganLength, setSloganLength] = useState(0);
+  const [descriptionLength, setDescriptionLength] = useState(0);
   const initialState: SloganFormState = {
     values: {
       slogan: "",
@@ -24,23 +25,24 @@ export default function SloganFormContainer() {
   };
 
   const formAction = useActionState(handleSloganFormSubmit, initialState)[1];
-
   return (
     <form
       action={formAction}
       className={cn("flex flex-col gap-[6.25rem] mt-[3.5rem]")}
     >
       <div className={cn("flex flex-col gap-24")}>
-        <CountLength>
+        <CountLength length={sloganLength}>
           <Input
+            onChange={(e) => setSloganLength(e.target.value.length)}
             max={100}
             name="slogan"
             label="슬로건 입력"
             placeholder="슬로건을 입력해주세요"
           />
         </CountLength>
-        <CountLength>
+        <CountLength length={descriptionLength} max={1000}>
           <Input
+            onChange={(e) => setDescriptionLength(e.target.value.length)}
             max={1000}
             name="description"
             label="슬로건 설명"
