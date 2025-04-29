@@ -32,22 +32,28 @@ async function handleRequest(request: NextRequest, params: { path: string[] }, m
   }
 }
 
-export async function GET(request: NextRequest, context: { params: { path: string[] } }) {
+type RouteContext = {
+  params: {
+    path: string[];
+  };
+};
+
+export async function GET(request: NextRequest, context: RouteContext): Promise<NextResponse> {
   return handleRequest(request, context.params, "GET");
 }
 
-export async function POST(request: NextRequest, context: { params: { path: string[] } }) {
+export async function POST(request: NextRequest, context: RouteContext): Promise<NextResponse> {
   return handleRequest(request, context.params, "POST");
 }
 
-export async function PUT(request: NextRequest, context: { params: { path: string[] } }) {
+export async function PUT(request: NextRequest, context: RouteContext): Promise<NextResponse> {
   return handleRequest(request, context.params, "PUT");
 }
 
-export async function DELETE(request: NextRequest, context: { params: { path: string[] } }) {
+export async function DELETE(request: NextRequest, context: RouteContext): Promise<NextResponse> {
   return handleRequest(request, context.params, "DELETE");
 }
 
-export async function PATCH(request: NextRequest, context: { params: { path: string[] } }) {
+export async function PATCH(request: NextRequest, context: RouteContext): Promise<NextResponse> {
   return handleRequest(request, context.params, "PATCH");
 }
