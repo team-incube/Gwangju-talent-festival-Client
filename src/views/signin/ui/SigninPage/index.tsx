@@ -8,7 +8,7 @@ const SigninPage = () => {
     <div className={cn("flex flex-col items-center mt-52 h-screen w-full px-4")}>
       <div className={cn("w-full max-w-md flex flex-col items-center")}>
         <div className={cn("mb-20")}>
-          <Logo color={colors.main[600]} size={200} />
+          <Logo color={colors.main[600]} width={200} height={200} />
         </div>
         <SigninFormContainer />
       </div>
