@@ -9,7 +9,7 @@ import SubmitButton from "@/entities/user/ui/SubmitButton";
 import { handleSignupFormSubmit } from "@/widgets/signup/lib/handleSignupFormSubmit";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { phoneNumberSchema } from "@/entities/user/model/schema";
+import { phoneNumberSchema } from "@/shared/model/phoneNumberSchema";
 
 const SignupFormContainer = () => {
   const [codeSent, setCodeSent] = useState(false);
