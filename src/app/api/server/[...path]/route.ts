@@ -32,22 +32,22 @@ async function handleRequest(request: NextRequest, params: { path: string[] }, m
   }
 }
 
-export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
-  return handleRequest(request, params, "GET");
+export async function GET(request: NextRequest, context: { params: { path: string[] } }) {
+  return handleRequest(request, context.params, "GET");
 }
 
-export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
-  return handleRequest(request, params, "POST");
+export async function POST(request: NextRequest, context: { params: { path: string[] } }) {
+  return handleRequest(request, context.params, "POST");
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { path: string[] } }) {
-  return handleRequest(request, params, "PUT");
+export async function PUT(request: NextRequest, context: { params: { path: string[] } }) {
+  return handleRequest(request, context.params, "PUT");
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
-  return handleRequest(request, params, "DELETE");
+export async function DELETE(request: NextRequest, context: { params: { path: string[] } }) {
+  return handleRequest(request, context.params, "DELETE");
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { path: string[] } }) {
-  return handleRequest(request, params, "PATCH");
+export async function PATCH(request: NextRequest, context: { params: { path: string[] } }) {
+  return handleRequest(request, context.params, "PATCH");
 }
