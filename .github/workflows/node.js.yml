@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main, develop]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -12,29 +12,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: 소스코드 체크아웃
+        uses: actions/checkout@v3
 
-      - name: Node.js 세팅
+      - name: Node.js 설정
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: npm 설치
-        uses: npm/action-setup@v2
-        with:
-          version: 8
+      - name: npm 최신 버전 설치 (선택 사항)
+        run: npm install -g npm@8
 
-      - name: npm store 경로 가져오기
-        id: store-path
-        run: echo "path=$(npm store path --silent)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v3
-        name: npm 캐시 설정
+      - name: npm 캐시 설정
+        uses: actions/cache@v3
         with:
-          path: ${{ steps.store-path.outputs.path }}
-          key: ${{ runner.os }}-npm-store-${{ hashFiles('**/npm-lock.yaml') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-npm-store-
+            ${{ runner.os }}-node-
 
       - name: 의존성 설치
         run: npm install --frozen-lockfile
@@ -43,7 +38,7 @@ jobs:
         run: npm run lint
 
       - name: 테스트
-        run: npm test
+        run: npm run test
 
       - name: 빌드
         run: npm run build
@@ -60,8 +55,8 @@ jobs:
             const pr = context.payload.pull_request;
             const status = '${{ job.status }}';
             const message = status === 'success' 
-              ? '✅ CI success'
-              : '❌ CI failed';
+              ? '✅ CI 성공'
+              : '❌ CI 실패';
 
             github.rest.issues.createComment({
               issue_number: pr.number,
