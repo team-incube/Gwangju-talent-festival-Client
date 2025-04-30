@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 소스코드 체크아웃
+        uses: actions/checkout@v3
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: npm 최신 버전 설치 (선택 사항)
+        run: npm install -g npm@8
+
+      - name: npm 캐시 설정
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: 의존성 설치
+        run: npm install --frozen-lockfile
+
+      - name: 린트
+        run: npm run lint
+
+      - name: 빌드
+        run: npm run build
+
+  pr-checks:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR CI 결과 코멘트
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const status = '${{ job.status }}';
+            const message = status === 'success' 
+              ? '✅ CI 성공'
+              : '❌ CI 실패';
+
+            github.rest.issues.createComment({
+              issue_number: pr.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
