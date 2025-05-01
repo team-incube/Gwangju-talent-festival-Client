@@ -78,7 +78,7 @@ export default function SloganFormContainer() {
             </span>
           </div>
 
-          {isSchoolFetched && schoolList.length > 0 && (
+          {isSchoolFetched && schoolName !== "" && schoolList.length > 0 && (
             <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] gap-8 mt-8">
               {schoolList.map(
                 (school) =>
