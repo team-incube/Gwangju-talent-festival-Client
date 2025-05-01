@@ -10,6 +10,7 @@ import { Button, Input } from "@/shared/ui";
 import CountLength from "@/entities/slogan/ui/CountLength";
 import { useDebounce } from "@/entities/slogan/lib/useDebounce";
 import { useGetSchool } from "@/entities/api/useGetSchool";
+import SloganHeader from "@/entities/slogan/ui/SloganHeader";
 
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
@@ -39,81 +40,84 @@ export default function SloganFormContainer() {
     schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
 
   return (
-    <form
-      action={formAction}
-      className={cn("flex flex-col gap-[6.25rem] mt-[3.5rem]")}
-    >
-      <div className={cn("flex flex-col gap-24")}>
-        <CountLength length={sloganLength}>
-          <Input
-            onChange={(e) => setSloganLength(e.target.value.length)}
-            max={100}
-            name="slogan"
-            label="슬로건 입력"
-            placeholder="슬로건을 입력해주세요"
-          />
-        </CountLength>
-        <CountLength length={descriptionLength} max={1000}>
-          <Input
-            onChange={(e) => setDescriptionLength(e.target.value.length)}
-            max={1000}
-            name="description"
-            label="슬로건 설명"
-            placeholder="슬로건 설명을 입력해주세요"
-          />
-        </CountLength>
-        <div>
-          <div className="relative">
-            <Input
-              name="school"
-              value={schoolName}
-              onChange={(e) => setSchoolName(e.target.value)}
-              label="학교"
-              placeholder="학교를 입력해주세요"
-            />
-            <span
-              className={cn("absolute top-4 right-0 mt-[2.5rem] mr-[1.25rem]")}
-            >
-              <Search />
-            </span>
-          </div>
+    <form action={formAction} className={cn("flex flex-col gap-[6.25rem]")}>
+      <div>
+        <SloganHeader />
 
-          {isSchoolFetched && schoolName !== "" && schoolList.length > 0 && (
-            <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] gap-8 mt-8">
-              {schoolList.map(
-                (school) =>
-                  school.SCHUL_NM !== schoolName && (
-                    <div
-                      key={school.SD_SCHUL_CODE}
-                      className="cursor-pointer p-16 hover:bg-gray-100 rounded"
-                      onClick={() => setSchoolName(school.SCHUL_NM)}
-                    >
-                      {school.SCHUL_NM}
-                    </div>
-                  )
-              )}
+        <div className={cn("flex flex-col mt-[3.5rem] gap-24")}>
+          <CountLength length={sloganLength}>
+            <Input
+              onChange={(e) => setSloganLength(e.target.value.length)}
+              max={100}
+              name="slogan"
+              label="슬로건 입력"
+              placeholder="슬로건을 입력해주세요"
+            />
+          </CountLength>
+          <CountLength length={descriptionLength} max={1000}>
+            <Input
+              onChange={(e) => setDescriptionLength(e.target.value.length)}
+              max={1000}
+              name="description"
+              label="슬로건 설명"
+              placeholder="슬로건 설명을 입력해주세요"
+            />
+          </CountLength>
+          <div>
+            <div className="relative">
+              <Input
+                name="school"
+                value={schoolName}
+                onChange={(e) => setSchoolName(e.target.value)}
+                label="학교"
+                placeholder="학교를 입력해주세요"
+              />
+              <span
+                className={cn(
+                  "absolute top-4 right-0 mt-[2.5rem] mr-[1.25rem]"
+                )}
+              >
+                <Search />
+              </span>
             </div>
-          )}
-        </div>
-        <div className="flex gap-24">
+
+            {isSchoolFetched && schoolName !== "" && schoolList.length > 0 && (
+              <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] gap-8 mt-8">
+                {schoolList.map(
+                  (school) =>
+                    school.SCHUL_NM !== schoolName && (
+                      <div
+                        key={school.SD_SCHUL_CODE}
+                        className="cursor-pointer p-16 hover:bg-gray-100 rounded"
+                        onClick={() => setSchoolName(school.SCHUL_NM)}
+                      >
+                        {school.SCHUL_NM}
+                      </div>
+                    )
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-24">
+            <Input
+              name="grade"
+              type="number"
+              label="학년"
+              placeholder="학년을 입력해주세요"
+            />
+            <Input
+              name="class"
+              type="number"
+              label="반"
+              placeholder="반을 입력해주세요"
+            />
+          </div>
           <Input
-            name="grade"
-            type="number"
-            label="학년"
-            placeholder="학년을 입력해주세요"
-          />
-          <Input
-            name="class"
-            type="number"
-            label="반"
-            placeholder="반을 입력해주세요"
+            name="phoneNumber"
+            label="전화번호"
+            placeholder="전화번호를 입력해주세요"
           />
         </div>
-        <Input
-          name="phoneNumber"
-          label="전화번호"
-          placeholder="전화번호를 입력해주세요"
-        />
       </div>
       <Button type="submit">응모하기</Button>
     </form>
