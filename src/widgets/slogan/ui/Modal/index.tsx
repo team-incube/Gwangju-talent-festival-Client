@@ -2,6 +2,7 @@
 
 import Inform from "@/shared/asset/svg/Inform";
 import X from "@/shared/asset/svg/X";
+import { Button } from "@/shared/ui";
 import { useState } from "react";
 
 export default function Modal() {
@@ -11,7 +12,7 @@ export default function Modal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="p-24 bg-white border border-gray-300 rounded-lg shadow-lg">
+      <div className="p-24 bg-white h-[350px] border border-gray-300 rounded-lg shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-20">
             <Inform />
@@ -21,7 +22,7 @@ export default function Modal() {
             <X />
           </span>
         </div>
-        <div className="bg-gray-100 text-caption1r mt-24 rounded-lg p-12">
+        <div className="border-gray-100 border border-solid text-caption1r h-[184px] overflow-y-scroll my-24 rounded-lg p-12">
           <h5>1. 순수 창작물 제출 필수</h5>
           <ul className="list-disc pl-16 marker:text-[10px]">
             <li>응모작은 반드시 본인의 순수 창작물이어야 합니다.</li>
@@ -71,6 +72,7 @@ export default function Modal() {
             </li>
           </ul>
         </div>
+        <Button className="w-full">확인</Button>
       </div>
     </div>
   );
