@@ -1,16 +1,25 @@
 "use client";
 
+import { useState } from "react";
+import { useActionState } from "react";
 import Search from "@/shared/asset/svg/Search";
 import { cn } from "@/shared/utils/cn";
 import { SloganFormState } from "@/entities/slogan/model/sloganFormState";
 import { handleSloganFormSubmit } from "@/entities/slogan/lib/handleSloganFormSubmit";
 import { Button, Input } from "@/shared/ui";
 import CountLength from "@/entities/slogan/ui/CountLength";
-import { useActionState, useState } from "react";
+import { useDebounce } from "@/entities/slogan/lib/useDebounce";
+import { useGetSchool } from "@/entities/api/useGetSchool";
 
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
   const [descriptionLength, setDescriptionLength] = useState(0);
+  const [schoolName, setSchoolName] = useState("");
+
+  const debouncedSchoolName = useDebounce<string>(schoolName, 400);
+  const { data: schoolData, isSuccess: isSchoolFetched } =
+    useGetSchool(debouncedSchoolName);
+
   const initialState: SloganFormState = {
     values: {
       slogan: "",
@@ -25,6 +34,10 @@ export default function SloganFormContainer() {
   };
 
   const formAction = useActionState(handleSloganFormSubmit, initialState)[1];
+
+  const schoolList =
+    schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
+
   return (
     <form
       action={formAction}
@@ -49,13 +62,38 @@ export default function SloganFormContainer() {
             placeholder="슬로건 설명을 입력해주세요"
           />
         </CountLength>
-        <div className={cn("relative")}>
-          <Input name="school" label="학교" placeholder="학교를 입력해주세요" />
-          <span
-            className={cn("absolute top-4 right-0 mt-[2.5rem] mr-[1.25rem]")}
-          >
-            <Search />
-          </span>
+        <div>
+          <div className="relative">
+            <Input
+              name="school"
+              value={schoolName}
+              onChange={(e) => setSchoolName(e.target.value)}
+              label="학교"
+              placeholder="학교를 입력해주세요"
+            />
+            <span
+              className={cn("absolute top-4 right-0 mt-[2.5rem] mr-[1.25rem]")}
+            >
+              <Search />
+            </span>
+          </div>
+
+          {isSchoolFetched && schoolList.length > 0 && (
+            <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] gap-8 mt-8">
+              {schoolList.map(
+                (school) =>
+                  school.SCHUL_NM !== schoolName && (
+                    <div
+                      key={school.SD_SCHUL_CODE}
+                      className="cursor-pointer p-16 hover:bg-gray-100 rounded"
+                      onClick={() => setSchoolName(school.SCHUL_NM)}
+                    >
+                      {school.SCHUL_NM}
+                    </div>
+                  )
+              )}
+            </div>
+          )}
         </div>
         <div className="flex gap-24">
           <Input
