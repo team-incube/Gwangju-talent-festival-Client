@@ -72,7 +72,9 @@ export default function Modal() {
             </li>
           </ul>
         </div>
-        <Button className="w-full">확인</Button>
+        <Button onClick={() => setIsOpen(false)} className="w-full">
+          확인
+        </Button>
       </div>
     </div>
   );
