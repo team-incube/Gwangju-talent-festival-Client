@@ -11,6 +11,7 @@ import CountLength from "@/entities/slogan/ui/CountLength";
 import { useDebounce } from "@/entities/slogan/lib/useDebounce";
 import { useGetSchool } from "@/entities/api/useGetSchool";
 import SloganHeader from "@/entities/slogan/ui/SloganHeader";
+import Share from "@/shared/asset/Share";
 
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
@@ -34,16 +35,31 @@ export default function SloganFormContainer() {
     submitted: false,
   };
 
-  const formAction = useActionState(handleSloganFormSubmit, initialState)[1];
+  const [state, formAction] = useActionState(
+    handleSloganFormSubmit,
+    initialState
+  );
 
   const schoolList =
     schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
 
+  if (state.isValid && state.submitted) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <h1 className="text-title1b text-main-600">응모가 완료되었습니다!</h1>
+        <div className="flex gap-24 mt-36">
+          <span className="text-body1r underline">
+            친구들에게도 공유해주세요
+          </span>
+          <Share width={37} height={36} />
+        </div>
+      </div>
+    );
+  }
   return (
     <form action={formAction} className={cn("flex flex-col gap-[6.25rem]")}>
       <div>
         <SloganHeader />
-
         <div className={cn("flex flex-col mt-[3.5rem] gap-24")}>
           <CountLength length={sloganLength}>
             <Input
