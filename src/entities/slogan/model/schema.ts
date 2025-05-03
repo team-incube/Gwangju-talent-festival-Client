@@ -17,7 +17,7 @@ export const sloganSchema = z.object({
   school: z.string().min(1, "학교를 선택해주세요."),
   grade: z.string().min(1, "학년을 선택해주세요."),
   class: z.string().min(1, "반을 선택해주세요."),
-  phoneNumber: phoneNumberSchema,
+  phone: phoneNumberSchema,
 });
 
 export type SloganFormValues = z.infer<typeof sloganSchema>;
