@@ -20,7 +20,7 @@ export default {
         h3: ["36px", { lineHeight: "120%", fontWeight: "500" }],
         h4b: ["32px", { lineHeight: "120%", fontWeight: "600" }],
         h4r: ["32px", { lineHeight: "120%", fontWeight: "400" }],
-        title1b: ["44", { lineHeight: "120%", fontWeight: "700" }],
+        title1b: ["44px", { lineHeight: "120%", fontWeight: "700" }],
         body1b: ["24px", { lineHeight: "120%", fontWeight: "600" }],
         body1r: ["24px", { lineHeight: "120%", fontWeight: "400" }],
         body2b: ["20px", { lineHeight: "120%", fontWeight: "600" }],
