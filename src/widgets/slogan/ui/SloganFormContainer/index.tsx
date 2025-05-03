@@ -12,6 +12,8 @@ import { useDebounce } from "@/entities/slogan/lib/useDebounce";
 import { useGetSchool } from "@/entities/api/useGetSchool";
 import SloganHeader from "@/entities/slogan/ui/SloganHeader";
 import Share from "@/shared/asset/Share";
+import { Logo } from "@/shared/asset/svg/Logo";
+import { colors } from "@/shared/utils/color";
 
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
@@ -29,7 +31,7 @@ export default function SloganFormContainer() {
       school: "",
       grade: "",
       class: "",
-      phoneNumber: "",
+      phone: "",
     },
     isValid: false,
     submitted: false,
@@ -43,21 +45,32 @@ export default function SloganFormContainer() {
   const schoolList =
     schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
 
-  if (state.isValid && state.submitted) {
+  if (state.submitted) {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full">
-        <h1 className="text-title1b text-main-600">응모가 완료되었습니다!</h1>
-        <div className="flex gap-24 mt-36">
-          <span className="text-body1r underline">
-            친구들에게도 공유해주세요
-          </span>
-          <Share width={37} height={36} />
+      <div
+        className="flex flex-col items-center justify-center w-full"
+        style={{ height: "calc(100vh - 70px)" }}
+      >
+        <Logo height={131} color={colors.main[600]} width={211} />
+        <div className="mt-[52px]">
+          <h1 className="text-title1b  text-main-600">
+            응모가 완료되었습니다!
+          </h1>
+          <div className="flex gap-24 items-center justify-center mt-32">
+            <Share width={37} height={36} />
+            <span className="text-body1r underline">
+              친구들에게도 공유해주세요
+            </span>
+          </div>
         </div>
       </div>
     );
   }
   return (
-    <form action={formAction} className={cn("flex flex-col gap-[6.25rem]")}>
+    <form
+      action={formAction}
+      className={cn("flex mt-[32px] flex-col gap-[6.25rem]")}
+    >
       <div>
         <SloganHeader />
         <div className={cn("flex flex-col mt-[3.5rem] gap-24")}>
