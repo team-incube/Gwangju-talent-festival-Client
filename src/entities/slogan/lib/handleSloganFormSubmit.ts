@@ -12,7 +12,7 @@ export async function handleSloganFormSubmit(
     school: formData.get("school")?.toString() || "",
     grade: formData.get("grade")?.toString() || "",
     class: formData.get("class")?.toString() || "",
-    phoneNumber: formData.get("phoneNumber")?.toString() || "",
+    phone: formData.get("phoneNumber")?.toString() || "",
   };
 
   const result = sloganSchema.safeParse(values);
