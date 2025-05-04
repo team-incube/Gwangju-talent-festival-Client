@@ -116,8 +116,7 @@ export default function SloganFormContainer() {
                   .filter((school) => school.SCHUL_NM !== schoolName)
                   .map((school, i) => (
                     <div key={school.SD_SCHUL_CODE}>
-                      {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}{" "}
-                      {/* 구분선에 여백 줌 */}
+                      {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}
                       <div
                         className="cursor-pointer p-16 hover:bg-gray-100 rounded"
                         onClick={() => setSchoolName(school.SCHUL_NM)}
