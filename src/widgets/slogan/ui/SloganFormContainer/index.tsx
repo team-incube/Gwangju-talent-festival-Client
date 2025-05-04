@@ -9,7 +9,7 @@ import { handleSloganFormSubmit } from "@/entities/slogan/lib/handleSloganFormSu
 import { Button, Input } from "@/shared/ui";
 import CountLength from "@/entities/slogan/ui/CountLength";
 import { useDebounce } from "@/entities/slogan/lib/useDebounce";
-import { useGetSchool } from "@/entities/api/useGetSchool";
+import { useGetSchool } from "@/entities/slogan/api/useGetSchool";
 import SloganHeader from "@/entities/slogan/ui/SloganHeader";
 import Share from "@/shared/asset/Share";
 import { Logo } from "@/shared/asset/svg/Logo";
