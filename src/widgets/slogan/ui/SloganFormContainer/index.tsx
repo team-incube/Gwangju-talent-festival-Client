@@ -41,13 +41,15 @@ export default function SloganFormContainer() {
     useGetSchool(debouncedSchoolName);
   const schoolList =
     schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
-
   if (state.isSubmitted) {
     return <SloganFormSuccess />;
   }
   return (
     <form
-      onSubmit={async () => await handleSloganFormSubmit(formValues)}
+      onSubmit={async (e) => {
+        e.preventDefault();
+        await handleSloganFormSubmit(formValues);
+      }}
       className={cn("flex mt-[32px] flex-col gap-[6.25rem]")}
     >
       <div>
@@ -55,7 +57,12 @@ export default function SloganFormContainer() {
         <div className={cn("flex flex-col mt-[3.5rem] gap-24")}>
           <CountLength length={sloganLength}>
             <Input
-              onChange={(e) => setSloganLength(e.target.value.length)}
+              value={formValues.slogan}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSloganLength(value.length);
+                setFormValues({ ...formValues, slogan: value });
+              }}
               max={100}
               name="slogan"
               label="슬로건 입력"
@@ -64,7 +71,12 @@ export default function SloganFormContainer() {
           </CountLength>
           <CountLength length={descriptionLength} max={1000}>
             <Input
-              onChange={(e) => setDescriptionLength(e.target.value.length)}
+              value={formValues.description}
+              onChange={(e) => {
+                const value = e.target.value;
+                setDescriptionLength(value.length);
+                setFormValues({ ...formValues, description: value });
+              }}
               max={1000}
               name="description"
               label="슬로건 설명"
@@ -119,24 +131,36 @@ export default function SloganFormContainer() {
             <Input
               name="grade"
               type="number"
+              value={formValues.grade}
+              onChange={(e) =>
+                setFormValues({ ...formValues, grade: e.target.value })
+              }
               label="학년"
               placeholder="학년을 입력해주세요"
             />
             <Input
               name="class"
               type="number"
+              value={formValues.class}
+              onChange={(e) =>
+                setFormValues({ ...formValues, class: e.target.value })
+              }
               label="반"
               placeholder="반을 입력해주세요"
             />
           </div>
           <Input
-            name="phoneNumber"
+            name="phone"
+            value={formValues.phone}
+            onChange={(e) =>
+              setFormValues({ ...formValues, phone: e.target.value })
+            }
             label="전화번호"
             placeholder="전화번호를 입력해주세요"
           />
         </div>
       </div>
-      <Button type="submit" disabled={!state.isValid}>
+      <Button type="submit" isDisabled={!state.isValid}>
         응모하기
       </Button>
     </form>
