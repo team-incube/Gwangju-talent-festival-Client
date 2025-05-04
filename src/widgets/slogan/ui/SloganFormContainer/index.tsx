@@ -24,17 +24,16 @@ export default function SloganFormContainer() {
     phone: "",
   });
   const [state, setState] = useState({
-    isValid: true,
+    isValid: false,
     isSubmitted: false,
   });
 
   useEffect(() => {
     const isValid = sloganSchema.safeParse(formValues);
-    if (isValid.success) {
-      setState((prev) => ({ ...prev, isValid: false }));
-    } else {
-      setState((prev) => ({ ...prev, isValid: true }));
-    }
+    setState((prevState) => ({
+      ...prevState,
+      isValid: isValid.success,
+    }));
   }, [formValues]);
 
   const debouncedSchoolName = useDebounce<string>(formValues.school, 400);
@@ -137,7 +136,7 @@ export default function SloganFormContainer() {
           />
         </div>
       </div>
-      <Button type="submit" disabled={state.isValid}>
+      <Button type="submit" disabled={!state.isValid}>
         응모하기
       </Button>
     </form>
