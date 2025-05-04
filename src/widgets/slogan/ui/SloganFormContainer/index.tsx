@@ -1,74 +1,54 @@
 "use client";
 
-import { useState } from "react";
-import { useActionState } from "react";
+import { useState, useEffect } from "react";
 import Search from "@/shared/asset/svg/Search";
 import { cn } from "@/shared/utils/cn";
-import { SloganFormState } from "@/entities/slogan/model/sloganFormState";
 import { handleSloganFormSubmit } from "@/entities/slogan/lib/handleSloganFormSubmit";
 import { Button, Input } from "@/shared/ui";
 import CountLength from "@/entities/slogan/ui/CountLength";
 import { useDebounce } from "@/entities/slogan/lib/useDebounce";
 import { useGetSchool } from "@/entities/slogan/api/useGetSchool";
 import SloganHeader from "@/entities/slogan/ui/SloganHeader";
-import Share from "@/shared/asset/Share";
-import { Logo } from "@/shared/asset/svg/Logo";
-import { colors } from "@/shared/utils/color";
+import { SloganFormValues, sloganSchema } from "@/entities/slogan/model/schema";
+import SloganFormSuccess from "@/entities/slogan/ui/SloganFormSuccess";
 
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
   const [descriptionLength, setDescriptionLength] = useState(0);
-  const [schoolName, setSchoolName] = useState("");
+  const [formValues, setFormValues] = useState<SloganFormValues>({
+    slogan: "",
+    description: "",
+    school: "",
+    grade: "",
+    class: "",
+    phone: "",
+  });
+  const [state, setState] = useState({
+    isValid: true,
+    isSubmitted: false,
+  });
 
-  const debouncedSchoolName = useDebounce<string>(schoolName, 400);
+  useEffect(() => {
+    const isValid = sloganSchema.safeParse(formValues);
+    if (isValid.success) {
+      setState((prev) => ({ ...prev, isValid: false }));
+    } else {
+      setState((prev) => ({ ...prev, isValid: true }));
+    }
+  }, [formValues]);
+
+  const debouncedSchoolName = useDebounce<string>(formValues.school, 400);
   const { data: schoolData, isSuccess: isSchoolFetched } =
     useGetSchool(debouncedSchoolName);
-
-  const initialState: SloganFormState = {
-    values: {
-      slogan: "",
-      description: "",
-      school: "",
-      grade: "",
-      class: "",
-      phone: "",
-    },
-    isValid: false,
-    submitted: false,
-  };
-
-  const [state, formAction] = useActionState(
-    handleSloganFormSubmit,
-    initialState
-  );
-
   const schoolList =
     schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
 
-  if (state.submitted) {
-    return (
-      <div
-        className="flex flex-col items-center justify-center w-full"
-        style={{ height: "calc(100vh - 70px)" }}
-      >
-        <Logo height={131} color={colors.main[600]} width={211} />
-        <div className="mt-[52px]">
-          <h1 className="text-title1b  text-main-600">
-            응모가 완료되었습니다!
-          </h1>
-          <div className="flex gap-24 items-center justify-center mt-32">
-            <Share width={37} height={36} />
-            <span className="text-body1r underline">
-              친구들에게도 공유해주세요
-            </span>
-          </div>
-        </div>
-      </div>
-    );
+  if (state.isSubmitted) {
+    return <SloganFormSuccess />;
   }
   return (
     <form
-      action={formAction}
+      onSubmit={async () => await handleSloganFormSubmit(formValues)}
       className={cn("flex mt-[32px] flex-col gap-[6.25rem]")}
     >
       <div>
@@ -96,8 +76,10 @@ export default function SloganFormContainer() {
             <div className="relative">
               <Input
                 name="school"
-                value={schoolName}
-                onChange={(e) => setSchoolName(e.target.value)}
+                value={formValues.school}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, school: e.target.value })
+                }
                 label="학교"
                 placeholder="학교를 입력해주세요"
               />
@@ -109,24 +91,30 @@ export default function SloganFormContainer() {
                 <Search />
               </span>
             </div>
-
-            {isSchoolFetched && schoolName !== "" && schoolList.length > 0 && (
-              <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8">
-                {schoolList
-                  .filter((school) => school.SCHUL_NM !== schoolName)
-                  .map((school, i) => (
-                    <div key={school.SD_SCHUL_CODE}>
-                      {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}
-                      <div
-                        className="cursor-pointer p-16 hover:bg-gray-100 rounded"
-                        onClick={() => setSchoolName(school.SCHUL_NM)}
-                      >
-                        {school.SCHUL_NM}
+            {isSchoolFetched &&
+              formValues.school !== "" &&
+              schoolList.length > 0 && (
+                <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8">
+                  {schoolList
+                    .filter((school) => school.SCHUL_NM !== formValues.school)
+                    .map((school, i) => (
+                      <div key={school.SD_SCHUL_CODE}>
+                        {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}
+                        <div
+                          className="cursor-pointer p-16 hover:bg-gray-100 rounded"
+                          onClick={() =>
+                            setFormValues({
+                              ...formValues,
+                              school: school.SCHUL_NM,
+                            })
+                          }
+                        >
+                          {school.SCHUL_NM}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </div>
-            )}
+                    ))}
+                </div>
+              )}
           </div>
           <div className="flex gap-24">
             <Input
@@ -149,7 +137,9 @@ export default function SloganFormContainer() {
           />
         </div>
       </div>
-      <Button type="submit">응모하기</Button>
+      <Button type="submit" disabled={state.isValid}>
+        응모하기
+      </Button>
     </form>
   );
 }

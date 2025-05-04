@@ -1,37 +1,15 @@
 import { toast } from "sonner";
 import { SloganFormValues, sloganSchema } from "../model/schema";
-import { SloganFormState } from "../model/sloganFormState";
+import { postSlogan } from "../api/postSlogan";
 
 export async function handleSloganFormSubmit(
-  _previousState: SloganFormState,
-  formData: FormData
-): Promise<SloganFormState> {
-  const values: SloganFormValues = {
-    slogan: formData.get("slogan")?.toString() || "",
-    description: formData.get("description")?.toString() || "",
-    school: formData.get("school")?.toString() || "",
-    grade: formData.get("grade")?.toString() || "",
-    class: formData.get("class")?.toString() || "",
-    phone: formData.get("phoneNumber")?.toString() || "",
-  };
-
-  const result = sloganSchema.safeParse(values);
-  const isValid = result.success;
-
-  if (!isValid) {
-    result.error.errors.forEach((err) => console.error(err.message));
-    return {
-      values,
-      isValid: false,
-      submitted: true,
-    };
+  values: SloganFormValues
+): Promise<boolean> {
+  const res = await postSlogan(values);
+  if (res.status !== 201) {
+    toast.error("슬로건 제출에 실패했습니다.");
+  } else {
+    toast.success("슬로건이 제출되었습니다.");
   }
-
-  toast.success("슬로건 등록 성공");
-
-  return {
-    values,
-    isValid: true,
-    submitted: true,
-  };
+  return res.status === 201;
 }
