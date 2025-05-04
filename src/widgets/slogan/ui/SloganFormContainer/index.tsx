@@ -111,19 +111,21 @@ export default function SloganFormContainer() {
             </div>
 
             {isSchoolFetched && schoolName !== "" && schoolList.length > 0 && (
-              <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] gap-8 mt-8">
-                {schoolList.map(
-                  (school) =>
-                    school.SCHUL_NM !== schoolName && (
+              <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8">
+                {schoolList
+                  .filter((school) => school.SCHUL_NM !== schoolName)
+                  .map((school, i) => (
+                    <div key={school.SD_SCHUL_CODE}>
+                      {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}{" "}
+                      {/* 구분선에 여백 줌 */}
                       <div
-                        key={school.SD_SCHUL_CODE}
                         className="cursor-pointer p-16 hover:bg-gray-100 rounded"
                         onClick={() => setSchoolName(school.SCHUL_NM)}
                       >
                         {school.SCHUL_NM}
                       </div>
-                    )
-                )}
+                    </div>
+                  ))}
               </div>
             )}
           </div>
