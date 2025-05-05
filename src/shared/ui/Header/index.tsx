@@ -10,10 +10,10 @@ import { useState } from "react";
 
 export default function Header() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const isAuthPage = pathname.startsWith("/signin") || pathname.startsWith("/signup");
   if (isAuthPage) return null;
-
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(prevState => !prevState);
