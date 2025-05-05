@@ -14,6 +14,10 @@ export default {
       fontFamily: {
         pretendard: ["Pretendard", "sans-serif"],
       },
+      screens: {
+        mobile: { max: "640px" },
+      },
+
       fontSize: {
         h1: ["44px", { lineHeight: "120%", fontWeight: "500" }],
         h2: ["40px", { lineHeight: "120%", fontWeight: "500" }],
