@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { SloganFormValues, sloganSchema } from "../model/schema";
+import { SloganFormValues } from "../model/schema";
 import { postSlogan } from "../api/postSlogan";
 
 export async function handleSloganFormSubmit(
