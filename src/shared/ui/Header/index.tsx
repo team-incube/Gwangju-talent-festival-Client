@@ -6,7 +6,7 @@ import { MobileMenuIcon } from "@/shared/asset/svg/MobileMenuIcon";
 import { cn } from "@/shared/utils/cn";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const pathname = usePathname();
@@ -31,6 +31,18 @@ export default function Header() {
     { href: "", label: "예매" },
     { href: "", label: "본선" },
   ];
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   return (
     <>
