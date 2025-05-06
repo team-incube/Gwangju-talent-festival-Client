@@ -90,7 +90,7 @@ export default function Header() {
         >
           <div className={cn("flex h-full")}>
             <div
-              className={cn("w-[calc(100vw-129px)] bg-black bg-opacity-40")}
+              className={cn("w-[calc(100vw-129px)]", "bg-black/40")}
               onClick={closeMobileMenu}
             ></div>
             <div className={cn("w-[129px] bg-white")}>
