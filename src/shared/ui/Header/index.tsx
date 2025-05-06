@@ -73,7 +73,7 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div
           className={cn(
-            "absolute top-74px right-0 w-full h-[calc(100vh-74px)]  mobile:block hidden z-10",
+            "absolute top-74px right-0 w-full h-[calc(100vh-68px)]  mobile:block hidden z-10",
           )}
         >
           <div className={cn("flex h-full")}>
