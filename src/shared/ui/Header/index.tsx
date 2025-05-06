@@ -77,7 +77,10 @@ export default function Header() {
           )}
         >
           <div className={cn("flex h-full")}>
-            <div className="w-[calc(100vw-129px)] bg-black bg-opacity-40"></div>
+            <div
+              className="w-[calc(100vw-129px)] bg-black bg-opacity-40"
+              onClick={closeMobileMenu}
+            ></div>
             <div className={cn("w-[129px] bg-white")}>
               <div className={cn("flex flex-col gap-[2.5rem] text-body3b m-26")}>
                 {links.map((link, index) => (
