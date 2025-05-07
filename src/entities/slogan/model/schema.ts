@@ -16,8 +16,8 @@ export const sloganSchema = z.object({
   description: sloganDescriptionSchema,
   school: z.string().min(1),
   grade: z.string().min(1),
-  class: z.string().min(1),
-  phone: phoneNumberSchema,
+  class_num: z.string().min(1),
+  phone_number: phoneNumberSchema,
 });
 
 export type SloganFormValues = z.infer<typeof sloganSchema>;

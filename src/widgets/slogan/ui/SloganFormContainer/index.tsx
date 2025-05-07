@@ -20,8 +20,8 @@ export default function SloganFormContainer() {
     description: "",
     school: "",
     grade: "",
-    class: "",
-    phone: "",
+    class_num: "",
+    phone_number: "",
   });
   const [state, setState] = useState({
     isValid: false,
@@ -141,9 +141,9 @@ export default function SloganFormContainer() {
             <Input
               name="class"
               type="number"
-              value={formValues.class}
+              value={formValues.class_num}
               onChange={(e) =>
-                setFormValues({ ...formValues, class: e.target.value })
+                setFormValues({ ...formValues, class_num: e.target.value })
               }
               label="반"
               placeholder="반을 입력해주세요"
@@ -151,9 +151,9 @@ export default function SloganFormContainer() {
           </div>
           <Input
             name="phone"
-            value={formValues.phone}
+            value={formValues.phone_number}
             onChange={(e) =>
-              setFormValues({ ...formValues, phone: e.target.value })
+              setFormValues({ ...formValues, phone_number: e.target.value })
             }
             label="전화번호"
             placeholder="전화번호를 입력해주세요"
