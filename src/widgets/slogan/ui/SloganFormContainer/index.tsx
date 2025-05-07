@@ -11,6 +11,7 @@ import { useGetSchool } from "@/entities/slogan/api/useGetSchool";
 import SloganHeader from "@/entities/slogan/ui/SloganHeader";
 import { SloganFormValues, sloganSchema } from "@/entities/slogan/model/schema";
 import SloganFormSuccess from "@/entities/slogan/ui/SloganFormSuccess";
+import Textarea from "@/entities/slogan/ui/Textarea";
 
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
@@ -71,15 +72,15 @@ export default function SloganFormContainer() {
             />
           </CountLength>
           <CountLength length={descriptionLength} max={1000}>
-            <Input
+            <Textarea
               value={formValues.description}
               onChange={(e) => {
                 const value = e.target.value;
                 setDescriptionLength(value.length);
                 setFormValues({ ...formValues, description: value });
               }}
-              max={1000}
               name="description"
+              maxLength={1000}
               label="슬로건 설명"
               placeholder="슬로건 설명을 입력해주세요"
             />
