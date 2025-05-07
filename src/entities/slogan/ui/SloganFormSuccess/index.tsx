@@ -6,7 +6,7 @@ export default function SloganFormSuccess() {
   return (
     <div
       className="flex flex-col items-center justify-center w-full"
-      style={{ height: "calc(100vh - 70px)" }}
+      style={{ height: "calc(100vh - 81px)" }}
     >
       <Logo height={131} color={colors.main[600]} width={211} />
       <div className="mt-[52px]">
