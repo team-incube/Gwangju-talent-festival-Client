@@ -48,7 +48,8 @@ export default function SloganFormContainer() {
     <form
       onSubmit={async (e) => {
         e.preventDefault();
-        await handleSloganFormSubmit(formValues);
+        const res = await handleSloganFormSubmit(formValues);
+        setState({ ...state, isSubmitted: res });
       }}
       className={cn("flex mt-[32px] flex-col gap-[6.25rem]")}
     >
