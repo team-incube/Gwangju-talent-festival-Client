@@ -4,6 +4,7 @@ import { CloseIcon } from "@/shared/asset/svg/CloseIcon";
 import { Logo } from "@/shared/asset/svg/Logo";
 import { MobileMenuIcon } from "@/shared/asset/svg/MobileMenuIcon";
 import { cn } from "@/shared/utils/cn";
+import { scrollToElement } from "@/shared/utils/scroll";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,13 +37,18 @@ export default function Header() {
   };
 
   const links = [
-    { href: "/slogan", label: "슬로건 공모" },
-    { href: "", label: "참여신청" },
-    { href: "", label: "FaQ" },
-    { href: "", label: "예선" },
-    { href: "", label: "예매" },
-    { href: "", label: "본선" },
+    { section: "slogan", label: "슬로건 공모" },
+    { section: "section2", label: "참여신청" },
+    // { section: "section3", label: "FaQ" },
+    { section: "section4", label: "예선" },
+    { section: "section5", label: "예매" },
+    { section: "section6", label: "본선" },
   ];
+
+  const handleScrollToSection = (section: string) => {
+    scrollToElement(`${section}`);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -56,9 +62,9 @@ export default function Header() {
         </Link>
         <div className={cn("flex gap-[2.5rem] text-body3b mobile:hidden")}>
           {links.map((link, index) => (
-            <Link key={index} href={link.href}>
+            <button key={index} onClick={() => handleScrollToSection(link.section)}>
               {link.label}
-            </Link>
+            </button>
           ))}
         </div>
         <div className={cn("hidden mobile:block")}>
@@ -96,9 +102,9 @@ export default function Header() {
             <div className={cn("w-[129px] bg-white")}>
               <div className={cn("flex flex-col gap-[2.5rem] text-body3b m-26")}>
                 {links.map((link, index) => (
-                  <Link key={index} href={link.href} onClick={closeMobileMenu}>
+                  <button key={index} onClick={() => handleScrollToSection(link.section)}>
                     {link.label}
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>
