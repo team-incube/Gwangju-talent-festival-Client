@@ -29,7 +29,7 @@ const Video = () => {
 
   return (
     <div className="relative w-full h-full ">
-      <video
+      {/* <video
         ref={videoRef}
         className={cn("w-full", "h-full", "object-cover")}
         autoPlay
@@ -39,7 +39,14 @@ const Video = () => {
       >
         <source src="/video/promotion.webm" type="video/webm" />
         <source src="/video/promotion.mp4" type="video/mp4" />
-      </video>
+      </video> */}
+
+      <iframe
+        className={cn("w-full", "h-full")}
+        src="https://www.youtube.com/embed/8iM_JB8u-Vo?autoplay=1&mute=1&loop=1&playlist=8iM_JB8u-Vo&controls=0&modestbranding=1&showinfo=0&rel=0&playsinline=1"
+        title="광탈페 프로모션"
+        allow="autoplay; encrypted-media"
+      />
       <div className="absolute bottom-[12%] left-0 w-full px-4 mobile:bottom-[6%]">
         <div className="max-w-[1060px] mx-auto text-white text-sm  rounded flex flex-col gap-14 tablet:pl-20 mobile:pl-10 mobile:gap-0">
           <p className="font-bold text-title1b tablet:text-body1b mobile:text-caption1b">
