@@ -14,8 +14,24 @@ export default {
       fontFamily: {
         pretendard: ["Pretendard", "sans-serif"],
       },
+
       screens: {
         mobile: { max: "640px" },
+        tablet: { min: "641px", max: "1024px" },
+      },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "marquee-reverse": {
+          "0%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(0%)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 30s linear infinite",
+        "marquee-reverse": "marquee-reverse 30s linear infinite",
       },
 
       fontSize: {
@@ -25,6 +41,10 @@ export default {
         h4b: ["32px", { lineHeight: "120%", fontWeight: "600" }],
         h4r: ["32px", { lineHeight: "120%", fontWeight: "400" }],
         title1b: ["44px", { lineHeight: "120%", fontWeight: "700" }],
+        title2b: ["40px", { lineHeight: "120%", fontWeight: "700" }],
+        title3m: ["36px", { lineHeight: "120%", fontWeight: "500" }],
+        title4b: ["32px", { lineHeight: "120%", fontWeight: "600" }],
+        title4r: ["32px", { lineHeight: "120%", fontWeight: "400" }],
         body1b: ["24px", { lineHeight: "120%", fontWeight: "600" }],
         body1r: ["24px", { lineHeight: "120%", fontWeight: "400" }],
         body2b: ["20px", { lineHeight: "120%", fontWeight: "600" }],
