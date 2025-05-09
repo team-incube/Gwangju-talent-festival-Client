@@ -4,4 +4,5 @@ export type SvgProps = SVGProps<SVGSVGElement> & {
   height?: number;
   width?: number;
   color?: string;
+  classname?: string;
 };
