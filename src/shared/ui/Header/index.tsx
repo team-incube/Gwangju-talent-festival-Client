@@ -37,12 +37,12 @@ export default function Header() {
   };
 
   const links = [
-    { section: "slogan", label: "슬로건 공모" },
-    { section: "section2", label: "참여신청" },
+    { section: "SloganSecondSection", label: "슬로건 공모" },
+    { section: "ParticipationThirdSection", label: "참여신청" },
     // { section: "section3", label: "FaQ" },
-    { section: "section4", label: "예선" },
-    { section: "section5", label: "예매" },
-    { section: "section6", label: "본선" },
+    { section: "PreliminaryFourthSection", label: "예선" },
+    { section: "ReservationFifthSection", label: "예매" },
+    { section: "FinalsSixthSection", label: "본선" },
   ];
 
   const handleScrollToSection = (section: string) => {
