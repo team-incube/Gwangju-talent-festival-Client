@@ -1,6 +1,7 @@
 import Share from "@/shared/asset/Share";
 import { Logo } from "@/shared/asset/svg/Logo";
 import { colors } from "@/shared/utils/color";
+import { share } from "../../lib/share";
 
 export default function SloganFormSuccess() {
   return (
@@ -11,7 +12,7 @@ export default function SloganFormSuccess() {
       <Logo height={131} color={colors.main[600]} width={211} />
       <div className="mt-[52px]">
         <h1 className="sm:text-title2b text-title4b">응모가 완료되었습니다!</h1>
-        <div className="flex gap-24 items-center justify-center mt-12 sm:mt-24">
+        <div onClick={share} className="flex gap-24 items-center justify-center mt-12 sm:mt-24">
           <Share color={colors.main[600]} height={24} width={24} />
           <span className="text-body2r text- underline text-main-600">
             친구들에게도 공유해주세요
