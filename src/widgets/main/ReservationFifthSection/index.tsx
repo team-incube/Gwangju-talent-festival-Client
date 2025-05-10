@@ -1,5 +1,4 @@
 import Image from "next/image";
-import ImageCarousel from "../ImageCarousel";
 
 const ReservationFifthSection = () => {
   return (

@@ -1,5 +1,4 @@
 "use client";
-import { cn } from "@/shared/utils/cn";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection";
