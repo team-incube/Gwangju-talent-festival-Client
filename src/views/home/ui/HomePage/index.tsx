@@ -5,6 +5,8 @@ import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection";
 import PreliminaryFourthSection from "@/widgets/main/PreliminaryFourthSection";
 import ReservationFifthSection from "@/widgets/main/ReservationFifthSection";
+import FinalsSixthSection from "@/widgets/main/FinalsSixthSection";
+import { Footer } from "@/widgets/main/Footer";
 
 const HomePage = () => {
   return (
@@ -14,12 +16,8 @@ const HomePage = () => {
       <ParticipationThirdSection />
       <PreliminaryFourthSection />
       <ReservationFifthSection />
-      <div id="section4" className="w-full h-[1080px] bg-pink-400">
-        예매
-      </div>
-      <div id="section5" className="w-full h-[1080px] bg-pink-500">
-        본선
-      </div>
+      <FinalsSixthSection />
+      <Footer />
     </>
   );
 };

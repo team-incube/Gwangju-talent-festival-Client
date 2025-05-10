@@ -27,7 +27,7 @@ const ReservationFifthSection = () => {
           온∙오프라인 참여 홍보 및 신청 접수
         </p>
 
-        <div className="flex flex-col gap-[40px] mb-[60px] bg-white rounded-[12px] py-[72px] px-[60px] text-center w-[376px] mobile:p-[24px] mobile:w-auto mobile:mb-[15px] mobile:gap-[24px]">
+        <div className="flex flex-col gap-[40px] mb-[60px] bg-white rounded-[12px] py-[72px] px-[60px] text-center w-[376px] mobile:p-[24px] mobile:w-fit justify-self-center mobile:mb-[15px] mobile:gap-[24px]">
           <p className="text-body1b mobile:text-caption1b">티켓오픈안내</p>
           <p className="text-title1b text-[#A24BE1] mobile:text-body1b">D-day</p>
           <div className="flex justify-center gap-4 text-[16px]">

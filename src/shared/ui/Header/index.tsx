@@ -42,7 +42,7 @@ export default function Header() {
     // { section: "section3", label: "FaQ" },
     { section: "PreliminaryFourthSection", label: "예선" },
     { section: "ReservationFifthSection", label: "예매" },
-    { section: "section6", label: "본선" },
+    { section: "FinalsSixthSection", label: "본선" },
   ];
 
   const handleScrollToSection = (section: string) => {
