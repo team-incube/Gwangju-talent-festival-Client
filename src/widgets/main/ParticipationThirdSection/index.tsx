@@ -32,16 +32,7 @@ const ParticipationThirdSection = () => {
           </p>
 
           <button className="inline-flex items-center text-purple-600 font-bold text-base mobile:text-sm hover:underline group">
-            신청하러가기
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="ml-2 w-5 h-5 text-purple-600 transition-transform group-hover:translate-x-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            2025.00.00일부터 신청기간 입니다
           </button>
         </div>
         <ImageCarousel />

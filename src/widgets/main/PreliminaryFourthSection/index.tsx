@@ -5,7 +5,7 @@ const PreliminaryFourthSection = () => {
     <section id="PreliminaryFourthSection" className="flex flex-col items-center">
       <div className="w-[70%] mobile:w-full">
         <div className="relative w-full text-center  mt-[66px] mobile:mt-[1.7rem]">
-          <p className="text-title1b mobile:text-body1b">참여 신청</p>
+          <p className="text-title1b mobile:text-body1b">예선</p>
           <p className="text-body2r text-gray-500 pt-[1.5rem] mobile:text-body3r mobile:pt-[1rem] mb-[24px] ">
             예선 설명 예선 설명
           </p>
