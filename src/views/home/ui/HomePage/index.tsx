@@ -3,6 +3,7 @@ import { cn } from "@/shared/utils/cn";
 import Video from "@/widgets/main/ui/video";
 import { useRouter } from "next/navigation";
 import SloganMarquee from "../SloganMarquee";
+import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 
 const HomePage = () => {
   const R = useRouter();
@@ -14,24 +15,7 @@ const HomePage = () => {
 
   return (
     <>
-      <div id="section1">
-        <section
-          className={cn(
-            "mobile:h-auto",
-            "tablet:h-auto",
-            "h-[calc(100vh-4.625rem)]",
-            "w-full",
-            "relative",
-            "top-0",
-            "z-0",
-            "flex",
-            "justify-center",
-            "bg-black",
-          )}
-        >
-          <Video />
-        </section>
-      </div>
+      <IntroFirstSection />
       <div id="slogan" className="w-full   text-center ">
         <p className="text-title1b pt-[4.7rem] mobile:text-body3b mobile:pt-[1.7rem]">
           슬로건 공모
