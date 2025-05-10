@@ -4,6 +4,7 @@ import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection";
 import PreliminaryFourthSection from "@/widgets/main/PreliminaryFourthSection";
+import ReservationFifthSection from "@/widgets/main/ReservationFifthSection";
 
 const HomePage = () => {
   return (
@@ -12,9 +13,7 @@ const HomePage = () => {
       <SloganSecondSection />
       <ParticipationThirdSection />
       <PreliminaryFourthSection />
-      <div id="section3" className="w-full h-[1080px] bg-pink-300">
-        예선
-      </div>
+      <ReservationFifthSection />
       <div id="section4" className="w-full h-[1080px] bg-pink-400">
         예매
       </div>

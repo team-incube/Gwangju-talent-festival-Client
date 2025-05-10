@@ -40,8 +40,8 @@ export default function Header() {
     { section: "SloganSecondSection", label: "슬로건 공모" },
     { section: "ParticipationThirdSection", label: "참여신청" },
     // { section: "section3", label: "FaQ" },
-    { section: "section4", label: "예선" },
-    { section: "section5", label: "예매" },
+    { section: "PreliminaryFourthSection", label: "예선" },
+    { section: "ReservationFifthSection", label: "예매" },
     { section: "section6", label: "본선" },
   ];
 
