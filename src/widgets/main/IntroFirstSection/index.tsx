@@ -1,5 +1,5 @@
 import { cn } from "@/shared/utils/cn";
-import Video from "@/widgets/main/ui/video";
+import Video from "@/widgets/main/IntroFirstSection/ui/video";
 
 const IntroFirstSection = () => {
   return (

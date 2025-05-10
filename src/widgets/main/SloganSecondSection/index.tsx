@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
-import SloganMarquee from "@/views/home/ui/SloganMarquee";
+import SloganMarquee from "@/widgets/main/SloganSecondSection/ui/SloganMarquee";
 
 const SloganSecondSection = () => {
   const R = useRouter();
