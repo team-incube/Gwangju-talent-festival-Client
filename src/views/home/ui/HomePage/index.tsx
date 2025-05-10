@@ -2,12 +2,14 @@
 import { cn } from "@/shared/utils/cn";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
+import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection";
 
 const HomePage = () => {
   return (
     <>
       <IntroFirstSection />
       <SloganSecondSection />
+      <ParticipationThirdSection />
       <div id="section2" className="w-full h-[1080px] bg-pink-200">
         침여 신청
       </div>
