@@ -11,7 +11,7 @@ const SloganSecondSection = () => {
   ];
 
   return (
-    <div id="slogan" className="w-full   text-center ">
+    <section id="SloganSecondSection" className="w-full   text-center ">
       <p className="text-title1b pt-[4.7rem] mobile:text-body1b mobile:pt-[1.7rem]">슬로건 공모</p>
       <p className="text-body1r pt-[1.5rem] text-gray-500 mobile:text-body3r mobile:pt-[1rem] mb-[24px]">
         <span className="block">2025 광탈페(광주학생탈렌트페스티벌),</span>
@@ -52,7 +52,7 @@ const SloganSecondSection = () => {
 
         <div className="text-sm text-gray-400">공모기간 : 2025.04.27~2025.04.30</div>
       </div>
-    </div>
+    </section>
   );
 };
 
