@@ -3,6 +3,7 @@ import { ToastProvider } from "@/shared/lib/ToastProvider";
 import "../shared/style/globals.css";
 import Header from "@/shared/ui/Header";
 import TanstackProviders from "@/shared/lib/TanstackProvider";
+import ChannelTalk from "@/shared/ui/ChannelTalk";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
@@ -30,6 +31,7 @@ export default function RootLayout({
         <TanstackProviders>
           <ToastProvider>{children}</ToastProvider>
         </TanstackProviders>
+        <ChannelTalk />
       </body>
     </html>
   );
