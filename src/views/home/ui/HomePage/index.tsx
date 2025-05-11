@@ -6,8 +6,13 @@ import PreliminaryFourthSection from "@/widgets/main/PreliminaryFourthSection";
 import ReservationFifthSection from "@/widgets/main/ReservationFifthSection";
 import FinalsSixthSection from "@/widgets/main/FinalsSixthSection";
 import { Footer } from "@/widgets/main/Footer";
+import { isShow } from "@/shared/lib/show";
+import ComingSoon from "@/shared/ui/ComingSoon";
 
 const HomePage = () => {
+  if (isShow("introduce")) {
+    return <ComingSoon />;
+  }
   return (
     <>
       <IntroFirstSection />

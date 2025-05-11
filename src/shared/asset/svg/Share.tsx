@@ -1,4 +1,4 @@
-import { SvgProps } from "../model/SvgProps";
+import { SvgProps } from "@/shared/model/SvgProps";
 
 export default function Share({ width, height, color = "#121212", className }: SvgProps) {
   return (
