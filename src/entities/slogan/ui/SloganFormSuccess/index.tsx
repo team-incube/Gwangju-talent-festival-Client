@@ -1,7 +1,7 @@
-import Share from "@/shared/asset/Share";
 import { Logo } from "@/shared/asset/svg/Logo";
 import { colors } from "@/shared/utils/color";
 import { share } from "../../lib/share";
+import Share from "@/shared/asset/svg/Share";
 
 export default function SloganFormSuccess() {
   return (
