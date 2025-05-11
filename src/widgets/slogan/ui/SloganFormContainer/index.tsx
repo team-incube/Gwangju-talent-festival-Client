@@ -39,13 +39,12 @@ export default function SloganFormContainer() {
     }));
   }, [formValues]);
 
-  if (isShow("slogan")) {
-    return <ComingSoon />;
-  }
-
   const debouncedSchoolName = useDebounce<string>(formValues.school, 400);
   const { data: schoolData, isSuccess: isSchoolFetched } = useGetSchool(debouncedSchoolName);
   const schoolList = schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
+  if (isShow("slogan")) {
+    return <ComingSoon />;
+  }
   if (state.isSubmitted) {
     return <SloganFormSuccess />;
   }
