@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
     !accessToken &&
     !refreshToken
   ) {
-    return NextResponse.redirect(new URL("/signin", request.url));
+    return NextResponse.redirect(new URL("/home", request.url));
   }
 
   return NextResponse.next();
