@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import PrizeItem from "@/entities/home/ui/PrizeItem";
 import SloganMarquee from "@/entities/home/ui/SloganMarquee";
+import Button from "@/shared/ui/Button";
 
 const SloganSecondSection = () => {
   const R = useRouter();
@@ -34,13 +35,10 @@ const SloganSecondSection = () => {
           ))}
         </div>
 
-        <button
-          onClick={() => R.push("/slogan")}
-          className="bg-purple-500 text-white font-semibold rounded-xl px-6 py-3 text-base flex items-center gap-2 my-[24px]"
-        >
+        <Button onClick={() => R.push("/slogan")} className="my-[24px] px-28">
           <span>슬로건 공모하러가기</span>
           <span className="text-lg">➔</span>
-        </button>
+        </Button>
 
         <div className="text-sm text-gray-400">공모기간 : 2025.04.27~2025.04.30</div>
       </div>
