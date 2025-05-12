@@ -47,7 +47,18 @@ const Video = () => {
         title="광탈페 프로모션"
         allow="autoplay; encrypted-media"
       />
-      <div className={cn("absolute", "inset-0", "bg-black/50", "select-none")} />
+      <div
+        className={cn(
+          "absolute",
+          "inset-0",
+          "select-none",
+          "bg-gradient-to-t",
+          "from-black/100",
+          "via-transparent",
+          "to-transparent",
+          "[background-position:0_30%]",
+        )}
+      />
       <div
         className={cn(
           "absolute",
