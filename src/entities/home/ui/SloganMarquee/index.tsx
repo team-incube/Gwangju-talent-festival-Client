@@ -87,9 +87,9 @@ const SloganMarquee = () => {
   }, []);
 
   return (
-    <div className="w-full overflow-hidden bg-[#f5e6ff] py-4 space-y-2 relative">
-      <MarqueeRow slogans={slogans1} font={font1} colorClass="text-purple-600" />
-      <MarqueeRow slogans={slogans2} font={font2} reverse colorClass="text-purple-700" />
+    <div className="w-full overflow-hidden bg-main-100 py-28 space-y-10 relative">
+      <MarqueeRow slogans={slogans1} font={font1} colorClass="text-main-600" />
+      <MarqueeRow slogans={slogans2} font={font2} reverse colorClass="text-main-500" />
     </div>
   );
 };
