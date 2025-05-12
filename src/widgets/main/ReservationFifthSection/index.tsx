@@ -6,7 +6,6 @@ const TICKET_OPEN_DATE = new Date("2025-10-29T20:00:00");
 
 const formatDateLeft = (timeLeft: number) => {
   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-
   return `D-${days}`;
 };
 
@@ -59,7 +58,7 @@ const ReservationFifthSection = () => {
         <p className={cn("text-title1b mobile:text-body1b")}>예매</p>
         <p
           className={cn(
-            "text-body2r text-gray-500 pt-[1.5rem] mobile:text-body3r mobile:pt-[1rem] mb-[24px]",
+            "text-body2r text-gray-500 pt-[1.5rem] mobile:text-body2r mobile:pt-[1rem] mb-[24px]",
           )}
         >
           온∙오프라인 참여 홍보 및 신청 접수
@@ -70,13 +69,13 @@ const ReservationFifthSection = () => {
             "flex flex-col gap-[40px] mb-[60px] bg-white rounded-[12px] py-[72px] px-[60px] text-center w-[376px] mobile:p-[24px] mobile:w-fit justify-self-center mobile:mb-[15px] mobile:gap-[24px]",
           )}
         >
-          <p className={cn("text-body1b mobile:text-caption1b")}>티켓오픈안내</p>
-          <p className={cn("text-title1b text-main-600 mobile:text-body1b")}>
+          <p className={cn("text-body1b")}>티켓오픈안내</p>
+          <p className={cn("text-title1b text-main-600 mobile:text-h3")}>
             {timeLeft > 0 ? formatDateLeft(timeLeft) : "D-Day"}
           </p>
-          <div className={cn("flex justify-center gap-4 text-[16px]")}>
-            <span className={cn("text-body2r mobile:text-caption2r")}>티켓오픈</span>
-            <span className={cn("text-body2r text-gray-500 mobile:text-caption2r")}>
+          <div className={cn("flex justify-center gap-4")}>
+            <span className={cn("text-body2r mobile:text-body2r")}>티켓오픈</span>
+            <span className={cn("text-body2r text-gray-500 mobile:text-body2r")}>
               {TICKET_OPEN_DATE.toLocaleString("ko-KR", {
                 year: "numeric",
                 month: "2-digit",

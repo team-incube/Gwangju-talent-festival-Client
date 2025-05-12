@@ -61,7 +61,7 @@ const ParticipationThirdSection = () => {
 
           <button
             className={cn(
-              "inline-flex items-center text-purple-600 font-bold text-base mobile:text-sm hover:underline group",
+              "inline-flex items-center text-main-600 font-bold text-body2b mobile:text-sm hover:underline group",
             )}
           >
             2025.00.00일부터 신청기간 입니다

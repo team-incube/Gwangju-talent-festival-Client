@@ -1,4 +1,5 @@
 import { cn } from "@/shared/utils/cn";
+import { Map } from "@/entities/home/ui/Map";
 
 const FinalsSixthSection = () => {
   return (
@@ -22,7 +23,7 @@ const FinalsSixthSection = () => {
             대상: 光트로(예선) 합격팀
             <br />∙ 2025. 8. 8.(금) 15:00, 광주학생예술누리터 꿈이룸관(예정)
           </p>
-          <div className={cn("w-full h-[200px] bg-slate-300 mb-[16px]")}>지도</div>
+          <Map />
         </div>
       </div>
     </section>

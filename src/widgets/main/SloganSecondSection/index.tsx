@@ -42,12 +42,12 @@ const SloganSecondSection = () => {
           ))}
         </div>
 
-        <Button onClick={() => R.push("/slogan")} className={cn("my-[24px] px-28")}>
-          <span>슬로건 공모하러가기</span>
-          <span className={cn("text-lg")}>➔</span>
+        <Button onClick={() => R.push("/slogan")} className={cn("my-[24px] gap-10 px-28")}>
+          <span className={cn("text-body2b")}>슬로건 공모하러가기</span>
+          <span>➔</span>
         </Button>
 
-        <div className={cn("text-sm text-gray-400")}>공모기간 : 2025.04.27~2025.04.30</div>
+        <div className={cn("text-caption1r text-gray-400")}>공모기간 : 2025.04.27~2025.04.30</div>
       </div>
     </section>
   );

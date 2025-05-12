@@ -4,7 +4,7 @@ import "../shared/style/globals.css";
 import Header from "@/shared/ui/Header";
 import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
-import { Footer } from "@/widgets/main/Footer";
+import { Footer } from "@/shared/ui/Footer";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
