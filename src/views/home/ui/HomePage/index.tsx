@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection";
@@ -10,9 +11,20 @@ import { isShow } from "@/shared/lib/show";
 import ComingSoon from "@/shared/ui/ComingSoon";
 
 const HomePage = () => {
-  if (isShow("introduce")) {
-    return <ComingSoon />;
-  }
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (isShow("introduce") && !window.location.pathname.startsWith("/test")) {
+      setShowComingSoon(true);
+    }
+  }, []);
+
+  if (!mounted) return null;
+
+  if (showComingSoon) return <ComingSoon />;
+
   return (
     <>
       <IntroFirstSection />
