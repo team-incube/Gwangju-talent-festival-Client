@@ -1,4 +1,11 @@
-import ImageCarousel from "../ImageCarousel";
+import ImageCarousel from "../../../entities/home/ui/ImageCarousel";
+
+const slides = [
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+];
 
 const PreliminaryFourthSection = () => {
   return (
@@ -19,12 +26,12 @@ const PreliminaryFourthSection = () => {
             </p>
           </div>
           <div className="w-[70%] mobile:w-full ">
-            <ImageCarousel wide />
+            <ImageCarousel wide={true} slides={slides} />
           </div>
         </div>
         <div className="flex w-full items-start justify-between mobile:flex-col-reverse">
           <div className="w-[70%] mobile:w-full ">
-            <ImageCarousel wide />
+            <ImageCarousel wide={true} slides={slides} />
           </div>
           <div className="w-[25%] mobile:w-full mobile:px-16">
             <p className="text-title4b mobile:text-body2b place-self-start mb-24">2차 예선</p>

@@ -1,5 +1,11 @@
 import Image from "next/image";
-import ImageCarousel from "../ImageCarousel";
+import ImageCarousel from "../../../entities/home/ui/ImageCarousel";
+
+const slides = [
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+];
 
 const ParticipationThirdSection = () => {
   return (
@@ -35,7 +41,7 @@ const ParticipationThirdSection = () => {
             2025.00.00일부터 신청기간 입니다
           </button>
         </div>
-        <ImageCarousel />
+        <ImageCarousel slides={slides} />
       </div>
     </section>
   );

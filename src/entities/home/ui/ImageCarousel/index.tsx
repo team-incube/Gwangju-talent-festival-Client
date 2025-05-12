@@ -3,19 +3,14 @@ import { useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import { PrevNextButton } from "@/shared/asset/svg/PrevNextButton";
+
 interface ImageCarouselProps {
   wide?: boolean;
+  slides: string[];
 }
 
-const ImageCarousel = ({ wide }: ImageCarouselProps) => {
+const ImageCarousel = ({ wide, slides }: ImageCarouselProps) => {
   const [current, setCurrent] = useState(0);
-
-  const slides = [
-    "/images/ParticipationThirdSection/slide1.png",
-    "/images/slide2.jpg",
-    "/images/slide3.jpg",
-    "/images/slide4.jpg",
-  ];
 
   const prev = () => setCurrent(prev => (prev === 0 ? slides.length - 1 : prev - 1));
   const next = () => setCurrent(prev => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -34,12 +29,26 @@ const ImageCarousel = ({ wide }: ImageCarouselProps) => {
           </button>
         )}
 
-        <Image
-          src={slides[current]}
-          alt={`Slide ${current + 1}`}
-          fill
-          className="object-cover transition-all duration-500 rounded-lg"
-        />
+        <div
+          className={clsx(
+            "absolute inset-0 flex transition-transform duration-500",
+            wide ? "aspect-[16/9]" : "aspect-[2/1]",
+          )}
+          style={{ transform: `translateX(-${current * 100}%)` }}
+        >
+          {slides.map((src, idx) => (
+            <div
+              key={src}
+              className={clsx(
+                "relative w-full h-full flex-shrink-0",
+                wide ? "aspect-[16/9]" : "aspect-[2/1]",
+              )}
+              style={{ minWidth: "100%" }}
+            >
+              <Image src={src} alt={`Slide ${idx + 1}`} fill className="object-cover rounded-lg" />
+            </div>
+          ))}
+        </div>
 
         {current !== slides.length - 1 && (
           <button className="absolute right-[4%] top-1/2 -translate-y-1/2 z-10" onClick={next}>
@@ -59,7 +68,7 @@ const ImageCarousel = ({ wide }: ImageCarouselProps) => {
               key={idx}
               className={clsx(
                 "w-16 h-16 rounded-full transition-colors mobile:w-8 mobile:h-8",
-                current === idx ? "bg-purple-600" : "bg-gray-400",
+                current === idx ? "bg-main-600" : "bg-gray-400",
               )}
             />
           ))}
