@@ -28,7 +28,7 @@ const Video = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-full ">
+    <div className="relative w-full h-full select-none">
       {/* <video
         ref={videoRef}
         className={cn("w-full", "h-full", "object-cover")}
@@ -42,14 +42,15 @@ const Video = () => {
       </video> */}
 
       <iframe
-        className={cn("w-full", "h-full")}
+        className={cn("w-full", "h-full", "pointer-events-none", "select-none")}
         src="https://www.youtube.com/embed/8iM_JB8u-Vo?autoplay=1&mute=1&loop=1&playlist=8iM_JB8u-Vo&controls=0&modestbranding=1&showinfo=0&rel=0&playsinline=1"
         title="광탈페 프로모션"
         allow="autoplay; encrypted-media"
       />
-      <div className="absolute bottom-[12%] left-0 w-full px-4 mobile:bottom-[6%]">
-        <div className="max-w-[1060px] mx-auto text-white text-sm  rounded flex flex-col gap-14 tablet:pl-20 mobile:pl-10 mobile:gap-0">
-          <p className="font-bold text-title1b tablet:text-body1b mobile:text-caption1b">
+      <div className="absolute inset-0 bg-black/50 select-none" />
+      <div className="absolute bottom-[12%] left-0 w-full px-4 mobile:bottom-[6%] select-none">
+        <div className="max-w-[1060px] mx-auto text-white text-sm rounded flex flex-col gap-14 tablet:pl-20 mobile:pl-10 mobile:gap-0 select-none">
+          <p className="font-bold text-title1b tablet:text-body1b mobile:text-caption1b select-none">
             光탈페 (광주학생탈렌트페스티벌)
           </p>
           <p className="text-title4r tablet:text-body3r mobile:text-caption3r !leading-[130%]">
