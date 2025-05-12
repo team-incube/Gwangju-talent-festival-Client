@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import PrizeItem from "@/entities/home/ui/PrizeItem";
-import SloganMarquee from "@/widgets/main/SloganSecondSection/ui/SloganMarquee";
+import SloganMarquee from "@/entities/home/ui/SloganMarquee";
 
 const SloganSecondSection = () => {
   const R = useRouter();
