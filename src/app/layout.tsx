@@ -4,6 +4,7 @@ import "../shared/style/globals.css";
 import Header from "@/shared/ui/Header";
 import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
+import { Footer } from "@/widgets/main/Footer";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
@@ -32,6 +33,7 @@ export default function RootLayout({
           <ToastProvider>{children}</ToastProvider>
         </TanstackProviders>
         <ChannelTalk />
+        <Footer />
       </body>
     </html>
   );

@@ -6,7 +6,6 @@ import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection"
 import PreliminaryFourthSection from "@/widgets/main/PreliminaryFourthSection";
 import ReservationFifthSection from "@/widgets/main/ReservationFifthSection";
 import FinalsSixthSection from "@/widgets/main/FinalsSixthSection";
-import { Footer } from "@/widgets/main/Footer";
 import { isShow } from "@/shared/lib/show";
 import ComingSoon from "@/shared/ui/ComingSoon";
 
@@ -33,7 +32,6 @@ const HomePage = () => {
       <PreliminaryFourthSection />
       <ReservationFifthSection />
       <FinalsSixthSection />
-      <Footer />
     </>
   );
 };
