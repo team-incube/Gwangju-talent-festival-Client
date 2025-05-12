@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import PrizeItem from "@/entities/home/ui/PrizeItem";
 import SloganMarquee from "@/widgets/main/SloganSecondSection/ui/SloganMarquee";
 
 const SloganSecondSection = () => {
@@ -28,17 +29,8 @@ const SloganSecondSection = () => {
 
       <div className="flex flex-col items-center p-6 bg-white my-[24px]">
         <div className="flex justify-center gap-[40px]">
-          {prizes.map(({ rank, bg, emoji, desc }) => (
-            <div key={rank} className="flex flex-col items-center gap-[16px]">
-              <div
-                className={`w-[60px] h-[60px] flex justify-center items-center rounded-full text-white text-body1r ${bg}`}
-              >
-                {rank}
-              </div>
-              <div className="text-lg font-semibold">
-                {emoji} {desc}
-              </div>
-            </div>
+          {prizes.map(prize => (
+            <PrizeItem key={prize.rank} {...prize} />
           ))}
         </div>
 
