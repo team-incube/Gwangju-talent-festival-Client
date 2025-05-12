@@ -69,7 +69,7 @@ export default function Header() {
         </div>
         <div className={cn("hidden mobile:block")}>
           <div className={cn("flex text-caption2r gap-16")}>
-            <Link
+            {/* <Link
               className={cn("border-gray-100 border border-solid rounded-lg px-12 py-8")}
               href="/signin"
             >
@@ -80,7 +80,7 @@ export default function Header() {
               href="/signup"
             >
               회원가입
-            </Link>
+            </Link> */}
             <div onClick={toggleMobileMenu} className={cn("place-self-center")}>
               {isMobileMenuOpen ? <CloseIcon /> : <MobileMenuIcon />}
             </div>
