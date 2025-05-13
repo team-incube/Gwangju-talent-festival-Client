@@ -1,4 +1,4 @@
-export const slogansMock = [
+export const slogansMock = Object.freeze([
   "너와 나, 우리가 만들어 갈 빛나는 축제 속으로!",
   "미래에 빛이 될 너, 지금 너의 모습을 맘껏 뽐내봐!",
   "언제나 빛나는 나, 너, 우리, 모두 함께 빛나자!",
@@ -16,4 +16,4 @@ export const slogansMock = [
   "오늘 여기 광주의 주인공은 너야너!",
   "꿈꾸는 너를 위한 무대, 바로 지금이야",
   "열정의 날개를 펼쳐라, 세상의 한계를 넘어!",
-];
+]) as ReadonlyArray<string>;
