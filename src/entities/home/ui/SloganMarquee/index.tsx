@@ -1,12 +1,12 @@
 "use client";
 
-import { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { slogansMock } from "@/entities/home/mock/sloganMock";
 import { getRandomSubset } from "./utils/getRandomSubset";
 import { FONTS, FontType } from "./model/fonts";
 import { MarqueeRow } from "./ui/MarqueeRow";
 
-const SloganMarquee = (): JSX.Element => {
+const SloganMarquee = (): React.ReactElement => {
   const [slogans1, setSlogans1] = useState<ReadonlyArray<string>>([]);
   const [slogans2, setSlogans2] = useState<ReadonlyArray<string>>([]);
   const [font1, setFont1] = useState<FontType>("Pretendard");

@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { FontType } from "../../model/fonts";
 import { SloganItem } from "../SloganItem";
 import { cn } from "@/shared/utils/cn";
@@ -11,7 +11,12 @@ type MarqueeRowProps = Readonly<{
 }>;
 
 export const MarqueeRow = memo(
-  ({ slogans, font, reverse = false, color = "text-main-600" }: MarqueeRowProps): JSX.Element => {
+  ({
+    slogans,
+    font,
+    reverse = false,
+    color = "text-main-600",
+  }: MarqueeRowProps): React.ReactElement => {
     const rendered = useMemo(
       () =>
         slogans.map((slogan, index) => (
