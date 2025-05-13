@@ -1,51 +1,64 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import { PrevNextButton } from "@/shared/asset/svg/PrevNextButton";
+import { SlideCounter } from "./ui/SlideCounter";
+import { SlideDots } from "./ui/SlideDots";
+import { cn } from "@/shared/utils/cn";
 
 interface ImageCarouselProps {
   wide?: boolean;
   slides: string[];
+  className?: string;
 }
 
-const ImageCarousel = ({ wide, slides }: ImageCarouselProps) => {
+const ASPECT_RATIO = {
+  wide: "aspect-[16/9]",
+  normal: "aspect-[2/1]",
+};
+
+const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) => {
   const [current, setCurrent] = useState(0);
 
-  const prev = () => setCurrent(prev => (prev === 0 ? slides.length - 1 : prev - 1));
-  const next = () => setCurrent(prev => (prev === slides.length - 1 ? 0 : prev + 1));
+  const prev = useCallback(
+    () => setCurrent(prev => (prev === 0 ? slides.length - 1 : prev - 1)),
+    [slides.length],
+  );
+
+  const next = useCallback(
+    () => setCurrent(prev => (prev === slides.length - 1 ? 0 : prev + 1)),
+    [slides.length],
+  );
+
+  const aspectRatio = wide ? ASPECT_RATIO.wide : ASPECT_RATIO.normal;
 
   return (
-    <div className="flex flex-col items-center justify-center mobile:px-16">
-      <div
-        className={clsx(
-          "relative w-full bg-black rounded-lg overflow-hidden",
-          wide ? "aspect-[16/9]" : "aspect-[2/1]",
-        )}
-      >
+    <div className={clsx("flex flex-col items-center justify-center mobile:px-16", className)}>
+      <div className={clsx("relative w-full bg-black rounded-lg overflow-hidden", aspectRatio)}>
         {current !== 0 && (
           <button className="absolute left-[4%] top-1/2 -translate-y-1/2 z-10" onClick={prev}>
-            <PrevNextButton className="mobile:w-[32px] " />
+            <PrevNextButton className="mobile:w-[32px]" />
           </button>
         )}
 
         <div
-          className={clsx(
-            "absolute inset-0 flex transition-transform duration-500",
-            wide ? "aspect-[16/9]" : "aspect-[2/1]",
-          )}
+          className={cn("absolute inset-0 flex transition-transform duration-500", aspectRatio)}
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {slides.map((src, idx) => (
             <div
-              key={src}
-              className={clsx(
-                "relative w-full h-full flex-shrink-0",
-                wide ? "aspect-[16/9]" : "aspect-[2/1]",
-              )}
+              key={`slide-${idx}`}
+              className={cn("relative w-full h-full flex-shrink-0", aspectRatio)}
               style={{ minWidth: "100%" }}
             >
-              <Image src={src} alt={`Slide ${idx + 1}`} fill className="object-cover rounded-lg" />
+              <Image
+                src={src}
+                alt={`${idx}`}
+                fill
+                className="object-cover rounded-lg"
+                priority={idx === 0}
+              />
             </div>
           ))}
         </div>
@@ -57,22 +70,9 @@ const ImageCarousel = ({ wide, slides }: ImageCarouselProps) => {
         )}
       </div>
       {wide ? (
-        <div className="mt-[24px] mb-[44px] text-body1b mobile:my-16 mobile:text-caption1b">
-          <span className="text-main-600">{current + 1}</span>
-          <span className="text-gray-400">/{slides.length}</span>
-        </div>
+        <SlideCounter current={current} total={slides.length} />
       ) : (
-        <div className="flex mt-[24px] mb-[44px]  gap-[40px] mobile:gap-[24px]">
-          {slides.map((_, idx) => (
-            <div
-              key={idx}
-              className={clsx(
-                "w-16 h-16 rounded-full transition-colors mobile:w-8 mobile:h-8",
-                current === idx ? "bg-main-600" : "bg-gray-400",
-              )}
-            />
-          ))}
-        </div>
+        <SlideDots current={current} total={slides.length} />
       )}
     </div>
   );
