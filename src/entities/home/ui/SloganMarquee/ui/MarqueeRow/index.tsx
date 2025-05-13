@@ -26,7 +26,7 @@ export const MarqueeRow = memo(
     );
 
     return (
-      <div className="w-full overflow-hidden whitespace-nowrap">
+      <div className={cn("w-full overflow-hidden whitespace-nowrap")}>
         <div
           className={cn(
             "flex w-[200%] text-[24px] font-bold",
