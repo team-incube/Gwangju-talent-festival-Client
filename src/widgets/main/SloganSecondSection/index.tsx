@@ -5,13 +5,14 @@ import SloganMarquee from "@/entities/home/ui/SloganMarquee";
 import Button from "@/shared/ui/Button";
 import { cn } from "@/shared/utils/cn";
 
+const PRIZES = [
+  { rank: "2등", bg: "bg-gray-400", emoji: "🍗", desc: "치킨 세트" },
+  { rank: "1등", bg: "bg-yellow-300", emoji: "🎁", desc: "수상자 해당 학습 간식" },
+  { rank: "3등", bg: "bg-orange-700", emoji: "🍔", desc: "햄버거 세트" },
+];
+
 const SloganSecondSection = () => {
   const R = useRouter();
-  const prizes = [
-    { rank: "2등", bg: "bg-gray-400", emoji: "🍗", desc: "치킨 세트" },
-    { rank: "1등", bg: "bg-yellow-300", emoji: "🎁", desc: "수상자 해당 학습 간식" },
-    { rank: "3등", bg: "bg-orange-700", emoji: "🍔", desc: "햄버거 세트" },
-  ];
 
   return (
     <section id="SloganSecondSection" className={cn("w-full text-center")}>
@@ -37,7 +38,7 @@ const SloganSecondSection = () => {
 
       <div className={cn("flex flex-col items-center p-6 bg-white my-[28px]")}>
         <div className={cn("flex justify-center gap-[40px]")}>
-          {prizes.map(prize => (
+          {PRIZES.map(prize => (
             <PrizeItem key={prize.rank} {...prize} />
           ))}
         </div>
