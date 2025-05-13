@@ -1,9 +1,9 @@
-type PrizeItemProps = {
+type PrizeItemProps = Readonly<{
   rank: string;
   bg: string;
   emoji: string;
   desc: string;
-};
+}>;
 
 const PrizeItem: React.FC<PrizeItemProps> = ({ rank, bg, emoji, desc }) => {
   return (

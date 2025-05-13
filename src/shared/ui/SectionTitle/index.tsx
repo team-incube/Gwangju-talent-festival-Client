@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
-interface SectionTitleProps {
+type SectionTitleProps = Readonly<{
   title: string;
   description?: ReactNode;
   className?: string;
-}
+}>;
 
 export const SectionTitle = ({ title, description, className }: SectionTitleProps) => {
   return (
