@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useMemo, memo } from "react";
-import clsx from "clsx";
 import { PrevNextButton } from "@/shared/asset/svg/PrevNextButton";
 import { SlideCounter } from "./ui/SlideCounter";
 import { SlideDots } from "./ui/SlideDots";
@@ -48,11 +47,11 @@ const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) 
   );
 
   return (
-    <div className={clsx("flex flex-col items-center justify-center mobile:px-16", className)}>
-      <div className={clsx("relative w-full bg-black rounded-lg overflow-hidden", aspectRatio)}>
+    <div className={cn("flex flex-col items-center justify-center mobile:px-16", className)}>
+      <div className={cn("relative w-full bg-black rounded-lg overflow-hidden", aspectRatio)}>
         {current !== 0 && (
-          <button className="absolute left-[4%] top-1/2 -translate-y-1/2 z-10" onClick={prev}>
-            <PrevNextButton className="mobile:w-[32px]" />
+          <button className={cn("absolute left-[4%] top-1/2 -translate-y-1/2 z-10")} onClick={prev}>
+            <PrevNextButton className={cn("mobile:w-[32px]")} />
           </button>
         )}
 
@@ -64,8 +63,11 @@ const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) 
         </div>
 
         {current !== slides.length - 1 && (
-          <button className="absolute right-[4%] top-1/2 -translate-y-1/2 z-10" onClick={next}>
-            <PrevNextButton className="mobile:w-[32px] rotate-180" />
+          <button
+            className={cn("absolute right-[4%] top-1/2 -translate-y-1/2 z-10")}
+            onClick={next}
+          >
+            <PrevNextButton className={cn("mobile:w-[32px] rotate-180")} />
           </button>
         )}
       </div>
