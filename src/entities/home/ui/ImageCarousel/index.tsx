@@ -1,17 +1,18 @@
 "use client";
-import { useState, useCallback } from "react";
+
+import { useState, useCallback, useMemo, memo } from "react";
 import clsx from "clsx";
-import Image from "next/image";
 import { PrevNextButton } from "@/shared/asset/svg/PrevNextButton";
 import { SlideCounter } from "./ui/SlideCounter";
 import { SlideDots } from "./ui/SlideDots";
 import { cn } from "@/shared/utils/cn";
+import { CarouselImage } from "./ui/CarouselImage";
 
-interface ImageCarouselProps {
+type ImageCarouselProps = Readonly<{
   wide?: boolean;
-  slides: string[];
+  slides: ReadonlyArray<string>;
   className?: string;
-}
+}>;
 
 const ASPECT_RATIO = {
   wide: "aspect-[16/9]",
@@ -31,7 +32,20 @@ const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) 
     [slides.length],
   );
 
-  const aspectRatio = wide ? ASPECT_RATIO.wide : ASPECT_RATIO.normal;
+  const aspectRatio = useMemo(() => (wide ? ASPECT_RATIO.wide : ASPECT_RATIO.normal), [wide]);
+
+  const transformStyle = useMemo(
+    () => ({ transform: `translateX(-${current * 100}%)` }),
+    [current],
+  );
+
+  const carouselImages = useMemo(
+    () =>
+      slides.map((src, idx) => (
+        <CarouselImage key={`slide-${idx}`} src={src} idx={idx} aspectRatio={aspectRatio} />
+      )),
+    [slides, aspectRatio],
+  );
 
   return (
     <div className={clsx("flex flex-col items-center justify-center mobile:px-16", className)}>
@@ -44,23 +58,9 @@ const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) 
 
         <div
           className={cn("absolute inset-0 flex transition-transform duration-500", aspectRatio)}
-          style={{ transform: `translateX(-${current * 100}%)` }}
+          style={transformStyle}
         >
-          {slides.map((src, idx) => (
-            <div
-              key={`slide-${idx}`}
-              className={cn("relative w-full h-full flex-shrink-0", aspectRatio)}
-              style={{ minWidth: "100%" }}
-            >
-              <Image
-                src={src}
-                alt={`${idx}`}
-                fill
-                className="object-cover rounded-lg"
-                priority={idx === 0}
-              />
-            </div>
-          ))}
+          {carouselImages}
         </div>
 
         {current !== slides.length - 1 && (
@@ -78,4 +78,4 @@ const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) 
   );
 };
 
-export default ImageCarousel;
+export default memo(ImageCarousel);
