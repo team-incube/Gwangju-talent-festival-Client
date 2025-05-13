@@ -2,8 +2,9 @@ export default function Agree() {
   return (
     <div className="border-gray-100 border border-solid text-caption1r h-[184px] overflow-y-scroll my-24 rounded-lg p-12">
       <p>
-        [개인정보 수집·이용에 대한 안내 및 동의] 광주학생탈렌트페스티벌은 아래와 같이 개인정보를
-        수집·이용하고자 합니다. 내용을 자세히 읽으신 후 동의 여부를 결정하여 주시기 바랍니다.
+        [개인정보 수집·이용에 대한 안내 및 동의]
+        <br /> 광주학생탈렌트페스티벌은 아래와 같이 개인정보를 수집·이용하고자 합니다. <br />
+        내용을 자세히 읽으신 후 동의 여부를 결정하여 주시기 바랍니다.
       </p>
       <h5>1. 수집 항목</h5>
       <ul className="list-disc pl-16 marker:text-[10px]">
