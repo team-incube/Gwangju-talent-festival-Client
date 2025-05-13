@@ -1,7 +1,8 @@
-import ImageCarousel from "../../../entities/home/ui/ImageCarousel";
+import ImageCarousel from "@/entities/home/ui/ImageCarousel";
 import { cn } from "@/shared/utils/cn";
+import { SectionTitle } from "@/shared/ui/SectionTitle";
 
-const slides = [
+const SLIDES = [
   "/images/ParticipationThirdSection/slide1.png",
   "/images/ParticipationThirdSection/slide1.png",
   "/images/ParticipationThirdSection/slide1.png",
@@ -12,16 +13,12 @@ const PreliminaryFourthSection = () => {
   return (
     <section id="PreliminaryFourthSection" className={cn("flex flex-col items-center")}>
       <div className={cn("w-[70%] mobile:w-full")}>
-        <div className={cn("relative w-full text-center mt-[66px] mobile:mt-[1.7rem]")}>
-          <p className={cn("text-title1b mobile:text-body1b")}>예선</p>
-          <p
-            className={cn(
-              "text-body2r text-gray-500 pt-[1.5rem] mobile:text-body3r mobile:pt-[1rem] mb-[24px]",
-            )}
-          >
-            예선 설명 예선 설명
-          </p>
-        </div>
+        <SectionTitle
+          title="예선"
+          description="예선 설명 예선 설명"
+          className={cn("mt-[66px] mobile:mt-[1.7rem] mb-[24px]")}
+        />
+
         <div
           className={cn(
             "flex w-full items-start justify-between mb-[90px] mobile:flex-col mobile:mb-[38px]",
@@ -35,12 +32,12 @@ const PreliminaryFourthSection = () => {
             </p>
           </div>
           <div className={cn("w-[70%] mobile:w-full")}>
-            <ImageCarousel wide={true} slides={slides} />
+            <ImageCarousel wide={true} slides={SLIDES} />
           </div>
         </div>
         <div className={cn("flex w-full items-start justify-between mobile:flex-col-reverse")}>
           <div className={cn("w-[70%] mobile:w-full")}>
-            <ImageCarousel wide={true} slides={slides} />
+            <ImageCarousel wide={true} slides={SLIDES} />
           </div>
           <div className={cn("w-[25%] mobile:w-full mobile:px-16")}>
             <p className={cn("text-title4b mobile:text-body2b place-self-start mb-24")}>2차 예선</p>
@@ -54,4 +51,5 @@ const PreliminaryFourthSection = () => {
     </section>
   );
 };
+
 export default PreliminaryFourthSection;
