@@ -20,7 +20,7 @@ const FinalsSixthSection = () => {
             대상: 光트로(예선) 합격팀
             <br />∙ 2025. 8. 8.(금) 15:00, 광주학생예술누리터 꿈이룸관(예정)
           </p>
-          <Map />
+          <Map address="광주광역시 동구 필문대로 309 조선대학교 해오름관" className="h-[300px]" />
         </div>
       </div>
     </section>

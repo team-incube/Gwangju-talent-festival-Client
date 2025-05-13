@@ -5,6 +5,7 @@ import Header from "@/shared/ui/Header";
 import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
 import { Footer } from "@/shared/ui/Footer";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
@@ -27,6 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <Script
+          strategy="beforeInteractive"
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&libraries=services&autoload=false`}
+        />
+      </head>
       <body className="font-['Pretendard-Regular'] antialiased">
         <Header />
         <TanstackProviders>
