@@ -6,34 +6,48 @@ import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection"
 import PreliminaryFourthSection from "@/widgets/main/PreliminaryFourthSection";
 import ReservationFifthSection from "@/widgets/main/ReservationFifthSection";
 import FinalsSixthSection from "@/widgets/main/FinalsSixthSection";
-import { Footer } from "@/widgets/main/Footer";
 import { isShow } from "@/shared/lib/show";
 import ComingSoon from "@/shared/ui/ComingSoon";
 
+const SECTIONS = [
+  { id: "intro", Component: IntroFirstSection },
+  { id: "slogan", Component: SloganSecondSection },
+  { id: "participation", Component: ParticipationThirdSection },
+  { id: "preliminary", Component: PreliminaryFourthSection },
+  { id: "reservation", Component: ReservationFifthSection },
+  { id: "finals", Component: FinalsSixthSection },
+];
+
+interface ShowStatus {
+  isComingSoon: boolean;
+  isMounted: boolean;
+}
+
 const HomePage = () => {
-  const [showComingSoon, setShowComingSoon] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [showStatus, setShowStatus] = useState<ShowStatus>({
+    isComingSoon: false,
+    isMounted: false,
+  });
 
   useEffect(() => {
-    setMounted(true);
-    if (isShow("introduce") && !window.location.pathname.startsWith("/test")) {
-      setShowComingSoon(true);
-    }
+    const shouldShowComingSoon =
+      isShow("introduce") && !window.location.pathname.startsWith("/test");
+
+    setShowStatus({
+      isComingSoon: shouldShowComingSoon,
+      isMounted: true,
+    });
   }, []);
 
-  if (!mounted) return null;
+  if (!showStatus.isMounted) return null;
 
-  if (showComingSoon) return <ComingSoon />;
+  if (showStatus.isComingSoon) return <ComingSoon />;
 
   return (
     <>
-      <IntroFirstSection />
-      <SloganSecondSection />
-      <ParticipationThirdSection />
-      <PreliminaryFourthSection />
-      <ReservationFifthSection />
-      <FinalsSixthSection />
-      <Footer />
+      {SECTIONS.map(({ id, Component }) => (
+        <Component key={id} />
+      ))}
     </>
   );
 };
