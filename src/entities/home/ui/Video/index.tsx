@@ -82,7 +82,7 @@ const Video = () => {
 
   return (
     <div className={cn("relative", "w-full", "h-full", "select-none")}>
-      <video
+      {/* <video
         ref={videoRef}
         className={cn("w-full", "h-full", "object-cover")}
         autoPlay
@@ -92,8 +92,13 @@ const Video = () => {
       >
         <source src={sources[index].webm} type="video/webm" />
         <source src={sources[index].mp4} type="video/mp4" />
-      </video>
-
+      </video> */}
+      <iframe
+        className={cn("w-full", "h-full", "pointer-events-none", "select-none")}
+        src="https://www.youtube.com/embed/8iM_JB8u-Vo?autoplay=1&mute=1&loop=1&playlist=8iM_JB8u-Vo&controls=0&modestbranding=1&showinfo=0&rel=0&playsinline=1"
+        title="광탈페 프로모션"
+        allow="autoplay; encrypted-media"
+      />
       <div
         className={cn(
           "absolute",
