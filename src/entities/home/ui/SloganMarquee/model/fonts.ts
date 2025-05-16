@@ -7,7 +7,13 @@ export const FONTS = Object.freeze([
   "Orbitron",
   "Cafe24ClassicType-Regular",
   "BMHANNAPro",
-  "Danjo-bold-Regular"
+  "Danjo-bold-Regular",
+  "Ownglyph_corncorn-Rg",
+  "LeeSeoyun",
+  "GangwonEduSaeeum_OTFMediumA",
+  "Shilla_CultureB-Bold",
+  "SangSangRock",
+  "Dokrip"
 ]) as ReadonlyArray<string> & {
   readonly [index: number]: string;
 };
