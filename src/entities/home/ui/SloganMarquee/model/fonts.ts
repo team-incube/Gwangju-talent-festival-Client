@@ -1,10 +1,13 @@
 export const FONTS = Object.freeze([
-  "Pretendard",
+  "Pretendard-Regular",
   "Arial",
   "NanumSquare",
   "DungGeunMo",
-  "GmarketSans",
+  "GmarketSansMedium",
   "Orbitron",
+  "Cafe24ClassicType-Regular",
+  "BMHANNAPro",
+  "Danjo-bold-Regular"
 ]) as ReadonlyArray<string> & {
   readonly [index: number]: string;
 };
