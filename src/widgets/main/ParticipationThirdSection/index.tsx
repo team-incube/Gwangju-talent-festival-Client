@@ -4,30 +4,30 @@ import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 
 const SLIDES = [
-  "https://www.광탈페.kr/images/ParticipationThirdSection/slide1.png",
-  "https://www.광탈페.kr/images/ParticipationThirdSection/slide1.png",
-  "https://www.광탈페.kr/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
 ];
 
 const BackgroundImages = () => (
   <div className={cn("mobile:hidden z-0")}>
     <div className={cn("absolute left-[1%] top-0 h-full w-[24%]")}>
-      <Image src="https://www.광탈페.kr/images/starline.png" alt="Star Line" fill />
+      <Image src="/images/starline.png" alt="Star Line" fill />
     </div>
     <div className={cn("absolute right-[4%] top-0 h-full w-[24%]")}>
-      <Image src="https://www.광탈페.kr/images/trophyline.png" alt="Trophy Line" fill />
+      <Image src="/images/trophyline.png" alt="Trophy Line" fill />
     </div>
     <div
       className={cn(
         "absolute left-[-10%] top-[55%] translate-y-[-50%] w-[40%] aspect-square tablet:left-0",
       )}
     >
-      <Image src="https://www.광탈페.kr/images/star.png" alt="Star" fill />
+      <Image src="/images/star.png" alt="Star" fill />
     </div>
     <div
       className={cn("absolute right-[-7%] top-[30%] translate-y-[-50%] w-[40%] aspect-square z-0")}
     >
-      <Image src="https://www.광탈페.kr/images/trophy.png" alt="Trophy" fill />
+      <Image src="/images/trophy.png" alt="Trophy" fill />
     </div>
   </div>
 );

@@ -34,24 +34,24 @@ const ReservationFifthSection = () => {
     >
       <div className={cn("z-0")}>
         <div className={cn("absolute left-[1%] top-0 h-full w-[26%] mobile:w-[30%]")}>
-          <Image src="https://www.광탈페.kr/images/starline.png" alt="Star Line" fill />
+          <Image src="/images/starline.png" alt="Star Line" fill />
         </div>
         <div className={cn("absolute right-[4%] top-0 h-full w-[26%] mobile:w-[30%]")}>
-          <Image src="https://www.광탈페.kr/images/trophyline.png" alt="Trophy Line" fill />
+          <Image src="/images/trophyline.png" alt="Trophy Line" fill />
         </div>
         <div
           className={cn(
             "absolute left-0 top-[40%] translate-y-[-50%] w-[30%] aspect-square tablet:left-0 mobile:w-[40%] mobile:top-[60%] mobile:left-[-4%]",
           )}
         >
-          <Image src="https://www.광탈페.kr/images/star.png" alt="Star" fill />
+          <Image src="/images/star.png" alt="Star" fill />
         </div>
         <div
           className={cn(
             "absolute right-[4%] top-[40%] translate-y-[-50%] w-[30%] aspect-square z-0 mobile:w-[40%] mobile:right-[-10%]",
           )}
         >
-          <Image src="https://www.광탈페.kr/images/trophy.png" alt="Trophy" fill />
+          <Image src="/images/trophy.png" alt="Trophy" fill />
         </div>
       </div>
       <div className={cn("relative w-full text-center mt-[66px] mobile:mt-[1.7rem]")}>

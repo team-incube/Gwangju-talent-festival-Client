@@ -3,10 +3,10 @@ import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 
 const SLIDES = [
-  "https://www.광탈페.kr/images/ParticipationThirdSection/slide1.png",
-  "https://www.광탈페.kr/images/ParticipationThirdSection/slide1.png",
-  "https://www.광탈페.kr/images/ParticipationThirdSection/slide1.png",
-  "https://www.광탈페.kr/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
+  "/images/ParticipationThirdSection/slide1.png",
 ];
 
 const PreliminaryFourthSection = () => {
