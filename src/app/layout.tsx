@@ -4,7 +4,7 @@ import "../shared/style/globals.css";
 import Header from "@/shared/ui/Header";
 import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
-import { Footer } from "@/shared/ui/Footer";
+// import { Footer } from "@/shared/ui/Footer";
 import Script from "next/script";
 
 export const metadata: Metadata = {
