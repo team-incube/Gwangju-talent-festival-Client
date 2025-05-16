@@ -7,10 +7,8 @@ import { FONTS, FontType } from "./model/fonts";
 import { MarqueeRow } from "./ui/MarqueeRow";
 
 const getRandomFonts = (count: number): FontType[] => {
-  return Array.from({ length: count }, () => {
-    const randomIndex = Math.floor(Math.random() * FONTS.length);
-    return FONTS[randomIndex];
-  });
+  const shuffledFonts = [...FONTS].sort(() => Math.random() - 0.5);
+  return shuffledFonts.slice(0, count);
 };
 
 const SloganMarquee = (): React.ReactElement => {
@@ -23,11 +21,15 @@ const SloganMarquee = (): React.ReactElement => {
     try {
       const [selectedSlogans1, selectedSlogans2] = getRandomSubset(slogansMock, 8);
       
-      const randomFonts1 = getRandomFonts(selectedSlogans1.length);
-      const randomFonts2 = getRandomFonts(selectedSlogans2.length);
-
       setSlogans1(selectedSlogans1);
       setSlogans2(selectedSlogans2);
+      
+      const randomFonts1 = getRandomFonts(selectedSlogans1.length);
+      const remainingFonts = FONTS.filter(font => !randomFonts1.includes(font));
+      const randomFonts2 = [...remainingFonts]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, selectedSlogans2.length);
+      
       setFonts1(randomFonts1);
       setFonts2(randomFonts2);
     } catch {
@@ -35,8 +37,15 @@ const SloganMarquee = (): React.ReactElement => {
       const defaultSlogans2 = slogansMock.slice(4, 8);
       setSlogans1(defaultSlogans1);
       setSlogans2(defaultSlogans2);
-      setFonts1(getRandomFonts(defaultSlogans1.length));
-      setFonts2(getRandomFonts(defaultSlogans2.length));
+      
+      const fallbackFonts1 = getRandomFonts(defaultSlogans1.length);
+      const fallbackRemainingFonts = FONTS.filter(font => !fallbackFonts1.includes(font));
+      const fallbackFonts2 = [...fallbackRemainingFonts]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, defaultSlogans2.length);
+      
+      setFonts1(fallbackFonts1);
+      setFonts2(fallbackFonts2);
     }
   }, []);
 
