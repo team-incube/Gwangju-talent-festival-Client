@@ -16,6 +16,7 @@ export function middleware(request: NextRequest) {
 
   if (
     !pathname.startsWith("/api") &&
+    !pathname.startsWith("/test") &&
     pathname !== "/signin" &&
     pathname !== "/signup" &&
     pathname !== "/home" &&
