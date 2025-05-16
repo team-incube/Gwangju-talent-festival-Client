@@ -6,7 +6,7 @@ import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
 // import { Footer } from "@/shared/ui/Footer";
 import Script from "next/script";
-import { GoogleAnalytics } from "nextjs-google-analytics";
+import GA from "@/shared/lib/ga";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
@@ -39,10 +39,7 @@ export default function RootLayout({
         <Header />
         <TanstackProviders>
           <ToastProvider>{children}</ToastProvider>
-          <GoogleAnalytics
-            trackPageViews
-            gaMeasurementId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}
-          />
+          <GA />
         </TanstackProviders>
         <ChannelTalk />
         {/* <Footer /> */}
