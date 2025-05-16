@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 const sources = [
   { webm: "/video/video1.webm", mp4: "/video/video1.mp4" },
   { webm: "/video/video2.webm", mp4: "/video/video2.mp4" },
+  { webm: "/video/video3.webm", mp4: "/video/video3.mp4" },
+  { webm: "/video/video4.webm", mp4: "/video/video4.mp4" },
 ];
 
 const Video = () => {
