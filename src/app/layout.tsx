@@ -40,7 +40,7 @@ export default function RootLayout({
           <ToastProvider>{children}</ToastProvider>
         </TanstackProviders>
         <ChannelTalk />
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );
