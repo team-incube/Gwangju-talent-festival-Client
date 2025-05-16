@@ -17,24 +17,25 @@ const SECTIONS = [
   { id: "reservation", Component: ReservationFifthSection },
   { id: "finals", Component: FinalsSixthSection },
 ];
-
+interface HomePageProps {
+  test?: boolean;
+}
 interface ShowStatus {
   isComingSoon: boolean;
   isMounted: boolean;
 }
 
-const HomePage = () => {
+const HomePage = ({ test = false }: HomePageProps) => {
   const [showStatus, setShowStatus] = useState<ShowStatus>({
     isComingSoon: false,
     isMounted: false,
   });
 
   useEffect(() => {
-    const shouldShowComingSoon =
-      isShow("introduce") && !window.location.pathname.startsWith("/test");
+    const shouldShowComingSoon = isShow("introduce");
 
     setShowStatus({
-      isComingSoon: shouldShowComingSoon,
+      isComingSoon: shouldShowComingSoon && !test,
       isMounted: true,
     });
   }, []);
