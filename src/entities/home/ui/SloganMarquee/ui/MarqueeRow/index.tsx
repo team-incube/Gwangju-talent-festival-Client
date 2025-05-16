@@ -5,7 +5,7 @@ import { cn } from "@/shared/utils/cn";
 
 type MarqueeRowProps = Readonly<{
   slogans: ReadonlyArray<string>;
-  font: FontType;
+  fonts: ReadonlyArray<FontType>;
   reverse?: boolean;
   color?: "text-main-500" | "text-main-600";
 }>;
@@ -13,16 +13,21 @@ type MarqueeRowProps = Readonly<{
 export const MarqueeRow = memo(
   ({
     slogans,
-    font,
+    fonts,
     reverse = false,
     color = "text-main-600",
   }: MarqueeRowProps): React.ReactElement => {
     const rendered = useMemo(
       () =>
         slogans.map((slogan, index) => (
-          <SloganItem key={`${slogan}-${index}`} slogan={slogan} index={index} />
+          <SloganItem 
+            key={`${slogan}-${index}`} 
+            slogan={slogan} 
+            index={index} 
+            font={fonts[index % fonts.length]} 
+          />
         )),
-      [slogans],
+      [slogans, fonts],
     );
 
     return (
@@ -33,7 +38,6 @@ export const MarqueeRow = memo(
             reverse ? "animate-marquee-reverse" : "animate-marquee",
             color,
           )}
-          style={{ fontFamily: `${font}, sans-serif` }}
           aria-live="off"
         >
           {rendered}
