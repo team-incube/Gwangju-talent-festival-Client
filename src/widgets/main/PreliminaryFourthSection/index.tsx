@@ -15,7 +15,7 @@ const PreliminaryFourthSection = () => {
       <div className={cn("w-[70%] mobile:w-full")}>
         <SectionTitle
           title="예선"
-          description="예선 설명 예선 설명"
+          description=""
           className={cn("mt-[66px] mobile:mt-[1.7rem] mb-[24px]")}
         />
 
@@ -25,10 +25,12 @@ const PreliminaryFourthSection = () => {
           )}
         >
           <div className={cn("w-[25%] mobile:w-full mobile:px-16")}>
-            <p className={cn("text-title4b mobile:text-body2b place-self-start mb-24")}>1차 예선</p>
+            <p className={cn("text-title4b mobile:text-body2b place-self-start mb-24")}>
+              1차 영상 심사
+            </p>
             <p className={cn("text-body2r text-gray-500 mobile:text-body3r mobile:py-[1rem]")}>
-              ※ 영상 재생 오류 및 링크 형태(유튜브, 드라이브 등)의 영상 제출 시 신청 대상에서 제외 ※
-              전체 영상이 3분 초과일 경우 3분 내외의 심사용 영상에 적합한 구간으로 편집하여 제출{" "}
+              신청서 내용과 제출영상을 바탕으로 전문위원 심사를 거쳐 예선전(光트로) 심사출연자를
+              확정합니다.
             </p>
           </div>
           <div className={cn("w-[70%] mobile:w-full")}>
@@ -40,10 +42,19 @@ const PreliminaryFourthSection = () => {
             <ImageCarousel wide={true} slides={SLIDES} />
           </div>
           <div className={cn("w-[25%] mobile:w-full mobile:px-16")}>
-            <p className={cn("text-title4b mobile:text-body2b place-self-start mb-24")}>2차 예선</p>
+            <p className={cn("text-title4b mobile:text-body2b place-self-start mb-24")}>
+              2차 예선(光트로)
+            </p>
+            <button
+              className={cn(
+                "inline-flex items-center text-main-600 font-bold text-body2b mobile:text-sm hover:underline group",
+              )}
+            >
+              2025. 7. 25(금)~26.(토) 광주광역시교육청학생교육문화회관{" "}
+            </button>
             <p className={cn("text-body2r text-gray-500 mobile:text-body3r mobile:py-[1rem]")}>
-              심사 기준: 예술적 기능 및 역량(테크닉), 무대 구성 및 완성도, 무대에서의 끼와 표현력,
-              무대 장악력 등
+              1차 영상심사를 통과한 참가자들이 직접 무대에서 경연을 펼치게 됩니다. 전문 심사위원의
+              심사를 거쳐 본선 진출자를 확정하게 됩니다.
             </p>
           </div>
         </div>

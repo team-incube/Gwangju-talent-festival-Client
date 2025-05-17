@@ -52,12 +52,11 @@ const ParticipationThirdSection = () => {
             title="참여 신청"
             description={
               <>
-                온·오프라인 참여 홍보 및 신청 접수 →
+                댄스, 보컬, 밴드, 연주, 실용음악 분야에 재능있는 분(팀)의 신청을 받습니다.
                 <span className={cn("inline-block")}>
                   {" "}
-                  1차 영상 심사 및 光트로(예선) 참가팀 선정 →{" "}
+                  (신청서 작성 및 영상제출 → 1차 영상 심사 → 예선(光트로))
                 </span>
-                <span className={cn("inline-block")}>光트로 참가팀 사전 협의 및 안내</span>
               </>
             }
           />
@@ -67,7 +66,7 @@ const ParticipationThirdSection = () => {
               "inline-flex items-center text-main-600 font-bold text-body2b mobile:text-sm hover:underline group",
             )}
           >
-            2025.00.00일부터 신청기간 입니다
+            2025. 6. 10.(화)부터 18일(수)까지 신청기간 입니다
           </button>
         </div>
         <ImageCarousel slides={SLIDES} />
