@@ -6,6 +6,7 @@ import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
 // import { Footer } from "@/shared/ui/Footer";
 import Script from "next/script";
+import GA from "@/shared/lib/ga";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
@@ -38,6 +39,7 @@ export default function RootLayout({
         <Header />
         <TanstackProviders>
           <ToastProvider>{children}</ToastProvider>
+          <GA />
         </TanstackProviders>
         <ChannelTalk />
         {/* <Footer /> */}
