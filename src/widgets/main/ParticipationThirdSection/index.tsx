@@ -39,7 +39,7 @@ const ParticipationThirdSection = () => {
     <section
       id="ParticipationThirdSection"
       className={cn(
-        "relative h-[800px] bg-main-100 overflow-hidden tablet:h-[800px] justify-items-center mobile:h-[500px]",
+        "relative h-[900px] bg-main-100 overflow-hidden tablet:h-[800px] justify-items-center mobile:h-[32rem]",
       )}
     >
       <BackgroundImages />
