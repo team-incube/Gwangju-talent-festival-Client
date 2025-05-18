@@ -13,7 +13,7 @@ const FinalsSixthSection = () => {
           className={cn("mt-[66px] mobile:mt-[1.7rem]")}
         />
 
-        <div>
+        <div className={cn("mt-[5rem] mobile:mt-20")}>
           <p className={cn("text-title4b mobile:text-body3b place-self-start mb-24 mobile:mb-0")}>오시는 길</p>
           <p className={cn("text-body2r text-gray-500 mobile:text-caption2r mobile:py-8")}>
             대상: 光트로(예선) 합격팀
