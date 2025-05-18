@@ -4,6 +4,7 @@ import PrizeItem from "@/entities/home/ui/PrizeItem";
 import SloganMarquee from "@/entities/home/ui/SloganMarquee";
 import Button from "@/shared/ui/Button";
 import { cn } from "@/shared/utils/cn";
+import { SectionTitle } from "@/shared/ui/SectionTitle";
 
 const PRIZES = [
   { rank: "2등", bg: "bg-gray-400", emoji: "🍗", desc: "치킨 세트" },
@@ -15,24 +16,16 @@ const SloganSecondSection = () => {
   const R = useRouter();
 
   return (
-    <section id="SloganSecondSection" className={cn("w-full text-center")}>
-      <p className={cn("text-title1b pt-[4.7rem] mobile:text-body1b mobile:pt-[1.7rem]")}>
-        슬로건 공모
-      </p>
-      <p
-        className={cn(
-          "text-body1r pt-[1.5rem] text-gray-500 mobile:text-caption2r mobile:pt-[1rem] mobile:mx-8 mb-28",
-        )}
-      >
-        <span className={cn("block")}>2025 광탈페(광주학생탈렌트페스티벌),</span>
-        <span className={cn("inline-block")}>
-          <span className={cn("inline-block")}>
-            참여자가 직접 만든 슬로건으로 학생이 주인공이 되는{"\u00A0"}
-          </span>
-          <span className={cn("inline-block")}>오디션 프로그램의 가치를 높이고{"\u00A0"}</span>
-        </span>
-        <span className={cn("inline-block")}>광탈페에 대한 이해와 관심을 더욱 끌어올립니다!</span>
-      </p>
+    <section id="SloganSecondSection" className={cn("w-full mt-20 text-center")}>
+      <SectionTitle
+        title="슬로건 공모"
+        description={
+          <>
+            <span className={cn("block")}>2025 광탈페(광주학생탈렌트페스티벌),</span>
+            <span className={cn("inline-block")}>참여자가 직접 만든 슬로건으로 학생이 주인공이 되는 오디션 프로그램의 가치를 높이고 광탈페에 대한 이해와 관심을 더욱 끌어올립니다!</span>
+          </>
+        }
+      />
 
       <SloganMarquee />
 
