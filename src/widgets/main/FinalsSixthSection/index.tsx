@@ -4,7 +4,7 @@ import { SectionTitle } from "@/shared/ui/SectionTitle";
 
 const FinalsSixthSection = () => {
   return (
-    <section id="FinalsSixthSection" className={cn("flex flex-col items-center")}>
+    <section id="FinalsSixthSection" className={cn("flex flex-col items-center my-20")}>
       <div className={cn("w-[70%] mobile:w-full mobile:px-16")}>
         <SectionTitle
           title="본선"
@@ -14,8 +14,8 @@ const FinalsSixthSection = () => {
         />
 
         <div>
-          <p className={cn("text-title4b mobile:text-body2b place-self-start mb-24")}>오시는 길</p>
-          <p className={cn("text-body2r text-gray-500 mobile:text-body3r mobile:py-[1rem]")}>
+          <p className={cn("text-title4b mobile:text-body3b place-self-start mb-24 mobile:mb-0")}>오시는 길</p>
+          <p className={cn("text-body2r text-gray-500 mobile:text-caption2r mobile:py-8")}>
             대상: 光트로(예선) 합격팀
             <br />∙ 2025.9.27.(토) 조선대학교 해오름관
           </p>

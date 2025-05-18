@@ -16,7 +16,7 @@ const SloganSecondSection = () => {
   const R = useRouter();
 
   return (
-    <section id="SloganSecondSection" className={cn("w-full mt-20 text-center")}>
+    <section id="SloganSecondSection" className={cn("w-full mt-[3.5rem] mobile:mt-20 text-center")}>
       <SectionTitle
         title="슬로건 공모"
         description={

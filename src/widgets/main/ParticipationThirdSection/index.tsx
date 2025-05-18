@@ -39,17 +39,17 @@ const ParticipationThirdSection = () => {
     <section
       id="ParticipationThirdSection"
       className={cn(
-        "relative min-h-screen bg-purple-100 overflow-hidden tablet:h-[800px] justify-items-center mobile:min-h-0",
+        "relative h-[800px] bg-main-100 overflow-hidden tablet:h-[800px] justify-items-center mobile:h-[500px]",
       )}
     >
       <BackgroundImages />
 
       <div
         className={cn(
-          "w-[70%] min-h-screen flex flex-col justify-center mobile:w-full gap-[60px] mobile:min-h-0 mobile:gap-[24px]",
+          "w-[70%] h-full flex flex-col justify-center mobile:w-full gap-[60px] mobile:gap-[24px]",
         )}
       >
-        <div id="apply" className={cn("relative w-full text-center mt-[66px] mobile:mt-[1.7rem]")}>
+        <div id="apply" className={cn("relative text-center mt-20 mobile:mt-[1.7rem]")}>
           <SectionTitle
             title="참여 신청"
             description={
