@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { cn } from "@/shared/utils/cn";
+import { SectionTitle } from "@/shared/ui/SectionTitle";
 
 const TICKET_OPEN_DATE = new Date("2025-10-29T20:00:00");
 
@@ -29,7 +30,7 @@ const ReservationFifthSection = () => {
     <section
       id="ReservationFifthSection"
       className={cn(
-        "relative h-full max-h-[600px] bg-purple-100 overflow-hidden tablet:h-[800px] justify-items-center mobile:min-h-0",
+        "relative h-full max-h-[600px] bg-main-100 overflow-hidden tablet:h-[800px] justify-items-center mt-20",
       )}
     >
       <div className={cn("z-0")}>
@@ -54,28 +55,21 @@ const ReservationFifthSection = () => {
           <Image src="/images/trophy.png" alt="Trophy" fill />
         </div>
       </div>
-      <div className={cn("relative w-full text-center mt-[66px] mobile:mt-[1.7rem]")}>
-        <p className={cn("text-title1b mobile:text-body1b")}>예매</p>
-        <p
-          className={cn(
-            "text-body2r text-gray-500 pt-[1.5rem] mobile:text-body3r mobile:pt-[1rem] mb-[24px]",
-          )}
-        >
-          온∙오프라인 참여 홍보 및 신청 접수
-        </p>
 
+      <div className={cn("relative w-full text-center mt-[66px] mobile:mt-[2rem]")}>
+        <SectionTitle title="예매" description="온∙오프라인 참여 홍보 및 신청 접수" />
         <div
           className={cn(
             "flex flex-col gap-[40px] mb-[60px] bg-white rounded-[12px] py-[72px] px-[60px] text-center w-[376px] mobile:p-[24px] mobile:w-fit justify-self-center mobile:mb-[15px] mobile:gap-[24px]",
           )}
         >
-          <p className={cn("text-body1b mobile:text-body2b")}>티켓오픈안내</p>
+          <p className={cn("text-body1b mobile:text-caption1b")}>티켓오픈안내</p>
           <p className={cn("text-title1b text-main-600 mobile:text-body1b")}>
             {timeLeft > 0 ? formatDateLeft(timeLeft) : "D-Day"}
           </p>
           <div className={cn("flex justify-center gap-4")}>
-            <span className={cn("text-body2r mobile:text-body3r")}>티켓오픈</span>
-            <span className={cn("text-body2r text-gray-500 mobile:text-body3r")}>
+            <span className={cn("text-body2r mobile:text-caption2r")}>티켓오픈</span>
+            <span className={cn("text-body2r text-gray-500 mobile:text-caption2r")}>
               {TICKET_OPEN_DATE.toLocaleString("ko-KR", {
                 year: "numeric",
                 month: "2-digit",
