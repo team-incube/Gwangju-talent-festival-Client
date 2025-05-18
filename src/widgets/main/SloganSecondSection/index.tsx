@@ -5,6 +5,7 @@ import SloganMarquee from "@/entities/home/ui/SloganMarquee";
 import Button from "@/shared/ui/Button";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
+import { formatDate } from "@/shared/utils/formatDate";
 
 const PRIZES = [
   { rank: "2등", bg: "bg-gray-400", emoji: "🍗", desc: "치킨 세트" },
@@ -12,8 +13,23 @@ const PRIZES = [
   { rank: "3등", bg: "bg-orange-700", emoji: "🍔", desc: "햄버거 세트" },
 ];
 
+const SLOGAN_START = new Date('2025-05-26T00:00:00+09:00');
+const SLOGAN_END = new Date('2025-06-05T23:59:59+09:00');
+
+
 const SloganSecondSection = () => {
   const R = useRouter();
+  
+  const isSloganPeriod = React.useMemo(() => {
+    const now = new Date();
+    return now >= SLOGAN_START && now <= SLOGAN_END;
+  }, []);
+
+  const submissionPeriodText = React.useMemo(() => {
+    const startText = formatDate(SLOGAN_START);
+    const endText = formatDate(SLOGAN_END);
+    return `공모기간 : 2025.${startText}~${endText}`;
+  }, []);
 
   return (
     <section id="SloganSecondSection" className={cn("w-full mt-[3.5rem] mobile:mt-20 text-center")}>
@@ -36,13 +52,19 @@ const SloganSecondSection = () => {
           ))}
         </div>
 
-        <Button onClick={() => R.push("/slogan")} className={cn("my-[24px] mobile:mb-[12px] px-28")}>
+        <Button 
+          onClick={() => R.push("/slogan")} 
+          className={cn(
+            "my-[24px] mobile:mb-[12px] px-28",
+          )}
+          isDisabled={!isSloganPeriod}
+        >
           <span className={cn("text-body2b mobile:text-body3b flex items-center gap-10")}>
-            슬로건 공모하러가기 <span>➔</span>
+            {isSloganPeriod ? "슬로건 공모하러가기" : "공모기간이 아닙니다"} <span>➔</span>
           </span>
         </Button>
 
-        <div className={cn("text-caption2r text-gray-400")}>공모기간 : 2025.04.27~2025.04.30</div>
+        <div className={cn("text-caption2r text-gray-400")}>{submissionPeriodText}</div>
       </div>
     </section>
   );
