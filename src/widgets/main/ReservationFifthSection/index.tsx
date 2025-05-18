@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 
-const TICKET_OPEN_DATE = new Date("2025-10-29T20:00:00");
+const TICKET_OPEN_DATE = new Date("2025-09-25T20:00:00");
 
 const formatDateLeft = (timeLeft: number) => {
   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -68,7 +68,7 @@ const ReservationFifthSection = () => {
             {timeLeft > 0 ? formatDateLeft(timeLeft) : "D-Day"}
           </p>
           <div className={cn("flex justify-center gap-4")}>
-            <span className={cn("text-body2r mobile:text-caption2r")}>티켓오픈</span>
+            <span className={cn("text-body2r mobile:text-caption2r")}>티켓오픈(예정)</span>
             <span className={cn("text-body2r text-gray-500 mobile:text-caption2r")}>
               {TICKET_OPEN_DATE.toLocaleString("ko-KR", {
                 year: "numeric",
