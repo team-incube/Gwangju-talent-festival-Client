@@ -1,13 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import ParticipationThirdSection from "@/widgets/main/ParticipationThirdSection";
 import PreliminaryFourthSection from "@/widgets/main/PreliminaryFourthSection";
 import ReservationFifthSection from "@/widgets/main/ReservationFifthSection";
 import FinalsSixthSection from "@/widgets/main/FinalsSixthSection";
-import { isShow } from "@/shared/lib/show";
-import ComingSoon from "@/shared/ui/ComingSoon";
 
 const SECTIONS = [
   { id: "intro", Component: IntroFirstSection },
@@ -17,33 +15,8 @@ const SECTIONS = [
   { id: "reservation", Component: ReservationFifthSection },
   { id: "finals", Component: FinalsSixthSection },
 ];
-interface HomePageProps {
-  test?: boolean;
-}
-interface ShowStatus {
-  isComingSoon: boolean;
-  isMounted: boolean;
-}
 
-const HomePage = ({ test = false }: HomePageProps) => {
-  const [showStatus, setShowStatus] = useState<ShowStatus>({
-    isComingSoon: false,
-    isMounted: false,
-  });
-
-  useEffect(() => {
-    const shouldShowComingSoon = isShow("introduce");
-
-    setShowStatus({
-      isComingSoon: shouldShowComingSoon && !test,
-      isMounted: true,
-    });
-  }, []);
-
-  if (!showStatus.isMounted) return null;
-
-  if (showStatus.isComingSoon) return <ComingSoon />;
-
+const HomePage = () => {
   return (
     <>
       {SECTIONS.map(({ id, Component }) => (
