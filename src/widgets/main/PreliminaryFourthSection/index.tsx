@@ -1,6 +1,7 @@
 import ImageCarousel from "@/entities/home/ui/ImageCarousel";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
+import { formatDate } from "@/shared/utils/formatDate";
 
 const SLIDES_1 = [
   "/images/Preliminary/slide1_1.jpg",
@@ -13,6 +14,9 @@ const SLIDES_2 = [
   "/images/Preliminary/slide2_2.jpg",
   "/images/Preliminary/slide2_3.jpg",
 ];
+
+const PRELIMINARY_START_DATE = new Date('2025-07-25T00:00:00+09:00');
+const PRELIMINARY_END_DATE = new Date('2025-07-26T23:59:59+09:00');
 
 const PreliminaryFourthSection = () => {
   return (
@@ -55,7 +59,9 @@ const PreliminaryFourthSection = () => {
                 "inline-flex items-center text-main-600 font-bold text-body2b mb-24 mobile:mb-0 mobile:text-sm hover:underline group",
               )}
             >
-              2025. 7. 25(금)~26.(토) 광주광역시교육청학생교육문화회관{" "}
+              2025. {formatDate(PRELIMINARY_START_DATE)} ~ {formatDate(PRELIMINARY_END_DATE)}
+              <br />
+              광주학생교육문화회관 공연장
             </button>
             <p className={cn("text-body2r text-gray-500 mobile:text-caption2r mobile:py-8")}>
               1차 영상심사를 통과한 참가자들이 직접 무대에서 경연을 펼치게 됩니다. 전문 심사위원의

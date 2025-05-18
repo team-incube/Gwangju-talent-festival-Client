@@ -64,7 +64,7 @@ const SloganSecondSection = () => {
           </span>
         </Button>
 
-        <div className={cn("text-caption2r text-gray-400")}>{submissionPeriodText}</div>
+        <div className={cn("text-caption1r mobile:text-caption2r text-gray-400")}>{submissionPeriodText}</div>
       </div>
     </section>
   );
