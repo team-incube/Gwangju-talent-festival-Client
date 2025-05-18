@@ -21,7 +21,7 @@ const SloganSecondSection = () => {
       </p>
       <p
         className={cn(
-          "text-body1r pt-[1.5rem] text-gray-500 mobile:text-body3r mobile:pt-[1rem] mb-[28px]",
+          "text-body1r pt-[1.5rem] text-gray-500 mobile:text-caption2r mobile:pt-[1rem] mobile:mx-8 mb-28",
         )}
       >
         <span className={cn("block")}>2025 광탈페(광주학생탈렌트페스티벌),</span>
@@ -36,19 +36,20 @@ const SloganSecondSection = () => {
 
       <SloganMarquee />
 
-      <div className={cn("flex flex-col items-center p-6 bg-white my-[28px]")}>
+      <div className={cn("flex flex-col items-center p-6 bg-white my-30")}>
         <div className={cn("flex justify-center gap-[40px]")}>
           {PRIZES.map(prize => (
             <PrizeItem key={prize.rank} {...prize} />
           ))}
         </div>
 
-        <Button onClick={() => R.push("/slogan")} className={cn("my-[24px] gap-10 px-28")}>
-          <span className={cn("text-body2b")}>슬로건 공모하러가기</span>
-          <span>➔</span>
+        <Button onClick={() => R.push("/slogan")} className={cn("my-[24px] mobile:mb-[12px] px-28")}>
+          <span className={cn("text-body2b mobile:text-body3b flex items-center gap-10")}>
+            슬로건 공모하러가기 <span>➔</span>
+          </span>
         </Button>
 
-        <div className={cn("text-caption1r text-gray-400")}>공모기간 : 2025.04.27~2025.04.30</div>
+        <div className={cn("text-caption2r text-gray-400")}>공모기간 : 2025.04.27~2025.04.30</div>
       </div>
     </section>
   );

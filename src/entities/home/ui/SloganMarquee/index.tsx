@@ -54,7 +54,7 @@ const SloganMarquee = (): React.ReactElement => {
   }, [initializeSlogans]);
 
   return (
-    <section className="w-full overflow-hidden bg-main-100 py-28 space-y-10 relative">
+    <section className="w-full overflow-hidden bg-main-100 py-28 mobile:py-14 space-y-10 relative">
       <MarqueeRow slogans={slogans1} fonts={fonts1} color="text-main-600" />
       <MarqueeRow slogans={slogans2} fonts={fonts2} reverse={true} color="text-main-500" />
     </section>

@@ -34,7 +34,7 @@ export const MarqueeRow = memo(
       <div className={cn("w-full overflow-hidden whitespace-nowrap")}>
         <div
           className={cn(
-            "flex w-[200%] text-[24px] font-bold",
+            "flex w-[200%] text-[24px] font-bold mobile:text-[13px]",
             reverse ? "animate-marquee-reverse" : "animate-marquee",
             color,
           )}

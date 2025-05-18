@@ -12,7 +12,7 @@ export const SloganItem = memo(
   ({ slogan, index, font }: SloganItemProps): React.ReactElement => (
     <span 
       key={`slogan-${index}`} 
-      className={cn("mx-16 inline-block")}
+      className={cn("mx-16 mobile:mx-8 inline-block")}
       style={{ fontFamily: `${font}, sans-serif` }}
     >
       {slogan}

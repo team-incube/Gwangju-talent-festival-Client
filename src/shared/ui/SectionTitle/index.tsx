@@ -14,7 +14,7 @@ export const SectionTitle = ({ title, description, className }: SectionTitleProp
       {description && (
         <p
           className={cn(
-            "text-body2r text-gray-500 pt-[1.5rem] mobile:text-body3r mobile:pt-[1rem] mb-[24px]",
+            "text-body2r text-gray-500 pt-[1.5rem] mobile:text-body3b mobile:pt-[1rem] mb-[24px]",
           )}
         >
           {description}
