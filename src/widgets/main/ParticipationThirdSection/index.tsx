@@ -4,9 +4,11 @@ import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 
 const SLIDES = [
-  "/images/ParticipationThirdSection/slide1.png",
-  "/images/ParticipationThirdSection/slide1.png",
-  "/images/ParticipationThirdSection/slide1.png",
+  "/images/Participation/slide1.jpg",
+  "/images/Participation/slide2.jpg",
+  "/images/Participation/slide3.jpg",
+  "/images/Participation/slide4.jpg",
+  "/images/Participation/slide5.jpg",
 ];
 
 const BackgroundImages = () => (

@@ -2,11 +2,16 @@ import ImageCarousel from "@/entities/home/ui/ImageCarousel";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 
-const SLIDES = [
-  "/images/ParticipationThirdSection/slide1.png",
-  "/images/ParticipationThirdSection/slide1.png",
-  "/images/ParticipationThirdSection/slide1.png",
-  "/images/ParticipationThirdSection/slide1.png",
+const SLIDES_1 = [
+  "/images/Preliminary/slide1_1.jpg",
+  "/images/Preliminary/slide1_2.jpg",
+  "/images/Preliminary/slide1_3.jpg",
+];
+
+const SLIDES_2 = [
+  "/images/Preliminary/slide2_1.jpg",
+  "/images/Preliminary/slide2_2.jpg",
+  "/images/Preliminary/slide2_3.jpg",
 ];
 
 const PreliminaryFourthSection = () => {
@@ -34,12 +39,12 @@ const PreliminaryFourthSection = () => {
             </p>
           </div>
           <div className={cn("w-[70%] mobile:w-full")}>
-            <ImageCarousel wide={true} slides={SLIDES} />
+            <ImageCarousel wide={true} slides={SLIDES_1} />
           </div>
         </div>
         <div className={cn("flex w-full items-start justify-between mobile:flex-col-reverse")}>
           <div className={cn("w-[70%] mobile:w-full")}>
-            <ImageCarousel wide={true} slides={SLIDES} />
+            <ImageCarousel wide={true} slides={SLIDES_2} />
           </div>
           <div className={cn("w-[25%] mobile:w-full mobile:px-16")}>
             <p className={cn("text-title4b mobile:text-body2b place-self-start mb-24")}>
