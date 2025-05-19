@@ -13,13 +13,12 @@ const PRIZES = [
   { rank: "3등", bg: "bg-orange-700", emoji: "🍔", desc: "햄버거 세트" },
 ];
 
-const SLOGAN_START = new Date('2025-05-26T00:00:00+09:00');
-const SLOGAN_END = new Date('2025-06-05T23:59:59+09:00');
-
+const SLOGAN_START = new Date("2025-05-26T00:00:00+09:00");
+const SLOGAN_END = new Date("2025-05-30T18:59:59+09:00");
 
 const SloganSecondSection = () => {
   const R = useRouter();
-  
+
   const isSloganPeriod = React.useMemo(() => {
     const now = new Date();
     return now >= SLOGAN_START && now <= SLOGAN_END;
@@ -38,7 +37,10 @@ const SloganSecondSection = () => {
         description={
           <>
             <span className={cn("block")}>2025 광탈페(광주학생탈렌트페스티벌),</span>
-            <span className={cn("inline-block")}>참여자가 직접 만든 슬로건으로 학생이 주인공이 되는 오디션 프로그램의 가치를 높이고 광탈페에 대한 이해와 관심을 더욱 끌어올립니다!</span>
+            <span className={cn("inline-block")}>
+              참여자가 직접 만든 슬로건으로 학생이 주인공이 되는 오디션 프로그램의 가치를 높이고
+              광탈페에 대한 이해와 관심을 더욱 끌어올립니다!
+            </span>
           </>
         }
       />
@@ -52,11 +54,9 @@ const SloganSecondSection = () => {
           ))}
         </div>
 
-        <Button 
-          onClick={() => R.push("/slogan")} 
-          className={cn(
-            "my-[24px] mobile:mb-[12px] px-28",
-          )}
+        <Button
+          onClick={() => R.push("/slogan")}
+          className={cn("my-[24px] mobile:mb-[12px] px-28")}
           isDisabled={!isSloganPeriod}
         >
           <span className={cn("text-body2b mobile:text-body3b flex items-center gap-10")}>
@@ -64,7 +64,9 @@ const SloganSecondSection = () => {
           </span>
         </Button>
 
-        <div className={cn("text-caption1r mobile:text-caption2r text-gray-400")}>{submissionPeriodText}</div>
+        <div className={cn("text-caption1r mobile:text-caption2r text-gray-400")}>
+          {submissionPeriodText}
+        </div>
       </div>
     </section>
   );
