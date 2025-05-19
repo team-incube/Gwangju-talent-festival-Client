@@ -9,7 +9,7 @@ import { formatDate } from "@/shared/utils/formatDate";
 
 const PRIZES = [
   { rank: "2등", bg: "bg-gray-400", emoji: "🍗", desc: "치킨 세트" },
-  { rank: "1등", bg: "bg-yellow-300", emoji: "🎁", desc: "수상자 해당 학습 간식" },
+  { rank: "1등", bg: "bg-yellow-300", emoji: "🎁", desc: "수상자 해당 학급 간식" },
   { rank: "3등", bg: "bg-orange-700", emoji: "🍔", desc: "햄버거 세트" },
 ];
 
