@@ -13,8 +13,8 @@ const SLIDES = [
   "/images/Participation/slide5.jpg",
 ];
 
-const SUBMISSION_START = new Date('2025-06-16T00:00:00+09:00');
-const SUBMISSION_END = new Date('2025-06-19T22:00:00+09:00');
+const SUBMISSION_START = new Date("2025-06-16T00:00:00+09:00");
+const SUBMISSION_END = new Date("2025-06-19T22:00:00+09:00");
 
 const BackgroundImages = () => (
   <div className={cn("mobile:hidden z-0")}>
@@ -40,8 +40,7 @@ const BackgroundImages = () => (
 );
 
 const ParticipationThirdSection = () => {
-  const isSubmissionPeriod =
-    new Date() >= SUBMISSION_START && new Date() <= SUBMISSION_END;
+  const isSubmissionPeriod = new Date() >= SUBMISSION_START && new Date() <= SUBMISSION_END;
 
   return (
     <section
@@ -54,10 +53,10 @@ const ParticipationThirdSection = () => {
 
       <div
         className={cn(
-          "w-[70%] h-full flex flex-col justify-center mobile:w-full gap-[60px] mobile:gap-[24px]",
+          "w-[70%] h-full flex flex-col justify-center mobile:w-full gap-[60px] mobile:gap-[24px] mx-auto",
         )}
       >
-        <div id="apply" className={cn("relative text-center mt-20 mobile:mt-[1.7rem]")}>
+        <div id="apply" className={cn("relative text-center mt-20 mobile:mt-[1.7rem] ")}>
           <SectionTitle
             title="참여 신청"
             description={
@@ -74,15 +73,14 @@ const ParticipationThirdSection = () => {
           <button
             className={cn(
               "inline-flex items-center font-bold text-body2b mobile:text-sm group",
-              isSubmissionPeriod 
+              isSubmissionPeriod
                 ? "text-main-600 hover:underline cursor-pointer"
-                : "text-gray-600 cursor-not-allowed"
+                : "text-gray-600 cursor-not-allowed",
             )}
           >
-            {isSubmissionPeriod 
+            {isSubmissionPeriod
               ? `신청하러 가기 (${formatDate(SUBMISSION_START)} ~ ${formatDate(SUBMISSION_END)})`
-              : `${formatDate(SUBMISSION_START)}부터 신청할 수 있습니다.`
-            }
+              : `${formatDate(SUBMISSION_START)}부터 신청할 수 있습니다.`}
           </button>
         </div>
         <ImageCarousel slides={SLIDES} />
