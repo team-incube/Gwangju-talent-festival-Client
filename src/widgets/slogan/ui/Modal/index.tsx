@@ -4,6 +4,7 @@ import Danger from "@/entities/slogan/ui/Danger";
 import Inform from "@/shared/asset/svg/Inform";
 import { Button } from "@/shared/ui";
 import { useState } from "react";
+import { isShow } from "@/shared/lib/show";
 
 interface ModalProps {
   isOpen: boolean;
@@ -13,6 +14,10 @@ interface ModalProps {
 
 export default function Modal({ type, setIsOpen, isOpen }: ModalProps) {
   const [agree, setAgree] = useState<boolean | null>(null);
+
+  if (isShow("slogan")) {
+    return null;
+  }
 
   if (!isOpen) return null;
 
