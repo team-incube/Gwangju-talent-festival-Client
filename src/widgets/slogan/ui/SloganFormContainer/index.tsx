@@ -23,7 +23,8 @@ export default function SloganFormContainer() {
     description: "",
     school: "",
     grade: "",
-    class_num: "",
+    name: "",
+    classroom: "",
     phone_number: "",
   });
   const [state, setState] = useState({
@@ -42,7 +43,7 @@ export default function SloganFormContainer() {
   const debouncedSchoolName = useDebounce<string>(formValues.school, 400);
   const { data: schoolData, isSuccess: isSchoolFetched } = useGetSchool(debouncedSchoolName);
   const schoolList = schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
-  if (isShow("slogan")) {
+  if (isShow("slogan") && false) {
     return <ComingSoon />;
   }
   if (state.isSubmitted) {
@@ -124,6 +125,13 @@ export default function SloganFormContainer() {
               </div>
             )}
           </div>
+          <Input
+            name="name"
+            value={formValues.name}
+            onChange={e => setFormValues({ ...formValues, name: e.target.value })}
+            label="이름"
+            placeholder="이름을 입력해주세요"
+          />
           <div className="flex gap-24">
             <Input
               name="grade"
@@ -136,8 +144,8 @@ export default function SloganFormContainer() {
             <Input
               name="class"
               type="number"
-              value={formValues.class_num}
-              onChange={e => setFormValues({ ...formValues, class_num: e.target.value })}
+              value={formValues.classroom}
+              onChange={e => setFormValues({ ...formValues, classroom: e.target.value })}
               label="반"
               placeholder="반을 입력해주세요"
             />
