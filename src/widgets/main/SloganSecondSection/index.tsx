@@ -14,7 +14,7 @@ const PRIZES = [
 ];
 
 const SLOGAN_START = new Date("2025-05-26T00:00:00+09:00");
-const SLOGAN_END = new Date("2025-05-30T18:59:59+09:00");
+const SLOGAN_END = new Date("2025-05-30T17:59:59+09:00");
 
 const SloganSecondSection = () => {
   const R = useRouter();
@@ -27,7 +27,7 @@ const SloganSecondSection = () => {
   const submissionPeriodText = React.useMemo(() => {
     const startText = formatDate(SLOGAN_START);
     const endText = formatDate(SLOGAN_END);
-    return `공모기간 : 2025.${startText}~${endText}`;
+    return `공모기간 : 2025.${startText}~${endText} 18:00까지`;
   }, []);
 
   return (
