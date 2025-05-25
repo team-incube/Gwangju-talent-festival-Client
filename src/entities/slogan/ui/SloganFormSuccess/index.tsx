@@ -1,12 +1,16 @@
+import { useRouter } from "next/navigation";
 import { Logo } from "@/shared/asset/svg/Logo";
 import { colors } from "@/shared/utils/color";
 import { share } from "../../lib/share";
 import Share from "@/shared/asset/svg/Share";
+import Button from "@/shared/ui/Button";
 
 export default function SloganFormSuccess() {
+  const R = useRouter();
+
   return (
     <div
-      className="flex flex-col items-center justify-center w-full"
+      className="flex flex-col items-center justify-center w-full text-center"
       style={{ height: "calc(100vh - 81px)" }}
     >
       <Logo height={131} color={colors.main[600]} width={211} />
@@ -26,6 +30,13 @@ export default function SloganFormSuccess() {
             </span>
           </div>
         )}
+        <div className="mx-auto">
+          <Button onClick={() => R.push("/home")} className="my-[24px] mobile:mb-[12px] px-28 ">
+            <span className="text-body2b mobile:text-body3b flex items-center gap-10">
+              홈으로 가기 <span>➔</span>
+            </span>
+          </Button>
+        </div>
       </div>
     </div>
   );
