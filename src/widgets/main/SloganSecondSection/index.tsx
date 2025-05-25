@@ -20,8 +20,8 @@ const SloganSecondSection = () => {
   const R = useRouter();
 
   const isSloganPeriod = React.useMemo(() => {
-    const now = new Date();
-    return now >= SLOGAN_START && now <= SLOGAN_END;
+    // const now = new Date();
+    return false;
   }, []);
 
   const submissionPeriodText = React.useMemo(() => {
