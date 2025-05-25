@@ -13,7 +13,7 @@ export const share = async () => {
         "🥉 3등: 햄버거 세트🍔",
         "",
         "🔥 지금 바로 도전하자!",
-        "https://www.xn--hc0b809dz3b.kr/slogan",
+        "https://www.광탈페.kr/slogan",
       ].join("\n"),
     });
     toast.success("공유하기에 성공했습니다.");
