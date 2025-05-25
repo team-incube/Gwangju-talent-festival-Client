@@ -37,10 +37,10 @@ const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) 
     [slides, aspectRatio],
   );
 
-  const goToSlide = useCallback((index: number) => {
-    setCurrent(index);
-    resetInterval();
-  }, []);
+  // const goToSlide = useCallback((index: number) => {
+  //   setCurrent(index);
+  //   resetInterval();
+  // }, []);
 
   const prev = useCallback(() => {
     setCurrent(prev => {
