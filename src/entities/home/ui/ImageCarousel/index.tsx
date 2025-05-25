@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, memo } from "react";
+import { useState, useCallback, useMemo, memo, useEffect, useRef } from "react";
 import { PrevNextButton } from "@/shared/asset/svg/PrevNextButton";
 import { SlideCounter } from "./ui/SlideCounter";
 import { SlideDots } from "./ui/SlideDots";
@@ -20,16 +20,7 @@ const ASPECT_RATIO = {
 
 const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) => {
   const [current, setCurrent] = useState(0);
-
-  const prev = useCallback(
-    () => setCurrent(prev => (prev === 0 ? slides.length - 1 : prev - 1)),
-    [slides.length],
-  );
-
-  const next = useCallback(
-    () => setCurrent(prev => (prev === slides.length - 1 ? 0 : prev + 1)),
-    [slides.length],
-  );
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const aspectRatio = useMemo(() => (wide ? ASPECT_RATIO.wide : ASPECT_RATIO.normal), [wide]);
 
@@ -45,6 +36,41 @@ const ImageCarousel = ({ wide = false, slides, className }: ImageCarouselProps) 
       )),
     [slides, aspectRatio],
   );
+
+  const goToSlide = useCallback((index: number) => {
+    setCurrent(index);
+    resetInterval();
+  }, []);
+
+  const prev = useCallback(() => {
+    setCurrent(prev => {
+      const newIndex = prev === 0 ? slides.length - 1 : prev - 1;
+      resetInterval();
+      return newIndex;
+    });
+  }, [slides.length]);
+
+  const next = useCallback(() => {
+    setCurrent(prev => {
+      const newIndex = prev === slides.length - 1 ? 0 : prev + 1;
+      resetInterval();
+      return newIndex;
+    });
+  }, [slides.length]);
+
+  const resetInterval = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setCurrent(prev => (prev === slides.length - 1 ? 0 : prev + 1));
+    }, 2000);
+  }, [slides.length]);
+
+  useEffect(() => {
+    resetInterval();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [resetInterval]);
 
   return (
     <div className={cn("flex flex-col items-center justify-center mobile:px-16", className)}>
