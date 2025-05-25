@@ -12,8 +12,8 @@ import SloganHeader from "@/entities/slogan/ui/SloganHeader";
 import { SloganFormValues, sloganSchema } from "@/entities/slogan/model/schema";
 import SloganFormSuccess from "@/entities/slogan/ui/SloganFormSuccess";
 import Textarea from "@/entities/slogan/ui/Textarea";
-import ComingSoon from "@/shared/ui/ComingSoon";
-import { isShow } from "@/shared/lib/show";
+// import ComingSoon from "@/shared/ui/ComingSoon";
+// import { isShow } from "@/shared/lib/show";
 
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
