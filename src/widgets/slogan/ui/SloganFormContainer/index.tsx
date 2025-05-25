@@ -42,7 +42,9 @@ export default function SloganFormContainer() {
   const { data: schoolData, isSuccess: isSchoolFetched } = useGetSchool(debouncedSchoolName);
   const schoolList = schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
 
-  return <SloganFormSuccess />;
+  if (state.isSubmitted) {
+    return <SloganFormSuccess />;
+  }
 
   return (
     <form
