@@ -11,7 +11,10 @@ export default function SloganFormSuccess() {
     >
       <Logo height={131} color={colors.main[600]} width={211} />
       <div className="mt-[52px]">
-        <h1 className="sm:text-title2b text-title4b">응모가 완료되었습니다!</h1>
+        <h1 className="sm:text-title2b text-title4b text-center">응모가 완료되었습니다!</h1>{" "}
+        <div className="text-caption1r mobile:text-caption2r text-gray-400">
+          결과 발표: 2025. 6. 13.(금) 예정, 광주학생예술누리터 홈페이지 공지 및 개별 통지
+        </div>
         {typeof navigator.share !== "undefined" && (
           <div
             onClick={share}
