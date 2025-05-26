@@ -28,6 +28,7 @@ export default function SloganFormContainer() {
   const [state, setState] = useState({
     isValid: false,
     isSubmitted: false,
+    isSubmitting: false,
   });
 
   useEffect(() => {
@@ -50,8 +51,13 @@ export default function SloganFormContainer() {
     <form
       onSubmit={async e => {
         e.preventDefault();
-        const res = await handleSloganFormSubmit(formValues);
-        setState({ ...state, isSubmitted: res });
+        setState(prevState => ({ ...prevState, isSubmitting: true }));
+        try {
+          const res = await handleSloganFormSubmit(formValues);
+          setState(prevState => ({ ...prevState, isSubmitted: res, isSubmitting: false }));
+        } catch (error) {
+          setState(prevState => ({ ...prevState, isSubmitting: false }));
+        }
       }}
       className={cn("flex px-12 mt-[32px] flex-col pb-5 gap-[6.25rem]")}
     >
@@ -156,7 +162,7 @@ export default function SloganFormContainer() {
           />
         </div>
       </div>
-      <Button type="submit" isDisabled={!state.isValid}>
+      <Button type="submit" isDisabled={!state.isValid || state.isSubmitting}>
         응모하기
       </Button>
     </form>
