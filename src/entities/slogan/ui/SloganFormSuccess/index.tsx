@@ -4,9 +4,19 @@ import { colors } from "@/shared/utils/color";
 import { share } from "../../lib/share";
 import Share from "@/shared/asset/svg/Share";
 import Button from "@/shared/ui/Button";
+import { useCallback } from "react";
+import React from "react";
 
-export default function SloganFormSuccess() {
-  const R = useRouter();
+const SloganFormSuccess = () => {
+  const router = useRouter();
+
+  const handleGoHome = useCallback(() => {
+    router.push("/home");
+  }, [router]);
+
+  const handleShare = useCallback(() => {
+    share();
+  }, []);
 
   return (
     <div
@@ -21,7 +31,7 @@ export default function SloganFormSuccess() {
         </div>
         {typeof navigator.share !== "undefined" && (
           <div
-            onClick={share}
+            onClick={handleShare}
             className="flex gap-24 cursor-pointer items-center justify-center mt-12 sm:mt-24"
           >
             <Share color={colors.main[600]} height={24} width={24} />
@@ -31,7 +41,7 @@ export default function SloganFormSuccess() {
           </div>
         )}
         <div className="mx-auto">
-          <Button onClick={() => R.push("/home")} className="my-[24px] mobile:mb-[12px] px-28 ">
+          <Button onClick={handleGoHome} className="my-[24px] mobile:mb-[12px] px-28 ">
             <span className="text-body2b mobile:text-body3b flex items-center gap-10">
               홈으로 가기 <span>➔</span>
             </span>
@@ -40,4 +50,6 @@ export default function SloganFormSuccess() {
       </div>
     </div>
   );
-}
+};
+
+export default React.memo(SloganFormSuccess);

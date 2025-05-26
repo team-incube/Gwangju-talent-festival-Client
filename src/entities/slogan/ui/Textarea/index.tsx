@@ -1,5 +1,6 @@
 import { cn } from "@/shared/utils/cn";
 import { forwardRef } from "react";
+import React from "react";
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;
@@ -26,4 +27,4 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
 Textarea.displayName = "Textarea";
 
-export default Textarea;
+export default React.memo(Textarea);
