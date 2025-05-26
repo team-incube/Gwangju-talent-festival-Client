@@ -27,7 +27,7 @@ const SchoolSearchInput = ({
   const normalizedValue = useMemo(() => value.replace(/\s+/g, ''), [value]);
   
   return (
-    <div>
+    <div className="relative">
       <div className="relative">
         <Input
           name="school"
@@ -41,7 +41,7 @@ const SchoolSearchInput = ({
         </span>
       </div>
       {isSchoolFetched && normalizedValue !== "" && filteredSchools.length > 0 && (
-        <div className="flex flex-col absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8 max-h-[250px] overflow-y-auto">
+        <div className="absolute left-0 right-0 bg-white shadow-xl rounded mt-8 overflow-y-auto z-10">
           {filteredSchools.map((school, i) => (
             <div key={school.SD_SCHUL_CODE}>
               {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}
