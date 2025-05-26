@@ -13,6 +13,8 @@ import { SloganFormValues, sloganSchema } from "@/entities/slogan/model/schema";
 import SloganFormSuccess from "@/entities/slogan/ui/SloganFormSuccess";
 import Textarea from "@/entities/slogan/ui/Textarea";
 
+const SCHOOL_SEARCH_DELAY = 400;
+
 export default function SloganFormContainer() {
   const [sloganLength, setSloganLength] = useState(0);
   const [descriptionLength, setDescriptionLength] = useState(0);
@@ -63,7 +65,7 @@ export default function SloganFormContainer() {
     setFormValues(prev => ({ ...prev, school: schoolName }));
   }, []);
 
-  const debouncedSchoolName = useDebounce<string>(formValues.school, 400);
+  const debouncedSchoolName = useDebounce<string>(formValues.school, SCHOOL_SEARCH_DELAY);
   const { data: schoolData, isSuccess: isSchoolFetched } = useGetSchool(debouncedSchoolName);
   
   const schoolList = useMemo(() => 
