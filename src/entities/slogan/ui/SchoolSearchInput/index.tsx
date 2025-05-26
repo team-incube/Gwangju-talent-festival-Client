@@ -41,7 +41,7 @@ const SchoolSearchInput = ({
         </span>
       </div>
       {isSchoolFetched && normalizedValue !== "" && filteredSchools.length > 0 && (
-        <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8">
+        <div className="flex flex-col absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8 max-h-[250px] overflow-y-auto">
           {filteredSchools.map((school, i) => (
             <div key={school.SD_SCHUL_CODE}>
               {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}
