@@ -21,7 +21,8 @@ export const useSloganForm = (): UseSloganFormReturn => {
     dispatch({ type: 'SET_VALID', value: isValid });
   }, [isValid]);
 
-  const debouncedSchoolName = useDebounce<string>(state.formValues.school, SCHOOL_SEARCH_DELAY);
+  const trimmedSchoolName = useMemo(() => state.formValues.school.trim(), [state.formValues.school]);
+  const debouncedSchoolName = useDebounce<string>(trimmedSchoolName, SCHOOL_SEARCH_DELAY);
   const { data: schoolData, isSuccess: isSchoolFetched } = useGetSchool(debouncedSchoolName);
   
   const schoolList = useMemo(() => 
@@ -30,8 +31,8 @@ export const useSloganForm = (): UseSloganFormReturn => {
   );
 
   const filteredSchools = useMemo(() => 
-    schoolList.filter(school => school.SCHUL_NM !== state.formValues.school),
-    [schoolList, state.formValues.school]
+    schoolList.filter(school => school.SCHUL_NM !== trimmedSchoolName),
+    [schoolList, trimmedSchoolName]
   );
 
   const handleSloganChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
