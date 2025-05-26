@@ -1,6 +1,8 @@
+import { ScrollableContent } from "@/shared/ui";
+
 export default function Agree() {
   return (
-    <div className="border-gray-100 border border-solid text-caption1r h-[184px] overflow-y-scroll my-24 rounded-lg p-12">
+    <ScrollableContent>
       <p>
         [개인정보 수집·이용에 대한 안내 및 동의]
         <br /> 광주학생탈렌트페스티벌은 아래와 같이 개인정보를 수집·이용하고자 합니다. <br />
@@ -25,6 +27,6 @@ export default function Agree() {
         <li>개인정보 수집·이용에 대한 동의를 거부할 수 있습니다.</li>
         <li>단, 필수항목에 대한 동의 거부 시 서비스 이용이 제한될 수 있습니다.</li>
       </ul>
-    </div>
+    </ScrollableContent>
   );
 }

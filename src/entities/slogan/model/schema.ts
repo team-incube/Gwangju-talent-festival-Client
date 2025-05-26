@@ -5,13 +5,23 @@ export const sloganNameSchema = z.string().min(1, "슬로건을 입력해주세�
 
 export const sloganDescriptionSchema = z.string().min(1, "슬로건 설명을 입력해주세요.").max(1000);
 
+export const gradeSchema = z
+  .string()
+  .min(1)
+  .regex(/^\d+$/, "학년은 숫자만 입력할 수 있습니다.");
+
+export const classroomSchema = z
+  .string()
+  .min(1)
+  .regex(/^\d+$/, "반은 숫자만 입력할 수 있습니다.");
+
 export const sloganSchema = z.object({
   slogan: sloganNameSchema,
   description: sloganDescriptionSchema,
   school: z.string().min(1),
   name: z.string().min(1),
-  grade: z.string().min(1),
-  classroom: z.string().min(1),
+  grade: gradeSchema,
+  classroom: classroomSchema,
   phone_number: phoneNumberSchema,
 });
 

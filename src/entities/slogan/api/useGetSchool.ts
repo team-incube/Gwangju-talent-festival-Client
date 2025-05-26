@@ -7,5 +7,6 @@ export function useGetSchool(name: string) {
     queryFn: async () => await getSchool(name),
     staleTime: 1000 * 60 * 60 * 24,
     gcTime: 1000 * 60 * 60 * 24,
+    enabled: name.length > 0,
   });
 }

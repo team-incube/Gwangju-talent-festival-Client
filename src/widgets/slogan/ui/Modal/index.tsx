@@ -1,9 +1,8 @@
+import { useState } from "react";
 import Agree from "@/entities/slogan/ui/Agree";
-import Check from "@/entities/slogan/ui/Check";
 import Danger from "@/entities/slogan/ui/Danger";
 import Inform from "@/shared/asset/svg/Inform";
-import { Button } from "@/shared/ui";
-import { useState } from "react";
+import { Button, Modal as BaseModal, RadioGroup } from "@/shared/ui";
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,35 +10,44 @@ interface ModalProps {
   type: "agree" | "danger";
 }
 
-export default function Modal({ type, setIsOpen, isOpen }: ModalProps) {
-  const [agree, setAgree] = useState<boolean | null>(null);
+const CONSENT_OPTIONS = [
+  { value: "agree", label: "동의" },
+  { value: "disagree", label: "미동의" },
+];
 
-  if (!isOpen) return null;
+export default function Modal({ type, setIsOpen, isOpen }: ModalProps) {
+  const [agree, setAgree] = useState<string | null>(null);
+
+  const handleClose = () => setIsOpen(false);
+
+  const footer = (
+    <Button
+      isDisabled={type === "agree" && agree !== "agree"}
+      onClick={handleClose}
+      className="w-full"
+    >
+      확인
+    </Button>
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="p-24 bg-white border border-gray-300 rounded-lg shadow-lg">
-        <div className="flex items-center justify-between mb-12">
-          <div className="flex items-center gap-20">
-            <Inform />
-            <h3 className="text-body2b">{type === "agree" ? "개인정보수집 동의서" : "주의사항"}</h3>
-          </div>
-          <span className="cursor-pointer" onClick={() => setIsOpen(false)}>
-            ✕
-          </span>
-        </div>
-
-        {type === "agree" ? <Agree /> : <Danger />}
-        {type === "agree" && <Check setAgree={setAgree} />}
-
-        <Button
-          isDisabled={type === "agree" && agree !== true}
-          onClick={() => setIsOpen(false)}
-          className="w-full mt-12"
-        >
-          확인
-        </Button>
-      </div>
-    </div>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={type === "agree" ? "개인정보수집 동의서" : "주의사항"}
+      icon={<Inform />}
+      showCloseButton={false}
+      footer={footer}
+    >
+      {type === "agree" ? <Agree /> : <Danger />}
+      {type === "agree" && (
+        <RadioGroup
+          name="consent"
+          options={CONSENT_OPTIONS}
+          value={agree}
+          onChange={setAgree}
+        />
+      )}
+    </BaseModal>
   );
 }
