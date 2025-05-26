@@ -1,6 +1,8 @@
+import { ScrollableContent } from "@/shared/ui";
+
 export default function Danger() {
   return (
-    <div className="border-gray-100 border border-solid text-caption1r h-[184px] overflow-y-scroll my-24 rounded-lg p-12">
+    <ScrollableContent height="280px">
       <h5>1. 순수 창작물 제출 필수</h5>
       <ul className="list-disc pl-16 marker:text-[10px]">
         <li>응모작은 반드시 본인의 순수 창작물이어야 합니다.</li>
@@ -35,6 +37,6 @@ export default function Danger() {
       <ul className="list-disc pl-16 marker:text-[10px]">
         <li>동일한 슬로건이 접수된 경우, ‘접수 우선순위’에 따라 선정됩니다.</li>
       </ul>
-    </div>
+    </ScrollableContent>
   );
 }
