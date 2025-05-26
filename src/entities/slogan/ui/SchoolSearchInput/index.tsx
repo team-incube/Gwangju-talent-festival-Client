@@ -23,7 +23,7 @@ const SchoolSearchInput = ({
   isSchoolFetched, 
   onSchoolSelect 
 }: SchoolSearchInputProps) => {
-  const trimmedValue = useMemo(() => value.trim(), [value]);
+  const normalizedValue = useMemo(() => value.replace(/\s+/g, ''), [value]);
   
   return (
     <div>
@@ -39,7 +39,7 @@ const SchoolSearchInput = ({
           <Search />
         </span>
       </div>
-      {isSchoolFetched && trimmedValue !== "" && filteredSchools.length > 0 && (
+      {isSchoolFetched && normalizedValue !== "" && filteredSchools.length > 0 && (
         <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8">
           {filteredSchools.map((school, i) => (
             <div key={school.SD_SCHUL_CODE}>
