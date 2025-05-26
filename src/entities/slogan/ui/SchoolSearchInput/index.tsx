@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Input } from "@/shared/ui";
 import { cn } from "@/shared/utils/cn";
 import Search from "@/shared/asset/svg/Search";
+import HighlightText from "../HighlightText";
 
 type School = {
   SD_SCHUL_CODE: string;
@@ -48,7 +49,10 @@ const SchoolSearchInput = ({
                 className="cursor-pointer p-16 hover:bg-gray-100 rounded"
                 onClick={() => onSchoolSelect(school.SCHUL_NM)}
               >
-                {school.SCHUL_NM}
+                <HighlightText 
+                  text={school.SCHUL_NM} 
+                  searchTerm={value}
+                />
               </div>
             </div>
           ))}
