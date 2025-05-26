@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Search from "@/shared/asset/svg/Search";
 import { cn } from "@/shared/utils/cn";
 import { handleSloganFormSubmit } from "@/entities/slogan/lib/handleSloganFormSubmit";
@@ -31,17 +31,61 @@ export default function SloganFormContainer() {
     isSubmitting: false,
   });
 
+  const isValid = useMemo(() => {
+    return sloganSchema.safeParse(formValues).success;
+  }, [formValues]);
+
   useEffect(() => {
-    const isValid = sloganSchema.safeParse(formValues);
     setState(prevState => ({
       ...prevState,
-      isValid: isValid.success,
+      isValid,
     }));
-  }, [formValues]);
+  }, [isValid]);
+
+  const handleSloganChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSloganLength(value.length);
+    setFormValues(prev => ({ ...prev, slogan: value }));
+  }, []);
+
+  const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setDescriptionLength(value.length);
+    setFormValues(prev => ({ ...prev, description: value }));
+  }, []);
+
+  const handleFieldChange = useCallback((field: keyof SloganFormValues) => 
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormValues(prev => ({ ...prev, [field]: e.target.value }));
+    }, []);
+
+  const handleSchoolSelect = useCallback((schoolName: string) => {
+    setFormValues(prev => ({ ...prev, school: schoolName }));
+  }, []);
 
   const debouncedSchoolName = useDebounce<string>(formValues.school, 400);
   const { data: schoolData, isSuccess: isSchoolFetched } = useGetSchool(debouncedSchoolName);
-  const schoolList = schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [];
+  
+  const schoolList = useMemo(() => 
+    schoolData?.schoolInfo?.length === 2 ? schoolData.schoolInfo[1].row : [],
+    [schoolData]
+  );
+
+  const filteredSchools = useMemo(() => 
+    schoolList.filter(school => school.SCHUL_NM !== formValues.school),
+    [schoolList, formValues.school]
+  );
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    setState(prevState => ({ ...prevState, isSubmitting: true }));
+    try {
+      const res = await handleSloganFormSubmit(formValues);
+      setState(prevState => ({ ...prevState, isSubmitted: res, isSubmitting: false }));
+    } catch (error) {
+      setState(prevState => ({ ...prevState, isSubmitting: false }));
+    }
+  }, [formValues]);
 
   if (state.isSubmitted) {
     return <SloganFormSuccess />;
@@ -49,16 +93,7 @@ export default function SloganFormContainer() {
 
   return (
     <form
-      onSubmit={async e => {
-        e.preventDefault();
-        setState(prevState => ({ ...prevState, isSubmitting: true }));
-        try {
-          const res = await handleSloganFormSubmit(formValues);
-          setState(prevState => ({ ...prevState, isSubmitted: res, isSubmitting: false }));
-        } catch (error) {
-          setState(prevState => ({ ...prevState, isSubmitting: false }));
-        }
-      }}
+      onSubmit={handleSubmit}
       className={cn("flex px-12 mt-[32px] flex-col pb-5 gap-[6.25rem]")}
     >
       <div>
@@ -67,11 +102,7 @@ export default function SloganFormContainer() {
           <CountLength length={sloganLength}>
             <Input
               value={formValues.slogan}
-              onChange={e => {
-                const value = e.target.value;
-                setSloganLength(value.length);
-                setFormValues({ ...formValues, slogan: value });
-              }}
+              onChange={handleSloganChange}
               max={100}
               name="slogan"
               label="슬로건 입력"
@@ -81,11 +112,7 @@ export default function SloganFormContainer() {
           <CountLength length={descriptionLength} max={1000}>
             <Textarea
               value={formValues.description}
-              onChange={e => {
-                const value = e.target.value;
-                setDescriptionLength(value.length);
-                setFormValues({ ...formValues, description: value });
-              }}
+              onChange={handleDescriptionChange}
               name="description"
               maxLength={1000}
               label="슬로건 설명"
@@ -97,7 +124,7 @@ export default function SloganFormContainer() {
               <Input
                 name="school"
                 value={formValues.school}
-                onChange={e => setFormValues({ ...formValues, school: e.target.value })}
+                onChange={handleFieldChange("school")}
                 label="학교"
                 placeholder="학교를 입력해주세요"
               />
@@ -105,33 +132,28 @@ export default function SloganFormContainer() {
                 <Search />
               </span>
             </div>
-            {isSchoolFetched && formValues.school !== "" && schoolList.length > 0 && (
+            {isSchoolFetched && formValues.school !== "" && filteredSchools.length > 0 && (
               <div className="flex flex-col overflow-y-auto absolute bg-white w-full max-w-[708px] shadow-xl rounded mt-8">
-                {schoolList
-                  .filter(school => school.SCHUL_NM !== formValues.school)
-                  .map((school, i) => (
-                    <div key={school.SD_SCHUL_CODE}>
-                      {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}
-                      <div
-                        className="cursor-pointer p-16 hover:bg-gray-100 rounded"
-                        onClick={() =>
-                          setFormValues({
-                            ...formValues,
-                            school: school.SCHUL_NM,
-                          })
-                        }
-                      >
-                        {school.SCHUL_NM}
-                      </div>
+                {filteredSchools.map((school, i) => (
+                  <div key={school.SD_SCHUL_CODE}>
+                    {i !== 0 && <div className="h-px bg-gray-100 mx-12" />}
+                    <div
+                      className="cursor-pointer p-16 hover:bg-gray-100 rounded"
+                      onClick={() =>
+                        handleSchoolSelect(school.SCHUL_NM)
+                      }
+                    >
+                      {school.SCHUL_NM}
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             )}
           </div>
           <Input
             name="name"
             value={formValues.name}
-            onChange={e => setFormValues({ ...formValues, name: e.target.value })}
+            onChange={handleFieldChange("name")}
             label="이름"
             placeholder="이름을 입력해주세요"
           />
@@ -140,7 +162,7 @@ export default function SloganFormContainer() {
               name="grade"
               type="number"
               value={formValues.grade}
-              onChange={e => setFormValues({ ...formValues, grade: e.target.value })}
+              onChange={handleFieldChange("grade")}
               label="학년"
               placeholder="학년을 입력해주세요"
             />
@@ -148,7 +170,7 @@ export default function SloganFormContainer() {
               name="class"
               type="number"
               value={formValues.classroom}
-              onChange={e => setFormValues({ ...formValues, classroom: e.target.value })}
+              onChange={handleFieldChange("classroom")}
               label="반"
               placeholder="반을 입력해주세요"
             />
@@ -156,7 +178,7 @@ export default function SloganFormContainer() {
           <Input
             name="phone"
             value={formValues.phone_number}
-            onChange={e => setFormValues({ ...formValues, phone_number: e.target.value })}
+            onChange={handleFieldChange("phone_number")}
             label="전화번호"
             placeholder="전화번호를 입력해주세요"
           />
