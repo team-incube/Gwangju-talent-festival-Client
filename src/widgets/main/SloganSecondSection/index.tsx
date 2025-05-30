@@ -65,7 +65,11 @@ const SloganSecondSection = () => {
         </Button>
 
         <div className={cn("text-caption1r mobile:text-caption2r text-gray-400")}>
-          {submissionPeriodText}
+          {submissionPeriodText} <br />
+          <p className="text-main-600">
+            광탈페 슬로건 공모 접수가 마감되었습니다. <br />
+            결과발표는 6월중으로 개별안내 및 별도공지됩니다.
+          </p>
         </div>
       </div>
     </section>
