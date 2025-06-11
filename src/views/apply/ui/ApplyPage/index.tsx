@@ -102,11 +102,21 @@ export const ApplyPage = () => {
         </div>
 
         <div className="flex flex-row gap-4 pt-28 mobile:flex-col">
-          <Button className="w-full bg-[#01C13A] flex flex-row gap-18 items-center justify-center ">
+          <Button 
+            className="w-full bg-[#01C13A] flex flex-row gap-18 items-center justify-center"
+            onClick={() => {
+              window.open("https://mail.naver.com/write/popup?to=hcgwangju@gmail.com&subject=2025 광주학생탈렌트페스티벌 참가 신청", "_blank");
+            }}
+          >
             <NaverLogo color="#FFF" />
             네이버메일 전송 바로가기
           </Button>
-          <Button className="w-full bg-[#FFF] border border-gray-100 text-[#000] flex flex-row gap-18 items-center justify-center">
+          <Button 
+            className="w-full bg-[#FFF] border border-gray-100 text-[#000] flex flex-row gap-18 items-center justify-center"
+            onClick={() => {
+              window.open("https://mail.google.com/mail/?view=cm&fs=1&to=hcgwangju@gmail.com&su=2025 광주학생탈렌트페스티벌 참가 신청", "_blank");
+            }}
+          >
             <GoogleLogo />
             구글메일 전송 바로가기
           </Button>
