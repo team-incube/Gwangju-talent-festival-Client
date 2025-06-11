@@ -2,7 +2,7 @@
 
 import { cn } from "@/shared/utils/cn";
 import { Button } from "@/shared/ui";
-import SloganHeader from "@/entities/slogan/ui/SloganHeader";
+import BackHeader from "@/shared/ui/BackHeader";
 import SloganFormSuccess from "@/entities/slogan/ui/SloganFormSuccess";
 import SloganInput from "@/entities/slogan/ui/SloganInput";
 import SloganDescriptionInput from "@/entities/slogan/ui/SloganDescriptionInput";
@@ -23,7 +23,7 @@ export default function SloganFormContainer() {
       className={cn("flex px-12 mt-[32px] flex-col pb-5 gap-[6.25rem]")}
     >
       <div>
-        <SloganHeader />
+        <BackHeader text="슬로건 응모" />
         <div className={cn("flex flex-col mt-[3.5rem] gap-24")}>
           <SloganInput
             value={state.formValues.slogan}

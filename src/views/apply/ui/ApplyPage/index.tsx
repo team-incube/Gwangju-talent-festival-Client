@@ -7,6 +7,7 @@ import { NaverLogo } from "@/shared/asset/svg/NaverLogo";
 import Inform from "@/shared/asset/svg/Inform";
 import Button from "@/shared/ui/Button";
 import Arrow from "@/shared/asset/svg/Arrow";
+import BackHeader from "@/shared/ui/BackHeader";
 
 export const ApplyPage = () => {
   const documentItems = [
@@ -39,6 +40,7 @@ export const ApplyPage = () => {
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-12 px-4">
       <div className="max-w-3xl w-full flex flex-col gap-10">
+        <BackHeader text="참가 신청" />
         <DescriptionCard 
           title="신청 서류: 참가 신청서, 개인정보수집이용활용동의서, 공연 영상[3분 내외, MP4 파일]" 
           items={documentItems} 
