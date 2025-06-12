@@ -35,7 +35,7 @@ export default function PosterModal() {
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
       <div className="bg-white p-24 rounded-[12px] flex flex-col gap-24 max-w-[500px] w-full shadow-xl relative">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-body2b">포스터</h3>
+          <h3 className="text-body2b">참가 신청</h3>
           <button onClick={handleClose}>
             <X />
           </button>
