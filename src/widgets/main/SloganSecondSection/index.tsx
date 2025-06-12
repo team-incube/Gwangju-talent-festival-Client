@@ -8,9 +8,27 @@ import { SectionTitle } from "@/shared/ui/SectionTitle";
 // import { formatDate } from "@/shared/utils/formatDate";
 
 const PRIZES = [
-  { rank: "2등", bg: "bg-gray-400", emoji: "광주SW마이스터고 2학년 ", desc: "허O서", slogan: "\"광주의 빛나는, 또 빛날 별들의 향연\"" },
-  { rank: "1등", bg: "bg-yellow-300", emoji: "전대사대부고 2학년 ", desc: "김O은", slogan: "\"세상의 무대 위, 광탈페! 너의 꿈이 시작되는 순간!\"" },
-  { rank: "3등", bg: "bg-orange-700", emoji: "빛고을고 2학년 ", desc: "최O원", slogan: "\"재능이 피어나는 시간, 가능성이 자라는 무대\"" },
+  {
+    rank: "2등",
+    bg: "bg-gray-400",
+    emoji: "광주SW마이스터고 2학년 ",
+    desc: "허O서",
+    slogan: '"광주의 빛나는, 또 빛날 별들의 향연"',
+  },
+  {
+    rank: "1등",
+    bg: "bg-yellow-300",
+    emoji: "전대사대부고 2학년 ",
+    desc: "김O은",
+    slogan: '"세상의 무대 위, 광탈페! 너의 꿈이 시작되는 순간!"',
+  },
+  {
+    rank: "3등",
+    bg: "bg-orange-700",
+    emoji: "빛고을고 2학년 ",
+    desc: "최O원",
+    slogan: '"재능이 피어나는 시간, 가능성이 자라는 무대"',
+  },
 ];
 
 // const SLOGAN_START = new Date("2025-05-26T00:00:00+09:00");
@@ -33,13 +51,14 @@ const SloganSecondSection = () => {
   return (
     <section id="SloganSecondSection" className={cn("w-full mt-[3.5rem] mobile:mt-20 text-center")}>
       <SectionTitle
-        title="슬로건 공모"
+        title="2025 광탈페 슬로건"
         description={
           <>
-            <span className={cn("block")}>2025 광탈페(광주학생탈렌트페스티벌),</span>
-            <span className={cn("inline-block")}>
-              참여자가 직접 만든 슬로건으로 학생이 주인공이 되는 오디션 프로그램의 가치를 높이고
-              광탈페에 대한 이해와 관심을 더욱 끌어올립니다!
+            <h3 className="text-black text-body2b">
+              세상의 무대 위, 광탈페! 너의 꿈이 시작되는 순간!
+            </h3>
+            <span className={cn("block")}>
+              2025년 모두가 주인공이 되는 광주학생탈렌트페스티벌의 꿈의 무대가 펼쳐집니다.
             </span>
           </>
         }
@@ -57,7 +76,7 @@ const SloganSecondSection = () => {
             <PrizeItem key={PRIZES[2].rank} {...PRIZES[2]} />
           </div>
         </div>
-{/* 
+        {/* 
         <Button
           onClick={() => R.push("/slogan")}
           className={cn("my-[24px] mobile:mb-[12px] px-28")}
