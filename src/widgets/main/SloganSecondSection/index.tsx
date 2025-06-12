@@ -51,9 +51,12 @@ const SloganSecondSection = () => {
   return (
     <section id="SloganSecondSection" className={cn("w-full mt-[3.5rem] mobile:mt-20 text-center")}>
       <SectionTitle
-        title="세상의 무대 위, 광탈페! 너의 꿈이 시작되는 순간!"
+        title="2025 광탈페 슬로건"
         description={
           <>
+            <h3 className="text-black text-body2b">
+              세상의 무대 위, 광탈페! 너의 꿈이 시작되는 순간!
+            </h3>
             <span className={cn("block")}>
               2025년 모두가 주인공이 되는 광주학생탈렌트페스티벌의 꿈의 무대가 펼쳐집니다.
             </span>
