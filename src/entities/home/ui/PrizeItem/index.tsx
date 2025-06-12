@@ -7,17 +7,6 @@ type PrizeItemProps = Readonly<{
 }>;
 
 const PrizeItem: React.FC<PrizeItemProps> = ({ rank, bg, emoji, desc, slogan }) => {
-  const getFontClass = (rank: string) => {
-    switch (rank) {
-      case "1등":
-        return "font-['SangSangRock']";
-      case "2등":
-        return "font-['Dokrip']";
-      case "3등":
-        return "font-['ChosunCentennial']";
-    }
-  };
-
   return (
     <div key={rank} className="flex flex-col items-center gap-[16px]">
       <div
@@ -26,15 +15,9 @@ const PrizeItem: React.FC<PrizeItemProps> = ({ rank, bg, emoji, desc, slogan }) 
         {rank}
       </div>
       <div className="flex flex-col gap-[2px]">
-        <div className="text-lg mobile:text-caption1b text-gray-400">
-          {emoji}
-        </div>
-        <div className="text-lg mobile:text-caption1b">
-          {desc}
-        </div>
-        <div className={`text-lg mobile:text-caption1b ${getFontClass(rank)}`}>
-          {slogan}
-        </div>
+        <div className="text-lg mobile:text-caption1b text-gray-400">{emoji}</div>
+        <div className="text-lg mobile:text-caption1b">{desc}</div>
+        <div className={`text-lg mobile:text-caption1b `}>{slogan}</div>
       </div>
     </div>
   );
