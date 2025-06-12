@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|images|video).*)", "/signin"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|images|video|files).*)", "/signin"],
 };
 
 export function middleware(request: NextRequest) {
