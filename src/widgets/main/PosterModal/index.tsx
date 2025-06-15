@@ -15,10 +15,6 @@ export default function PosterModal() {
   const router = useRouter();
 
   useEffect(() => {
-    if (new Date() < new Date("2025-06-16")) {
-      setShow(false);
-      return;
-    }
     if (localStorage.getItem("show")) {
       setShow(false);
     } else {
