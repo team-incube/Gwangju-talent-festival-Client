@@ -8,6 +8,7 @@ interface LazySectionProps {
   rootMargin?: string;
   threshold?: number;
   className?: string;
+  id?: string;
 }
 
 const LazySection = ({
@@ -16,6 +17,7 @@ const LazySection = ({
   rootMargin = "200px",
   threshold = 0.1,
   className = "",
+  id,
 }: LazySectionProps) => {
   const [isInView, setIsInView] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -42,7 +44,7 @@ const LazySection = ({
   }, [rootMargin, threshold]);
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} id={id} className={className}>
       {isInView ? children : fallback}
     </div>
   );
