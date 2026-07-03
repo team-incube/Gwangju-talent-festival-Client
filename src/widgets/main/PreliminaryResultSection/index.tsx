@@ -45,9 +45,6 @@ const PreliminaryResultSection = () => {
           <p className="text-body3r mobile:text-caption1r text-gray-700">
             총 <strong className="text-orange-500 text-body2b mobile:text-body3b">24팀</strong>이 본선에 진출합니다
           </p>
-          <p className="text-body3r mobile:text-caption1r text-gray-500">
-            7월 3일(금) 오전 10시 공개 예정
-          </p>
         </div>
 
         {/* CTA 버튼 */}
