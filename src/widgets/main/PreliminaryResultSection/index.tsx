@@ -8,7 +8,6 @@ const PreliminaryResultSection = () => {
   const isOpen = isPreliminaryResultOpen();
   return (
     <section
-      id="PreliminaryResultSection"
       className={cn("relative w-full overflow-hidden bg-white py-[80px] mobile:py-[52px]")}
     >
       {/* 좌측 데코 — 와이드 데스크탑에서만 표시 */}
