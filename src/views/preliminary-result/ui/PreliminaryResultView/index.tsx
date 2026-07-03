@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { cn } from "@/shared/utils/cn";
 import BackHeader from "@/shared/ui/BackHeader";
-import Button from "@/shared/ui/Button";
 
 type Team = {
   id: number;
@@ -26,13 +25,7 @@ const PRELIMINARY_TEAMS: Team[] = [
   { id: 10, field: "댄스", name: "Luna.X", school: "살레시오중", representative: "박시*" },
   { id: 11, field: "댄스", name: "ON:BEAT", school: "문산중 외", representative: "강도*" },
   { id: 12, field: "댄스", name: "PLAY", school: "성덕중", representative: "임수*" },
-  {
-    id: 13,
-    field: "댄스",
-    name: "베아트리스. Beat",
-    school: "동일미래과학고",
-    representative: "이준*",
-  },
+  { id: 13, field: "댄스", name: "베아트리스. Beat", school: "동일미래과학고", representative: "이준*" },
   { id: 14, field: "밴드", name: "B.O.D", school: "서강중", representative: "임도*" },
   { id: 15, field: "밴드", name: "Be 정상", school: "문정여고 외", representative: "박지*" },
   { id: 16, field: "밴드", name: "EVA밴드", school: "고려고 외", representative: "박지*" },
@@ -51,14 +44,15 @@ const MEETING_INFO = [
   {
     label: "대상",
     value:
-      "예선(오디션) 선정 팀당 1명 필참(사진학생증(신분증, 여권, 청소년증, 주민등록증, 생기부 1면 등) 지참)",
+      "예선(오디션) 선정 팀 대표(24개 팀, 팀당 1명 필참, 사진학생증(신분증, 여권, 청소년증, 주민등록증, 생기부 1면 등))",
   },
   { label: "장소", value: "광주학생예술누리터 꿈이룸관(2층)" },
 ];
 
 const VENUE = {
-  name: "광주학생예술누리터 1관",
+  name: "광주학생예술누리터",
   address: "광주광역시 동구 제봉로 167 광주학생예술누리터",
+  phone: "운영실 222-7301,2,4,5 / 관리실 222-7306",
 };
 
 const MEETING_AGENDA = [
@@ -68,8 +62,6 @@ const MEETING_AGENDA = [
   "예선 참여 곡명 및 무대 지원 필요 사항 점검 등",
   "홍보자료 제작용 팀 소개 관련 자료 수합 안내(사진, 팀 소개, 연주곡 소개 등)",
 ];
-
-const PRELIMINARY_FORM_URL = "https://form.naver.com/response/lmQTiRvKRFYiVKnSeLieRg";
 
 const PreliminaryResultView = () => {
   const meetingGuideRef = useRef<HTMLElement>(null);
@@ -81,50 +73,35 @@ const PreliminaryResultView = () => {
 
         {/* 헤더 */}
         <div className={cn("flex flex-col items-center text-center gap-16 py-40 mobile:py-28")}>
-          <h1 className={cn("text-title2b mobile:text-h4b text-black")}>2026 광탈페 예선 진출팀</h1>
-          <div
-            className={cn("flex flex-col gap-6 text-body3r mobile:text-caption1r text-gray-600")}
-          >
-            <p>
-              오디션에 선정되신 <strong className="text-orange-500">24개 팀</strong>은 신분증을
-              지참하여 사전 협의회에 참석해주세요.
-            </p>
+          <h1 className={cn("text-title2b mobile:text-h4b text-black")}>
+            2026 광탈페 예선 진출팀
+          </h1>
+          <div className={cn("flex flex-col gap-6 text-body3r mobile:text-caption1r text-gray-600")}>
+            <p>오디션에 선정되신 <strong className="text-orange-500">24개 팀</strong>의 대표는 신분증을 지참하여 협의회에 참석해주세요.</p>
+            <p>각 팀의 대표는 사전 협의회 참석 명단을 이메일로 제출해주세요.</p>
             <p>진출하신 모든 팀을 진심으로 축하드립니다.</p>
           </div>
-
-          <div className={cn("flex flex-col items-center gap-12 mobile:gap-10 mobile:w-full")}>
-            <Button
-              className="px-48 mobile:w-full"
-              onClick={() => window.open(PRELIMINARY_FORM_URL, "_blank")}
-            >
-              사전 협의회 참석 명단 제출하기
-            </Button>
-            <a
-              href="#meeting-guide"
-              onClick={e => {
-                e.preventDefault();
-                meetingGuideRef.current?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className={cn(
-                "inline-flex items-center gap-4 text-body3b mobile:text-caption1b text-orange-500",
-                "underline underline-offset-4 hover:text-orange-400 transition-colors duration-200",
-              )}
-            >
-              협의회 참석 관련 안내 →
-            </a>
-          </div>
+          <a
+            href="#meeting-guide"
+            onClick={(e) => {
+              e.preventDefault();
+              meetingGuideRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className={cn(
+              "inline-flex items-center gap-4 text-body3b mobile:text-caption1b text-orange-500",
+              "underline underline-offset-4 hover:text-orange-400 transition-colors duration-200",
+            )}
+          >
+            협의회 참석 관련 안내 →
+          </a>
         </div>
 
         {/* 구분선 */}
         <div className="w-full h-[1px] bg-gray-100 mb-40 mobile:mb-28" />
 
         {/* 팀 카드 그리드 */}
-        <div
-          className={cn(
-            "grid grid-cols-3 tablet:grid-cols-2 mobile:grid-cols-2 gap-14 mobile:gap-8",
-          )}
-        >
-          {PRELIMINARY_TEAMS.map(team => (
+        <div className={cn("grid grid-cols-3 tablet:grid-cols-2 mobile:grid-cols-2 gap-14 mobile:gap-8")}>
+          {PRELIMINARY_TEAMS.map((team) => (
             <div
               key={team.id}
               className={cn(
@@ -147,17 +124,9 @@ const PreliminaryResultView = () => {
                   {String(team.id).padStart(2, "0")} · {team.field}
                 </span>
                 <div className={cn("flex flex-col gap-4")}>
-                  <p
-                    className={cn(
-                      "text-body3b mobile:text-caption1b text-black break-keep leading-snug",
-                    )}
-                  >
+                  <p className={cn("text-body3b mobile:text-caption1b text-black break-keep leading-snug")}>
                     {team.name}
-                    <span
-                      className={cn(
-                        "ml-6 text-caption1r mobile:text-caption2r text-gray-400 font-normal",
-                      )}
-                    >
+                    <span className={cn("ml-6 text-caption1r mobile:text-caption2r text-gray-400 font-normal")}>
                       ({team.representative})
                     </span>
                   </p>
@@ -184,7 +153,7 @@ const PreliminaryResultView = () => {
           </h2>
 
           <div className={cn("flex flex-col gap-16 mobile:gap-12")}>
-            {MEETING_INFO.map(item => (
+            {MEETING_INFO.map((item) => (
               <div key={item.label} className={cn("flex gap-12 mobile:gap-8")}>
                 <span className={cn("shrink-0 text-body3b mobile:text-caption1b text-orange-500")}>
                   {item.label}
@@ -198,9 +167,8 @@ const PreliminaryResultView = () => {
 
           <div className={cn("flex flex-col gap-8 rounded-xl bg-gray-50 p-20 mobile:p-16")}>
             <p className={cn("text-body3b mobile:text-caption1b text-black")}>{VENUE.name}</p>
-            <p className={cn("text-caption1r mobile:text-caption2r text-gray-600")}>
-              {VENUE.address}
-            </p>
+            <p className={cn("text-caption1r mobile:text-caption2r text-gray-600")}>{VENUE.address}</p>
+            <p className={cn("text-caption1r mobile:text-caption2r text-gray-600")}>{VENUE.phone}</p>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(VENUE.address)}`}
               target="_blank"
@@ -213,23 +181,6 @@ const PreliminaryResultView = () => {
               지도에서 보기 →
             </a>
           </div>
-
-          <div
-            className={cn(
-              "flex flex-col items-center gap-12 mobile:gap-10 rounded-xl p-24 mobile:p-16",
-              "bg-gradient-to-br from-orange-50 to-white border border-orange-100 text-center",
-            )}
-          >
-            <p className={cn("text-body3b mobile:text-caption1b text-black")}>
-              사전 협의회 참석 명단은 아래 폼으로 제출해주세요
-            </p>
-            <Button
-              className="px-48 mobile:w-full"
-              onClick={() => window.open(PRELIMINARY_FORM_URL, "_blank")}
-            >
-              참석 명단 제출 폼 바로가기
-            </Button>
-          </div>
         </section>
 
         {/* 구분선 */}
@@ -241,12 +192,10 @@ const PreliminaryResultView = () => {
             예선팀 대표 사전 협의회 주요 내용
           </h2>
           <ul className={cn("flex flex-col gap-10 mobile:gap-8")}>
-            {MEETING_AGENDA.map(content => (
+            {MEETING_AGENDA.map((content) => (
               <li
                 key={content}
-                className={cn(
-                  "flex gap-8 text-body3r mobile:text-caption1r text-gray-700 break-keep",
-                )}
+                className={cn("flex gap-8 text-body3r mobile:text-caption1r text-gray-700 break-keep")}
               >
                 <span className="text-orange-400" aria-hidden="true">
                   ○
@@ -256,6 +205,7 @@ const PreliminaryResultView = () => {
             ))}
           </ul>
         </section>
+
       </div>
     </main>
   );
