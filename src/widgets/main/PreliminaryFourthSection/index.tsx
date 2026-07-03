@@ -22,7 +22,7 @@ const PRELIMINARY_VIDEOS = [
 
 const PreliminaryFourthSection = () => {
   return (
-    <section id="PreliminaryFourthSection" className={cn("flex flex-col items-center")}>
+    <section className={cn("flex flex-col items-center")}>
       <div className={cn("w-[70%] mobile:w-full")}>
         <SectionTitle
           title="2025 광탈페 예선 다시보기"
