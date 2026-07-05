@@ -42,7 +42,7 @@ const PreliminaryResultSection = () => {
             2026 광탈페 光트로 예선 진출팀
           </h2>
           <p className="text-body3r mobile:text-caption1r text-gray-700">
-            총 <strong className="text-orange-500 text-body2b mobile:text-body3b">24팀</strong>이 본선에 진출합니다
+            총 <strong className="text-orange-500 text-body2b mobile:text-body3b">24팀</strong>이 예선에 진출합니다
           </p>
         </div>
 
