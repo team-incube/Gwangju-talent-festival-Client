@@ -14,7 +14,11 @@ export const useSeatSelection = () => {
     (seat: Seat) => {
       if (seat.status === SEAT_STATUS.OCCUPIED) return;
 
-      if (selectedSeat?.seatNumber === seat.seatNumber && selectedSeat?.section === seat.section) {
+      if (
+        selectedSeat?.seatNumber === seat.seatNumber &&
+        selectedSeat?.row === seat.row &&
+        selectedSeat?.section === seat.section
+      ) {
         setSelectedSeat(null);
       } else {
         setSelectedSeat(seat);

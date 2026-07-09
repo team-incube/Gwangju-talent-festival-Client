@@ -38,7 +38,7 @@ export function useMultipleSeatBooking() {
           .map((result, index) => {
             if (result.status === "rejected") {
               const seat = seats[index];
-              return `${seat.section}${seat.seatNumber} 좌석 예매 실패`;
+              return `${seat.section}${seat.row}${seat.seatNumber} 좌석 예매 실패`;
             }
             return "";
           })
