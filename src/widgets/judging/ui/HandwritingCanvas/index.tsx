@@ -140,7 +140,17 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   const commitCurrentStroke = () => {
     const stroke = currentStroke.current;
     currentStroke.current = null;
-    if (!stroke || stroke.points.length < 2) return;
+    if (!stroke || stroke.points.length === 0) return;
+
+    if (stroke.points.length === 1) {
+      stroke.points.push({ ...stroke.points[0] });
+      const canvas = canvasRef.current;
+      const ctx = canvas?.getContext("2d");
+      if (canvas && ctx) {
+        ctx.lineTo(stroke.points[0].x * canvas.width, stroke.points[0].y * canvas.height);
+        ctx.stroke();
+      }
+    }
 
     const next = [...strokes, stroke];
     setStrokes(next);
