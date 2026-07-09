@@ -49,6 +49,13 @@ export const useTeamScores = (teams: Score[]) => {
 
       return { previousScores };
     },
+    onSuccess: (_data, teamId) => {
+      setEdits(prev => {
+        const next = { ...prev };
+        delete next[teamId];
+        return next;
+      });
+    },
     onError: (error, _teamId, context) => {
       if (context?.previousScores) {
         queryClient.setQueryData(judgeListQueryKey, context.previousScores);
