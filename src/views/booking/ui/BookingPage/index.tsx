@@ -131,7 +131,7 @@ const BookingPage = () => {
   };
 
   return (
-    <main className="w-full max-w-[480px] mx-auto min-h-screen bg-white flex flex-col overflow-hidden">
+    <main className="w-full max-w-[480px] mx-auto h-screen bg-white flex flex-col overflow-hidden">
       <div className="px-4">
         <BackHeader goto="/home" text="예매하기" />
       </div>
@@ -140,7 +140,7 @@ const BookingPage = () => {
         <div className="flex-shrink-0">
           <SelectSection onSectionSelect={handleSectionSelect} />
         </div>
-        <div className="flex-shrink-0 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden">
           <SeatSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             selectedSeat={isPerformer ? null : selectedSeat}

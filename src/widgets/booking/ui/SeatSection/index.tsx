@@ -163,8 +163,8 @@ export const SeatSection = memo<SeatSectionProps>(
     const layout = getLayout();
 
     return (
-      <div className={cn("pb-20", className)}>
-        <div className="h-[420px]">
+      <div className={cn("pb-20 h-full flex flex-col", className)}>
+        <div className="flex-1 min-h-0">
           <SeatGrid
             layout={layout}
             selectedSeat={selectedSeat}
@@ -177,9 +177,9 @@ export const SeatSection = memo<SeatSectionProps>(
           />
         </div>
 
-        <div className="h-8"></div>
+        <div className="h-8 flex-shrink-0"></div>
 
-        <div className="h-24">
+        <div className="h-24 flex-shrink-0">
           <SelectedSeatDisplay
             selectedSeat={!isPerformerMode ? selectedSeatInfo : null}
             selectedSection={selectedSection}
