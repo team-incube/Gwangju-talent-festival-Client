@@ -118,7 +118,7 @@ export const SeatGrid = memo<SeatGridProps>(
     const renderSingleSectionGrid = () => (
       <div className="min-w-max flex flex-col justify-start">
         {seatGrid.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex items-center gap-8 mb-8">
+          <div key={rowIndex} className="flex items-center gap-4 mb-4">
             {row.map(({ seat, key }) => (
               <div key={key} className="w-5 h-5">
                 {seat ? (
