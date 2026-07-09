@@ -82,6 +82,7 @@ const BookingPage = () => {
       if (isComplete && selectedSeatInfo) {
         seatBookingMutation.mutate({
           section: selectedSeatInfo.seat.section,
+          row: selectedSeatInfo.seat.row,
           seatNumber: selectedSeatInfo.seat.seatNumber,
         });
         toast.success("예매가 완료되었습니다.");

@@ -41,7 +41,7 @@ const MyBookingPage = () => {
 
       const originalSeats = seats;
       const updatedSeats = seats.filter(
-        s => !(s.section === seat.section && s.seatNumber === seat.seatNumber),
+        s => !(s.section === seat.section && s.row === seat.row && s.seatNumber === seat.seatNumber),
       );
 
       queryClient.setQueryData(["mySeats"], updatedSeats);
@@ -51,7 +51,7 @@ const MyBookingPage = () => {
 
       try {
         await cancelPerformerSeats([seat]);
-        toast.success(`${seat.section}${seat.seatNumber} 좌석 예매가 취소되었습니다.`);
+        toast.success(`${seat.section}${seat.row}${seat.seatNumber} 좌석 예매가 취소되었습니다.`);
 
         queryClient.invalidateQueries({ queryKey: ["mySeat"] });
         queryClient.invalidateQueries({ queryKey: ["mySeats"] });
@@ -141,12 +141,13 @@ const MyBookingPage = () => {
             >
               {seats.map(seat => (
                 <Button
-                  key={`${seat.section}-${seat.seatNumber}`}
+                  key={`${seat.section}-${seat.row}-${seat.seatNumber}`}
                   className="h-[40px] text-sm"
                   onClick={() => handleIndividualSeatCancel(seat)}
                   disabled={seats.length === 0}
                 >
                   {seat.section}
+                  {seat.row}
                   {seat.seatNumber} 취소
                 </Button>
               ))}

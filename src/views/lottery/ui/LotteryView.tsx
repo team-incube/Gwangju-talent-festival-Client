@@ -105,7 +105,7 @@ const LotteryView = () => {
         if (allSeats.length === 0) return;
         const r = Math.floor(Math.random() * allSeats.length);
         const s = allSeats[r];
-        setSlotLabel(`${s.section}${s.seatNumber}`);
+        setSlotLabel(`${s.section}${s.row}${s.seatNumber}`);
       }, 60);
     } else {
       cleanupSlotInterval();
@@ -127,7 +127,9 @@ const LotteryView = () => {
         setRevealedSeats(prev => {
           const exists = prev.some(
             seat =>
-              seat.section === targetSeat.section && seat.seatNumber === targetSeat.seatNumber,
+              seat.section === targetSeat.section &&
+              seat.row === targetSeat.row &&
+              seat.seatNumber === targetSeat.seatNumber,
           );
           return exists ? prev : [...prev, targetSeat];
         });
@@ -176,10 +178,11 @@ const LotteryView = () => {
             <div className="flex flex-wrap justify-center gap-2 mx-4">
               {revealedSeats.map(s => (
                 <span
-                  key={`${s.section}-${s.seatNumber}`}
+                  key={`${s.section}-${s.row}-${s.seatNumber}`}
                   className="inline-flex items-center justify-center rounded-full border border-purple-200 text-purple-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8"
                 >
                   {s.section}
+                  {s.row}
                   {s.seatNumber}
                 </span>
               ))}
@@ -188,15 +191,16 @@ const LotteryView = () => {
                 !revealedSeats.some(
                   rs =>
                     rs.section === currentTarget.section &&
+                    rs.row === currentTarget.row &&
                     rs.seatNumber === currentTarget.seatNumber,
                 ) && (
                   <span
-                    key={`target-${currentTarget.section}-${currentTarget.seatNumber}`}
+                    key={`target-${currentTarget.section}-${currentTarget.row}-${currentTarget.seatNumber}`}
                     className="inline-flex items-center justify-center rounded-full border border-purple-200 text-purple-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8 animate-pulse"
                   >
                     {isAnimating && slotLabel
                       ? slotLabel
-                      : `${currentTarget.section}${currentTarget.seatNumber}`}
+                      : `${currentTarget.section}${currentTarget.row}${currentTarget.seatNumber}`}
                   </span>
                 )}
             </div>
