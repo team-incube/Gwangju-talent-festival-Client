@@ -40,6 +40,7 @@ export function useSeatChangeSSE(options: UseSeatChangeSSEOptions = {}) {
           const data = JSON.parse(event.data);
           const seatChangeEvent: SeatChangeEvent = {
             seat_section: data.seat_section,
+            seat_row: data.seat_row,
             seat_number: data.seat_number,
             is_available: data.is_available,
           };

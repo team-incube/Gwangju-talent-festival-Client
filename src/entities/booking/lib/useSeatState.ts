@@ -109,6 +109,7 @@ export function updateSeatInCache(
 ): void {
   const {
     seat_section: section,
+    seat_row: seatRow,
     seat_number: seatNumber,
     is_available: isAvailable,
   } = seatChangeEvent;
@@ -117,7 +118,7 @@ export function updateSeatInCache(
     if (!oldData) return oldData;
 
     return oldData.map(seat => {
-      if (seat.seatNumber === seatNumber.toString()) {
+      if (seat.seatNumber === seatNumber.toString() && seat.row === seatRow) {
         return {
           ...seat,
           status: isAvailable ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
