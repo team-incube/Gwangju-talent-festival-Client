@@ -128,11 +128,21 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     const sectionSeatMaps = useMemo(() => {
+      const seatsBySection = new Map<(typeof SECTIONS)[number], Seat[]>();
+      allSeats?.forEach(seat => {
+        const bucket = seatsBySection.get(seat.section);
+        if (bucket) {
+          bucket.push(seat);
+        } else {
+          seatsBySection.set(seat.section, [seat]);
+        }
+      });
+
       const maps = new Map<(typeof SECTIONS)[number], Map<string, Seat>>();
 
       SECTIONS.forEach(section => {
         const cachedSeats = queryClient.getQueryData<Seat[]>(seatQueryKeys.seatState(section));
-        const allSectionSeats = allSeats?.filter(seat => seat.section === section);
+        const allSectionSeats = seatsBySection.get(section);
         const sectionLayout = getSeatLayout(section);
         const seatsToUse =
           allSectionSeats && allSectionSeats.length > 0
