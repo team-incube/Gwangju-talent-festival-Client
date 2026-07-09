@@ -6,7 +6,7 @@ import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { cn } from "@/shared/utils/cn";
 import { Seat, SeatLayout, SECTIONS } from "@/entities/booking/model/types";
 import { SeatItem } from "../SeatItem";
-import { getSeatPattern, getSeatLayout } from "@/entities/booking/model/seatLayouts";
+import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 
 export interface SeatGridProps {
   layout: SeatLayout | null;
@@ -48,16 +48,21 @@ export const SeatGrid = memo<SeatGridProps>(
       if (!layout?.section) return [];
 
       const pattern = getSeatPattern(layout.section);
+      const rowLabels = getRowLabels(layout.section);
       const seatMap = new Map<string, Seat>();
 
       layout.seats.forEach(seat => {
-        seatMap.set(seat.seatNumber, seat);
+        seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
       });
 
       return pattern.map((row, rowIndex) =>
         row.map((seatNumber, colIndex) => {
-          const seat = seatNumber ? seatMap.get(seatNumber.toString()) || null : null;
-          const key = seat ? `${seat.section}-${seat.seatNumber}` : `${rowIndex}-${colIndex}`;
+          const seat = seatNumber
+            ? seatMap.get(`${rowLabels[rowIndex]}-${seatNumber}`) || null
+            : null;
+          const key = seat
+            ? `${seat.section}-${seat.row}-${seat.seatNumber}`
+            : `${rowIndex}-${colIndex}`;
 
           return {
             seatNumber,
@@ -69,8 +74,8 @@ export const SeatGrid = memo<SeatGridProps>(
     }, [layout?.section, layout?.seats]);
 
     const allSectionsGrid = useMemo(() => {
-      const sectionsRow1 = SECTIONS.slice(0, 5);
-      const sectionsRow2 = SECTIONS.slice(5, 10);
+      const sectionsRow1 = SECTIONS.slice(0, 3);
+      const sectionsRow2 = SECTIONS.slice(3, 6);
 
       return [sectionsRow1, sectionsRow2];
     }, []);
@@ -80,24 +85,31 @@ export const SeatGrid = memo<SeatGridProps>(
         if (!seat) return false;
 
         if (selectedSeatsForCancel) {
-          const seatId = `${seat.section}-${seat.seatNumber}`;
+          const seatId = `${seat.section}-${seat.row}-${seat.seatNumber}`;
           return selectedSeatsForCancel.has(seatId);
         }
 
         if (mySeat) {
           if (myAllSeats && myAllSeats.length > 1) {
             return myAllSeats.some(
-              (s: Seat) => s.seatNumber === seat.seatNumber && s.section === seat.section,
+              (s: Seat) =>
+                s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section,
             );
           }
-          return mySeat.seatNumber === seat.seatNumber && mySeat.section === seat.section;
+          return (
+            mySeat.seatNumber === seat.seatNumber &&
+            mySeat.row === seat.row &&
+            mySeat.section === seat.section
+          );
         }
 
         if (isPerformerMode && typeof isSeatSelected === "function") {
           return isSeatSelected(seat) === true;
         }
         return (
-          selectedSeat?.seatNumber === seat.seatNumber && selectedSeat?.section === seat.section
+          selectedSeat?.seatNumber === seat.seatNumber &&
+          selectedSeat?.row === seat.row &&
+          selectedSeat?.section === seat.section
         );
       },
       [mySeat, myAllSeats, isPerformerMode, isSeatSelected, selectedSeat, selectedSeatsForCancel],
@@ -130,6 +142,7 @@ export const SeatGrid = memo<SeatGridProps>(
       const allSectionSeats = allSeats?.filter(seat => seat.section === section);
       const sectionLayout = getSeatLayout(section);
       const pattern = getSeatPattern(section);
+      const rowLabels = getRowLabels(section);
 
       const seatMap = new Map<string, Seat>();
       const seatsToUse =
@@ -138,7 +151,7 @@ export const SeatGrid = memo<SeatGridProps>(
           : cachedSeats || sectionLayout.seats;
 
       seatsToUse.forEach(seat => {
-        seatMap.set(seat.seatNumber, seat);
+        seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
       });
 
       return (
@@ -148,9 +161,11 @@ export const SeatGrid = memo<SeatGridProps>(
             {pattern.map((row, rowIndex) => (
               <div key={rowIndex} className="flex gap-1">
                 {row.map((seatNumber, colIndex) => {
-                  const seat = seatNumber ? seatMap.get(seatNumber.toString()) || null : null;
+                  const seat = seatNumber
+                    ? seatMap.get(`${rowLabels[rowIndex]}-${seatNumber}`) || null
+                    : null;
                   const key = seat
-                    ? `${seat.section}-${seat.seatNumber}`
+                    ? `${seat.section}-${seat.row}-${seat.seatNumber}`
                     : `${rowIndex}-${colIndex}`;
                   return (
                     <div key={key} className="w-6 h-6">

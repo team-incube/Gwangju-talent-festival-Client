@@ -26,7 +26,7 @@ export const SectionButtons = memo<SectionButtonsProps>(
       <div className={cn("w-full", className)}>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
-            {sections.slice(0, 5).map(section => {
+            {sections.slice(0, 3).map(section => {
               const isSelected = selectedSection === section;
               return (
                 <button
@@ -49,7 +49,7 @@ export const SectionButtons = memo<SectionButtonsProps>(
             })}
           </div>
           <div className="flex gap-4">
-            {sections.slice(5, 10).map(section => {
+            {sections.slice(3, 6).map(section => {
               const isSelected = selectedSection === section;
               return (
                 <button

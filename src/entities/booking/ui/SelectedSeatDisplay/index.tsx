@@ -43,9 +43,9 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     const section = selectedSeat?.section || selectedSection;
     const seatPosition =
       selectedSeats && selectedSeats.length > 0
-        ? selectedSeats.map(seat => `${seat.section}${seat.seatNumber}`).join(", ")
+        ? selectedSeats.map(seat => `${seat.section}${seat.row}${seat.seatNumber}`).join(", ")
         : selectedSeat
-          ? `${selectedSeat.section}${selectedSeat.seat.seatNumber}`
+          ? `${selectedSeat.section}${selectedSeat.seat.row}${selectedSeat.seat.seatNumber}`
           : null;
 
     let availableSeatsCount = 0;
