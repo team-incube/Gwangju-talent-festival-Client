@@ -1,138 +1,94 @@
 import { Section, SeatLayout, Seat, SEAT_STATUS, SEAT_INFO } from "./types";
 
 const SECTION_SEAT_PATTERNS: Record<Section, (number | null)[][]> = {
-  A: [
-    [null, null, null, 1, 2, 3],
-    [null, null, 4, 5, 6, 7],
-    [null, 8, 9, 10, 11, 12],
-    [null, 13, 14, 15, 16, 17],
-    [18, 19, 20, 21, 22, 23],
-    [24, 25, 26, 27, 28, 29],
-    [30, 31, 32, 33, 34, 35],
-    [36, 37, 38, 39, 40, 41],
-    [42, 43, 44, 45, 46, 47],
-    [48, 49, 50, 51, 52, 53],
-    [54, 55, 56, 57, 58, 59],
-    [60, 61, 62, 63, 64, 65],
-    [66, 67, 68, 69, 70, 71],
-    [72, 73, 74, 75, 76, 77],
+  RED: [
+    [null, null, null, 4, 5, 6, 7, 8, 9, 10],
+    [null, null, 3, 4, 5, 6, 7, 8, 9, 10],
+    [null, null, 3, 4, 5, 6, 7, 8, 9, 10],
+    [null, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [null, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   ],
 
-  B: Array.from({ length: 13 }, (_, rowIndex) =>
-    Array.from({ length: 10 }, (_, colIndex) => rowIndex * 10 + colIndex + 1),
+  YELLOW: Array.from({ length: 11 }, () =>
+    Array.from({ length: 12 }, (_, colIndex) => colIndex + 11),
   ),
 
-  C: Array.from({ length: 14 }, (_, rowIndex) =>
-    Array.from({ length: 11 }, (_, colIndex) => rowIndex * 11 + colIndex + 1),
+  TEAL: [
+    [23, 24, 25, 26, 27, 28, 29, null, null, null],
+    [23, 24, 25, 26, 27, 28, 29, 30, null, null],
+    [23, 24, 25, 26, 27, 28, 29, 30, null, null],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, null],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, null],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+  ],
+
+  BLUE: [
+    [null, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  ],
+
+  GREEN: Array.from({ length: 8 }, () =>
+    Array.from({ length: 12 }, (_, colIndex) => colIndex + 11),
   ),
 
-  D: Array.from({ length: 13 }, (_, rowIndex) =>
-    Array.from({ length: 10 }, (_, colIndex) => rowIndex * 10 + colIndex + 1),
-  ),
-
-  E: [
-    [1, 2, 3, null, null, null],
-    [4, 5, 6, 7, null, null],
-    [8, 9, 10, 11, 12, null],
-    [13, 14, 15, 16, 17, null],
-    [18, 19, 20, 21, 22, 23],
-    [24, 25, 26, 27, 28, 29],
-    [30, 31, 32, 33, 34, 35],
-    [36, 37, 38, 39, 40, 41],
-    [42, 43, 44, 45, 46, 47],
-    [48, 49, 50, 51, 52, 53],
-    [54, 55, 56, 57, 58, 59],
-    [60, 61, 62, 63, 64, 65],
-    [66, 67, 68, 69, 70, 71],
-    [72, 73, 74, 75, 76, 77],
+  PURPLE: [
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, null],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
   ],
+};
 
-  F: [
-    [null, 1, 2, 3, 4],
-    [5, 6, 7, 8, 9],
-    [10, 11, 12, 13, 14],
-    [15, 16, 17, 18, 19],
-    [20, 21, 22, 23, 24],
-    [25, 26, 27, 28, 29],
-    [30, 31, 32, 33, 34],
-    [35, 36, 37, 38, 39],
-    [40, 41, 42, 43, 44],
-    [45, 46, 47, 48, 49],
-    [50, 51, 52, 53, 54],
-  ],
+const TOP_BLOCK_ROWS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
+const BOTTOM_BLOCK_ROWS = ["L", "M", "N", "O", "P", "Q", "R", "S"];
 
-  G: [
-    [null, 1, 2, 3, 4, 5, null, null, null, null, null],
-    [6, 7, 8, 9, 10, 11, null, null, null, null, null],
-    [12, 13, 14, 15, 16, 17, null, null, null, null, null],
-    [18, 19, 20, 21, 22, 23, null, null, null, null, null],
-    [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34],
-    [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45],
-    [46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56],
-    [57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67],
-    [68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78],
-    [79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
-    [90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100],
-  ],
-
-  H: [
-    [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, null],
-    [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
-    [32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42],
-    [43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53],
-    [54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
-    [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75],
-    [76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86],
-    [87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97],
-    [98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108],
-    [109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119],
-  ],
-
-  I: [
-    [null, null, null, null, null, 1, 2, 3, 4, 5, null],
-    [null, null, null, null, null, 6, 7, 8, 9, 10, 11],
-    [null, null, null, null, null, 12, 13, 14, 15, 16, 17],
-    [null, null, null, null, null, 18, 19, 20, 21, 22, 23],
-    [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34],
-    [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45],
-    [46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56],
-    [57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67],
-    [68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78],
-    [79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
-    [90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100],
-  ],
-
-  J: [
-    [1, 2, 3, 4, null],
-    [5, 6, 7, 8, 9],
-    [10, 11, 12, 13, 14],
-    [15, 16, 17, 18, 19],
-    [20, 21, 22, 23, 24],
-    [25, 26, 27, 28, 29],
-    [30, 31, 32, 33, 34],
-    [35, 36, 37, 38, 39],
-    [40, 41, 42, 43, 44],
-    [45, 46, 47, 48, 49],
-    [50, 51, 52, 53, 54],
-  ],
+const SECTION_ROW_LABELS: Record<Section, string[]> = {
+  RED: TOP_BLOCK_ROWS,
+  YELLOW: TOP_BLOCK_ROWS,
+  TEAL: TOP_BLOCK_ROWS,
+  BLUE: BOTTOM_BLOCK_ROWS,
+  GREEN: BOTTOM_BLOCK_ROWS,
+  PURPLE: BOTTOM_BLOCK_ROWS,
 };
 
 const generateSeatLayout = (section: Section): SeatLayout => {
   const seatInfo = SEAT_INFO[section];
   const { total } = seatInfo;
   const pattern = SECTION_SEAT_PATTERNS[section];
+  const rowLabels = SECTION_ROW_LABELS[section];
 
   const seats: Seat[] = [];
   let seatIndex = 0;
 
-  pattern.forEach(row => {
+  pattern.forEach((row, rowIndex) => {
     row.forEach(seatNumber => {
       if (seatNumber !== null && seatIndex < total) {
         const status = SEAT_STATUS.AVAILABLE;
 
         seats.push({
           seatNumber: seatNumber.toString(),
+          row: rowLabels[rowIndex],
           status,
           section,
         });
@@ -149,25 +105,25 @@ const generateSeatLayout = (section: Section): SeatLayout => {
 };
 
 export const SEAT_LAYOUTS: Record<Section, SeatLayout> = Object.freeze({
-  A: Object.freeze(generateSeatLayout("A")),
-  B: Object.freeze(generateSeatLayout("B")),
-  C: Object.freeze(generateSeatLayout("C")),
-  D: Object.freeze(generateSeatLayout("D")),
-  E: Object.freeze(generateSeatLayout("E")),
-  F: Object.freeze(generateSeatLayout("F")),
-  G: Object.freeze(generateSeatLayout("G")),
-  H: Object.freeze(generateSeatLayout("H")),
-  I: Object.freeze(generateSeatLayout("I")),
-  J: Object.freeze(generateSeatLayout("J")),
+  RED: Object.freeze(generateSeatLayout("RED")),
+  YELLOW: Object.freeze(generateSeatLayout("YELLOW")),
+  TEAL: Object.freeze(generateSeatLayout("TEAL")),
+  BLUE: Object.freeze(generateSeatLayout("BLUE")),
+  GREEN: Object.freeze(generateSeatLayout("GREEN")),
+  PURPLE: Object.freeze(generateSeatLayout("PURPLE")),
 });
 
 export const getSeatLayout = (section: Section): SeatLayout => {
   return SEAT_LAYOUTS[section];
 };
 
-export const findSeatById = (seatNumber: string, section: Section): Seat | undefined => {
+export const findSeatById = (
+  seatNumber: string,
+  row: string,
+  section: Section,
+): Seat | undefined => {
   const layout = SEAT_LAYOUTS[section];
-  return layout.seats.find(seat => seat.seatNumber === seatNumber);
+  return layout.seats.find(seat => seat.seatNumber === seatNumber && seat.row === row);
 };
 
 export const getAvailableSeatsCount = (section: Section): number => {
@@ -177,4 +133,8 @@ export const getAvailableSeatsCount = (section: Section): number => {
 
 export const getSeatPattern = (section: Section): (number | null)[][] => {
   return SECTION_SEAT_PATTERNS[section];
+};
+
+export const getRowLabels = (section: Section): string[] => {
+  return SECTION_ROW_LABELS[section];
 };
