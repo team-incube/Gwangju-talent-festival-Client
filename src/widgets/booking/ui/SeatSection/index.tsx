@@ -175,7 +175,7 @@ export const SeatSection = memo<SeatSectionProps>(
           myAllSeats={myBookedSeats}
         />
 
-        <div className="h-8"></div>
+        <div className="h-24"></div>
 
         <div className="h-24">
           <SelectedSeatDisplay
