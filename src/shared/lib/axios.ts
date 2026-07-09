@@ -59,6 +59,13 @@ instance.interceptors.response.use(
     if (!originalRequest) return Promise.reject(error);
 
     const status = error.response?.status;
+    const requestUrl = originalRequest.url ?? "";
+
+    // 심사 페이지는 비로그인 상태에서도 화면에 머물러야 해서(스켈레톤 표시),
+    // 이 엔드포인트들의 401/403은 자동 리다이렉트/토큰 갱신 없이 그대로 호출부로 전달한다.
+    if ((status === 401 || status === 403) && requestUrl.startsWith("/judge")) {
+      return Promise.reject(error);
+    }
 
     if (status === 403 || status === 401) {
       clearTokens();
