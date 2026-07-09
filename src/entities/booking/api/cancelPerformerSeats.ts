@@ -8,6 +8,7 @@ export const cancelPerformerSeats = async (seats: Seat[]) => {
       axios.delete("/api/seat/performer", {
         data: {
           seat_section: seat.section,
+          seat_row: seat.row,
           seat_number: seat.seatNumber,
         },
       }),

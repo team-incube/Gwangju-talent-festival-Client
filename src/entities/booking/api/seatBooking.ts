@@ -6,6 +6,7 @@ export const seatBooking = async (data: Omit<Seat, "status">) => {
   try {
     const response = await axios.post("/api/seat", {
       seat_section: data.section,
+      seat_row: data.row,
       seat_number: data.seatNumber,
     });
 

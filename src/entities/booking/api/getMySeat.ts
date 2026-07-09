@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 
 interface MySeatApiResponse {
   seat_section: string;
+  seat_row: string;
   seat_number: number;
 }
 
@@ -14,8 +15,9 @@ export const getMySeats = async (): Promise<Seat[]> => {
   try {
     const response = await axios.get<PerformerSeatsApiResponse>("/api/seat/myself/performer");
 
-    return response.data.map(({ seat_section, seat_number }) => ({
+    return response.data.map(({ seat_section, seat_row, seat_number }) => ({
       section: seat_section as Section,
+      row: seat_row,
       seatNumber: seat_number.toString(),
       status: "selected" as const,
     }));
@@ -44,18 +46,20 @@ export const getMySeat = async (): Promise<Seat | null> => {
       if (data.length === 0) {
         return null;
       }
-      const { seat_section, seat_number } = data[0];
+      const { seat_section, seat_row, seat_number } = data[0];
       return {
         section: seat_section as Section,
+        row: seat_row,
         seatNumber: seat_number.toString(),
         status: "selected" as const,
       };
     } else {
       const data = response.data as MySeatApiResponse;
-      const { seat_section, seat_number } = data;
+      const { seat_section, seat_row, seat_number } = data;
 
       return {
         section: seat_section as Section,
+        row: seat_row,
         seatNumber: seat_number.toString(),
         status: "selected" as const,
       };

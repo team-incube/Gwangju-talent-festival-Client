@@ -7,6 +7,7 @@ export const cancelSeatBooking = async (data: Omit<Seat, "status">) => {
     const response = await axios.delete("/api/seat", {
       data: {
         seat_section: data.section,
+        seat_row: data.row,
         seat_number: data.seatNumber,
       },
     });
