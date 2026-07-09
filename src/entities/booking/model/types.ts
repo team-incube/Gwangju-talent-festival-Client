@@ -3,6 +3,17 @@ export const SECTIONS = ["RED", "YELLOW", "TEAL", "BLUE", "GREEN", "PURPLE"] as 
 export type Section = (typeof SECTIONS)[number];
 export type SectionType = Section | null;
 
+export const SECTION_LABELS: Record<Section, string> = {
+  RED: "A",
+  YELLOW: "B",
+  TEAL: "C",
+  BLUE: "D",
+  GREEN: "E",
+  PURPLE: "F",
+} as const;
+
+export const getSectionLabel = (section: Section): string => SECTION_LABELS[section];
+
 export const SEAT_STATUS = {
   OCCUPIED: "occupied",
   AVAILABLE: "available",

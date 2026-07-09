@@ -6,7 +6,7 @@ import Button from "@/shared/ui/Button";
 import { LotterySeatGrid } from "@/entities/booking/ui/LotterySeatGrid";
 import { useLotteryAnimation } from "@/entities/booking/lib/useLotteryAnimation";
 import { getLotteryConfig, convertToSeats } from "@/entities/booking/model/lotterySeats";
-import { Seat, SECTIONS } from "@/entities/booking/model/types";
+import { Seat, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
 import { cn } from "@/shared/utils/cn";
 import { redirect } from "next/navigation";
@@ -105,7 +105,7 @@ const LotteryView = () => {
         if (allSeats.length === 0) return;
         const r = Math.floor(Math.random() * allSeats.length);
         const s = allSeats[r];
-        setSlotLabel(`${s.section}${s.row}${s.seatNumber}`);
+        setSlotLabel(`${getSectionLabel(s.section)}${s.row}${s.seatNumber}`);
       }, 60);
     } else {
       cleanupSlotInterval();
@@ -179,7 +179,7 @@ const LotteryView = () => {
               {revealedSeats.map(s => (
                 <span
                   key={`${s.section}-${s.row}-${s.seatNumber}`}
-                  className="inline-flex items-center justify-center rounded-full border border-purple-200 text-purple-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8"
+                  className="inline-flex items-center justify-center rounded-full border border-main-200 text-main-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8"
                 >
                   {s.section}
                   {s.row}
@@ -200,7 +200,7 @@ const LotteryView = () => {
                   >
                     {isAnimating && slotLabel
                       ? slotLabel
-                      : `${currentTarget.section}${currentTarget.row}${currentTarget.seatNumber}`}
+                      : `${getSectionLabel(currentTarget.section)}${currentTarget.row}${currentTarget.seatNumber}`}
                   </span>
                 )}
             </div>
@@ -215,7 +215,7 @@ const LotteryView = () => {
                   className={cn(
                     "flex items-center justify-center w-full h-24 rounded-md text-body2b font-semibold border-2 transition-colors",
                     Number(lotteryId) === teamNumber
-                      ? "bg-main-600 text-white text-body3b border-main-800"
+                      ? "bg-main-600 text-white text-body3b border-main-600"
                       : "bg-transparent text-white text-body3r border-gray-400 hover:border-gray-300",
                   )}
                   onClick={() => {
@@ -235,7 +235,7 @@ const LotteryView = () => {
                 "px-8 py-3 text-lg font-bold bottom-4 right-4 absolute",
                 isBatchRunning || isAnimating
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-purple-600 hover:bg-purple-700",
+                  : "bg-main-600 hover:bg-main-500",
               )}
             >
               {isBatchRunning || isAnimating

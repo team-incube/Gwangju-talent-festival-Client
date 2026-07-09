@@ -164,7 +164,7 @@ export const SeatSection = memo<SeatSectionProps>(
 
     return (
       <div className={cn("pb-20", className)}>
-        <div className="h-80">
+        <div className="h-[420px]">
           <SeatGrid
             layout={layout}
             selectedSeat={selectedSeat}
@@ -177,7 +177,7 @@ export const SeatSection = memo<SeatSectionProps>(
           />
         </div>
 
-        <div className="h-28"></div>
+        <div className="h-8"></div>
 
         <div className="h-24">
           <SelectedSeatDisplay

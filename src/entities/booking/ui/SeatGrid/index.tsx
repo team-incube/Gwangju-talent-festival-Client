@@ -4,7 +4,7 @@ import { memo, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { cn } from "@/shared/utils/cn";
-import { Seat, SeatLayout, SECTIONS } from "@/entities/booking/model/types";
+import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
 import { SeatItem } from "../SeatItem";
 import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 
@@ -155,8 +155,8 @@ export const SeatGrid = memo<SeatGridProps>(
       });
 
       return (
-        <div className="flex flex-col items-center border rounded-lg mb-28">
-          <div className="text-white text-sm font-bold mb-1">{section}</div>
+        <div className="flex flex-col items-center border rounded-lg mb-6">
+          <div className="text-white text-sm font-bold mb-1">{getSectionLabel(section)}</div>
           <div className="flex flex-col gap-1">
             {pattern.map((row, rowIndex) => (
               <div key={rowIndex} className="flex gap-1">
@@ -202,7 +202,7 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     const getGridContainerStyles = () => {
-      return "relative bg-gray-800 rounded-lg h-80 w-full flex justify-center";
+      return "relative bg-gray-800 rounded-lg h-[420px] w-full flex justify-center";
     };
 
     return (

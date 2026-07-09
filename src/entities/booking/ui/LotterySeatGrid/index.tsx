@@ -4,7 +4,7 @@ import { memo, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { cn } from "@/shared/utils/cn";
-import { Seat, SeatLayout, SECTIONS } from "@/entities/booking/model/types";
+import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
 import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 import { SeatItem } from "../SeatItem";
 
@@ -209,7 +209,7 @@ export const LotterySeatGrid = memo<LotterySeatGridProps>(
 
       return (
         <div className="flex flex-col items-center border rounded-lg mb-28">
-          <div className="text-white text-lg font-bold mb-2">{section}</div>
+          <div className="text-white text-lg font-bold mb-2">{getSectionLabel(section)}</div>
           <div className="flex flex-col gap-4">
             {pattern.map((row, rowIndex) => (
               <div key={rowIndex} className="flex gap-4">

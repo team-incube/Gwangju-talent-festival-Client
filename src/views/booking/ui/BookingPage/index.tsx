@@ -131,10 +131,12 @@ const BookingPage = () => {
   };
 
   return (
-    <main className="w-[375px] h-screen bg-white flex flex-col fixed  overflow-hidden">
-      <BackHeader goto="/home" text="예매하기" />
+    <main className="w-full max-w-[480px] mx-auto min-h-screen bg-white flex flex-col overflow-hidden">
+      <div className="px-4">
+        <BackHeader goto="/home" text="예매하기" />
+      </div>
 
-      <div className="flex-1 flex flex-col p-4 gap-8 min-h-0">
+      <div className="flex-1 flex flex-col p-4 pt-8 gap-8 min-h-0">
         <div className="flex-shrink-0">
           <SelectSection onSectionSelect={handleSectionSelect} />
         </div>
@@ -152,7 +154,7 @@ const BookingPage = () => {
           />
         </div>
         <Button
-          className="fixed bottom-[48px] w-[375px] h-[48px]"
+          className="fixed bottom-[48px] left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-[448px] h-[48px]"
           onClick={handleBookingClick}
           disabled={isPerformer ? !canBook || maxSelectableSeats === 0 : !isComplete}
         >

@@ -2,7 +2,7 @@
 
 import { memo, useCallback } from "react";
 import { cn } from "@/shared/utils/cn";
-import { Section, SectionType } from "../../model/types";
+import { Section, SectionType, getSectionLabel } from "../../model/types";
 
 interface SectionButtonsProps {
   selectedSection: SectionType;
@@ -37,10 +37,10 @@ export const SectionButtons = memo<SectionButtonsProps>(
                     "min-h-[40px] hover:scale-105 hover:shadow-md hover:cursor-pointer",
                     isSelected
                       ? "border-main-600 bg-main-600 text-white shadow-lg"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-main-300 hover:bg-main-25",
+                      : "border-gray-200 bg-white text-gray-700 hover:border-main-300 hover:bg-main-100",
                   )}
                 >
-                  <span className="text-2xl font-bold mb-1">{section}</span>
+                  <span className="text-2xl font-bold mb-1">{getSectionLabel(section)}</span>
                   <span className={cn("text-xs text-gray-500", isSelected && "text-white")}>
                     {seatInfoMap[section]}
                   </span>
@@ -60,10 +60,10 @@ export const SectionButtons = memo<SectionButtonsProps>(
                     "min-h-[40px] hover:scale-105 hover:shadow-md hover:cursor-pointer",
                     isSelected
                       ? "border-main-600 bg-main-600 text-white shadow-lg"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-main-300 hover:bg-main-25",
+                      : "border-gray-200 bg-white text-gray-700 hover:border-main-300 hover:bg-main-100",
                   )}
                 >
-                  <span className="text-2xl font-bold mb-1">{section}</span>
+                  <span className="text-2xl font-bold mb-1">{getSectionLabel(section)}</span>
                   <span className={cn("text-xs text-gray-500", isSelected && "text-white")}>
                     {seatInfoMap[section]}
                   </span>

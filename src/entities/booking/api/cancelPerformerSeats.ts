@@ -1,4 +1,4 @@
-import { Seat } from "../model/types";
+import { Seat, getSectionLabel } from "../model/types";
 import axios from "@/shared/lib/axios";
 import { AxiosError } from "axios";
 
@@ -24,7 +24,7 @@ export const cancelPerformerSeats = async (seats: Seat[]) => {
         .map((result, index) => {
           if (result.status === "rejected") {
             const seat = seats[index];
-            return `${seat.section}-${seat.seatNumber} 좌석 취소 실패`;
+            return `${getSectionLabel(seat.section)}${seat.row}${seat.seatNumber} 좌석 취소 실패`;
           }
           return "";
         })
