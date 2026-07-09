@@ -163,23 +163,21 @@ export const SeatSection = memo<SeatSectionProps>(
     const layout = getLayout();
 
     return (
-      <div className={cn("pb-20 h-full flex flex-col", className)}>
-        <div className="flex-1 min-h-0">
-          <SeatGrid
-            layout={layout}
-            selectedSeat={selectedSeat}
-            onSeatSelect={isLoading || !!error ? () => {} : onSeatSelect}
-            allSeats={realTimeSeats}
-            selectedSeats={selectedSeats}
-            isSeatSelected={isSeatSelected}
-            isPerformerMode={isPerformerMode}
-            myAllSeats={myBookedSeats}
-          />
-        </div>
+      <div className={cn("pb-20", className)}>
+        <SeatGrid
+          layout={layout}
+          selectedSeat={selectedSeat}
+          onSeatSelect={isLoading || !!error ? () => {} : onSeatSelect}
+          allSeats={realTimeSeats}
+          selectedSeats={selectedSeats}
+          isSeatSelected={isSeatSelected}
+          isPerformerMode={isPerformerMode}
+          myAllSeats={myBookedSeats}
+        />
 
-        <div className="h-8 flex-shrink-0"></div>
+        <div className="h-8"></div>
 
-        <div className="h-24 flex-shrink-0">
+        <div className="h-24">
           <SelectedSeatDisplay
             selectedSeat={!isPerformerMode ? selectedSeatInfo : null}
             selectedSection={selectedSection}

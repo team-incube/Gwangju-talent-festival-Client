@@ -131,16 +131,16 @@ const BookingPage = () => {
   };
 
   return (
-    <main className="w-full max-w-[480px] mx-auto h-screen bg-white flex flex-col overflow-hidden">
+    <main className="w-full max-w-[480px] mx-auto min-h-screen bg-white flex flex-col">
       <div className="px-4">
         <BackHeader goto="/home" text="예매하기" />
       </div>
 
-      <div className="flex-1 flex flex-col p-4 pt-8 gap-8 min-h-0">
-        <div className="flex-shrink-0">
+      <div className="flex flex-col p-4 pt-8 gap-8">
+        <div>
           <SelectSection onSectionSelect={handleSectionSelect} />
         </div>
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div>
           <SeatSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             selectedSeat={isPerformer ? null : selectedSeat}
