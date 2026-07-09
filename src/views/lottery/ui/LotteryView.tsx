@@ -179,7 +179,7 @@ const LotteryView = () => {
               {revealedSeats.map(s => (
                 <span
                   key={`${s.section}-${s.row}-${s.seatNumber}`}
-                  className="inline-flex items-center justify-center rounded-full border border-main-200 text-main-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8"
+                  className="inline-flex items-center justify-center rounded-full border border-orange-200 text-orange-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8"
                 >
                   {s.section}
                   {s.row}
@@ -215,7 +215,7 @@ const LotteryView = () => {
                   className={cn(
                     "flex items-center justify-center w-full h-24 rounded-md text-body2b font-semibold border-2 transition-colors",
                     Number(lotteryId) === teamNumber
-                      ? "bg-main-600 text-white text-body3b border-main-600"
+                      ? "bg-orange-500 text-white text-body3b border-orange-500"
                       : "bg-transparent text-white text-body3r border-gray-400 hover:border-gray-300",
                   )}
                   onClick={() => {
@@ -235,7 +235,7 @@ const LotteryView = () => {
                 "px-8 py-3 text-lg font-bold bottom-4 right-4 absolute",
                 isBatchRunning || isAnimating
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-main-600 hover:bg-main-500",
+                  : "bg-orange-500 hover:bg-orange-400",
               )}
             >
               {isBatchRunning || isAnimating

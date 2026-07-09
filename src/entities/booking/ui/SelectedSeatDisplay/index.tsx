@@ -35,7 +35,7 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
           <span className="text-gray-600 text-caption1r">불가능</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-main-600 border border-main-600"></div>
+          <div className="w-3 h-3 bg-orange-500 border border-orange-500"></div>
           <span className="text-gray-600 text-caption1r">선택</span>
         </div>
       </div>
@@ -76,12 +76,12 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     }
 
     return (
-      <div className={cn("h-24 p-4 rounded-lg border border-main-200", className)}>
+      <div className={cn("h-24 p-4 rounded-lg border border-orange-200", className)}>
         <div className="flex items-center justify-between h-full">
           <div className="flex flex-col justify-center gap-1">
             <div>
               <span className="text-body3r text-gray-600">좌석번호 </span>
-              <span className="text-body3b font-bold text-main-600">{seatPosition || ""}</span>
+              <span className="text-body3b font-bold text-orange-500">{seatPosition || ""}</span>
             </div>
 
             <div>

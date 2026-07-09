@@ -36,8 +36,8 @@ export const SectionButtons = memo<SectionButtonsProps>(
                     "flex-1 min-w-0 flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200",
                     "min-h-[40px] hover:scale-105 hover:shadow-md hover:cursor-pointer",
                     isSelected
-                      ? "border-main-600 bg-main-600 text-white shadow-lg"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-main-300 hover:bg-main-100",
+                      ? "border-orange-500 bg-orange-500 text-white shadow-lg"
+                      : "border-gray-200 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-100",
                   )}
                 >
                   <span className="text-2xl font-bold mb-1">{getSectionLabel(section)}</span>
@@ -59,8 +59,8 @@ export const SectionButtons = memo<SectionButtonsProps>(
                     "flex-1 min-w-0 flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all duration-200",
                     "min-h-[40px] hover:scale-105 hover:shadow-md hover:cursor-pointer",
                     isSelected
-                      ? "border-main-600 bg-main-600 text-white shadow-lg"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-main-300 hover:bg-main-100",
+                      ? "border-orange-500 bg-orange-500 text-white shadow-lg"
+                      : "border-gray-200 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-100",
                   )}
                 >
                   <span className="text-2xl font-bold mb-1">{getSectionLabel(section)}</span>
