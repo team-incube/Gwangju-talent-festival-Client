@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { cn } from "@/shared/utils/cn";
 import BackHeader from "@/shared/ui/BackHeader";
-import Button from "@/shared/ui/Button";
 
 type Team = {
   id: number;
@@ -69,8 +68,6 @@ const MEETING_AGENDA = [
   "홍보자료 제작용 팀 소개 관련 자료 수합 안내(사진, 팀 소개, 연주곡 소개 등)",
 ];
 
-const PRELIMINARY_FORM_URL = "https://form.naver.com/response/lmQTiRvKRFYiVKnSeLieRg";
-
 const PreliminaryResultView = () => {
   const meetingGuideRef = useRef<HTMLElement>(null);
 
@@ -93,12 +90,6 @@ const PreliminaryResultView = () => {
           </div>
 
           <div className={cn("flex flex-col items-center gap-12 mobile:gap-10 mobile:w-full")}>
-            <Button
-              className="px-48 mobile:w-full"
-              onClick={() => window.open(PRELIMINARY_FORM_URL, "_blank")}
-            >
-              사전 협의회 참석 명단 제출하기
-            </Button>
             <a
               href="#meeting-guide"
               onClick={e => {
@@ -212,23 +203,6 @@ const PreliminaryResultView = () => {
             >
               지도에서 보기 →
             </a>
-          </div>
-
-          <div
-            className={cn(
-              "flex flex-col items-center gap-12 mobile:gap-10 rounded-xl p-24 mobile:p-16",
-              "bg-gradient-to-br from-orange-50 to-white border border-orange-100 text-center",
-            )}
-          >
-            <p className={cn("text-body3b mobile:text-caption1b text-black")}>
-              사전 협의회 참석 명단은 아래 폼으로 제출해주세요
-            </p>
-            <Button
-              className="px-48 mobile:w-full"
-              onClick={() => window.open(PRELIMINARY_FORM_URL, "_blank")}
-            >
-              참석 명단 제출 폼 바로가기
-            </Button>
           </div>
         </section>
 
