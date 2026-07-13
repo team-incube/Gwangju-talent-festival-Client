@@ -251,8 +251,6 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
         onPointerUp={commitCurrentStroke}
         onPointerLeave={commitCurrentStroke}
       />
-
-      <p className="text-caption2r text-gray-400">이 메모는 서버에 저장되어 다른 기기에서도 이어서 확인할 수 있습니다</p>
     </div>
   );
 };
