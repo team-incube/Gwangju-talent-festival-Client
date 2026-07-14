@@ -29,7 +29,7 @@ const ScoreForm = ({ teamId, teamName, score, onChange, onSave, isSaving }: Scor
       <h2 className="text-body3b">채점</h2>
 
       <div className="w-full border border-gray-100 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-5 text-center text-caption1b bg-gray-50 py-12 mobile:text-caption2b">
+        <div className="grid grid-cols-3 text-center text-caption1b bg-gray-50 py-12 mobile:text-caption2b">
           {EVALUATION_CRITERIA.map(({ key, label }) => (
             <div key={key}>
               {label}
@@ -39,7 +39,7 @@ const ScoreForm = ({ teamId, teamName, score, onChange, onSave, isSaving }: Scor
           ))}
         </div>
 
-        <div className="grid grid-cols-5 py-16 gap-8 mobile:gap-4">
+        <div className="grid grid-cols-3 py-16 gap-8 mobile:gap-4">
           {EVALUATION_CRITERIA.map(({ key, label, max }) => {
             const maxAllowed = Math.min(max, score[key] + (TOTAL_MAX - total));
 

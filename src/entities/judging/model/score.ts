@@ -2,22 +2,18 @@ export type Score = {
   judgementId: number | null;
   teamId: number;
   teamName: string;
-  expressionCommunicationScore: number;
-  technicalCompletenessScore: number;
+  completenessExpressionScore: number;
   creativityCompositionScore: number;
-  stagePresencePerformanceScore: number;
-  teamworkStageHarmonyScore: number;
+  stagePerformanceTeamworkScore: number;
   totalScore: number;
   isPerformed: boolean;
   isJudged: boolean;
 };
 
 export const EVALUATION_CRITERIA = [
-  { key: "expressionCommunicationScore", label: "표현·소통", max: 40 },
-  { key: "technicalCompletenessScore", label: "기술·완성도", max: 40 },
-  { key: "creativityCompositionScore", label: "창의·구성", max: 30 },
-  { key: "stagePresencePerformanceScore", label: "무대장악력·퍼포먼스", max: 30 },
-  { key: "teamworkStageHarmonyScore", label: "팀워크·무대조화", max: 40 },
+  { key: "completenessExpressionScore", label: "완성도·표현력", max: 40 },
+  { key: "creativityCompositionScore", label: "창의력·구성", max: 30 },
+  { key: "stagePerformanceTeamworkScore", label: "무대매너·퍼포먼스", max: 30 },
 ] as const;
 
 export type EvaluationScoreKey = (typeof EVALUATION_CRITERIA)[number]["key"];
@@ -40,7 +36,6 @@ export const toTeamScore = (score: Score): TeamScore =>
     {} as TeamScore,
   );
 
-// 백엔드가 심사 총점을 100점 초과 시 저장을 거부하므로, 기준별 최대값 합(180)과 무관하게 최종 만점은 100으로 고정한다.
 export const TOTAL_MAX = 100;
 
 export const getScoreTotal = (score: TeamScore): number =>
