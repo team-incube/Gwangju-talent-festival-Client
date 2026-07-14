@@ -4,7 +4,7 @@ import { festivalDate, sloganStartDate, sloganEndDate, applyStartDate, applyEndD
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api|images|video|files).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|images|video|files|fonts).*)",
     "/signin",
     "/robots.txt",
   ],
