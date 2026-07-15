@@ -1,7 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { renderHook, act } from "@testing-library/react"
 import { useSeatSelection } from "../useSeatSelection"
+import { banSeat, cancelSeatBan } from "@/entities/booking/api/banSeat"
 import { Seat, Section, SeatStatus, SEAT_STATUS } from "@/entities/booking/model/types"
+
+vi.mock("@/entities/booking/api/banSeat", () => ({
+  banSeat: vi.fn(() => Promise.resolve({ data: null })),
+  cancelSeatBan: vi.fn(() => Promise.resolve({ data: null })),
+}))
+
+vi.mock("sonner", () => ({
+  toast: { error: vi.fn(), success: vi.fn() },
+}))
 
 const makeSeat = (
   seatNumber: string,
@@ -144,12 +154,14 @@ describe("useSeatSelection - selectedSeatInfo", () => {
     expect(result.current.selectedSeatInfo).toEqual({ seat, section: "RED" })
   })
 
-  it("섹션이 없으면 selectedSeatInfo는 null이다", () => {
+  it("섹션 선택 없이 좌석만 선택해도 좌석의 섹션이 자동 지정된다", () => {
     const { result } = renderHook(() => useSeatSelection())
+    const seat = makeSeat("1")
 
-    act(() => { result.current.selectSeat(makeSeat("1")) })
+    act(() => { result.current.selectSeat(seat) })
 
-    expect(result.current.selectedSeatInfo).toBeNull()
+    expect(result.current.selectedSection).toBe("RED")
+    expect(result.current.selectedSeatInfo).toEqual({ seat, section: "RED" })
   })
 
   it("좌석이 없으면 selectedSeatInfo는 null이다", () => {
@@ -183,6 +195,87 @@ describe("useSeatSelection - 초기 상태", () => {
   })
 })
 
+describe("useSeatSelection - 임시 저장(좌석 홀드)", () => {
+  it("좌석 선택 시 임시 저장 API를 호출한다", () => {
+    const { result } = renderHook(() => useSeatSelection())
+    const seat = makeSeat("1")
+
+    act(() => { result.current.selectSeat(seat) })
+
+    expect(banSeat).toHaveBeenCalledWith(seat)
+  })
+
+  it("좌석 선택 해제 시 임시 저장 해제 API를 호출한다", () => {
+    const { result } = renderHook(() => useSeatSelection())
+    const seat = makeSeat("1")
+
+    act(() => { result.current.selectSeat(seat) })
+    act(() => { result.current.selectSeat(seat) })
+
+    expect(cancelSeatBan).toHaveBeenCalledWith(seat)
+  })
+
+  it("다른 좌석으로 교체 시 이전 좌석의 임시 저장을 해제한다", () => {
+    const { result } = renderHook(() => useSeatSelection())
+    const seatA = makeSeat("1")
+    const seatB = makeSeat("2")
+
+    act(() => { result.current.selectSeat(seatA) })
+    act(() => { result.current.selectSeat(seatB) })
+
+    expect(cancelSeatBan).toHaveBeenCalledWith(seatA)
+    expect(banSeat).toHaveBeenCalledWith(seatB)
+  })
+
+  it("섹션 변경 시 선택돼 있던 좌석의 임시 저장을 해제한다", () => {
+    const { result } = renderHook(() => useSeatSelection())
+    const seat = makeSeat("1")
+
+    act(() => { result.current.setSelectedSection("RED") })
+    act(() => { result.current.selectSeat(seat) })
+    act(() => { result.current.setSelectedSection("YELLOW") })
+
+    expect(cancelSeatBan).toHaveBeenCalledWith(seat)
+  })
+
+  it("다른 사용자가 선점한 좌석(409)이면 재시도 후에도 실패 시 선택이 해제된다", async () => {
+    const conflict = Object.assign(new Error("이미 차단된 좌석"), { status: 409 })
+    vi.mocked(banSeat).mockRejectedValueOnce(conflict).mockRejectedValueOnce(conflict)
+    const { result } = renderHook(() => useSeatSelection())
+    const seat = makeSeat("1")
+
+    await act(async () => { result.current.selectSeat(seat) })
+
+    expect(result.current.selectedSeat).toBeNull()
+  })
+
+  it("본인의 이전 홀드로 409가 나면 해제 후 재시도해 선택을 유지한다", async () => {
+    vi.mocked(banSeat).mockRejectedValueOnce(
+      Object.assign(new Error("이미 차단된 좌석"), { status: 409 }),
+    )
+    const { result } = renderHook(() => useSeatSelection())
+    const seat = makeSeat("1")
+
+    await act(async () => { result.current.selectSeat(seat) })
+
+    expect(cancelSeatBan).toHaveBeenCalledWith(seat)
+    expect(banSeat).toHaveBeenCalledTimes(2)
+    expect(result.current.selectedSeat).toEqual(seat)
+  })
+
+  it("선점 외 사유(권한 없음 등)로 임시 저장이 실패해도 선택은 유지된다", async () => {
+    vi.mocked(banSeat).mockRejectedValueOnce(
+      Object.assign(new Error("권한 없음"), { status: 403 }),
+    )
+    const { result } = renderHook(() => useSeatSelection())
+    const seat = makeSeat("1")
+
+    await act(async () => { result.current.selectSeat(seat) })
+
+    expect(result.current.selectedSeat).toEqual(seat)
+  })
+})
+
 describe("useSeatSelection - isComplete", () => {
   it("섹션과 좌석이 모두 선택되면 true다", () => {
     const { result } = renderHook(() => useSeatSelection())
@@ -201,11 +294,11 @@ describe("useSeatSelection - isComplete", () => {
     expect(result.current.isComplete).toBe(false)
   })
 
-  it("좌석만 선택되면 false다", () => {
+  it("좌석만 선택해도 섹션이 자동 지정되어 true다", () => {
     const { result } = renderHook(() => useSeatSelection())
 
     act(() => { result.current.selectSeat(makeSeat("1")) })
 
-    expect(result.current.isComplete).toBe(false)
+    expect(result.current.isComplete).toBe(true)
   })
 })
