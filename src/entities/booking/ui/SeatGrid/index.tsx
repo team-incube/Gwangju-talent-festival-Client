@@ -119,7 +119,7 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     const renderSingleSectionGrid = () => (
-      <div className="min-w-max flex flex-col justify-start">
+      <div className="w-max mx-auto flex flex-col justify-start">
         {seatGrid.map((row, rowIndex) => (
           <div key={rowIndex} className="flex items-center gap-4 mb-4">
             {row.map(({ seat, key }) => (
@@ -214,7 +214,7 @@ export const SeatGrid = memo<SeatGridProps>(
     };
 
     const renderAllSectionsGrid = () => (
-      <div className="flex flex-col gap-8 items-center">
+      <div className="w-max mx-auto flex flex-col gap-8 items-center">
         {allSectionsGrid.map((sectionsRow, rowIndex) => (
           <div key={rowIndex} className="flex gap-8 items-end">
             {sectionsRow.map(section => (
@@ -226,7 +226,7 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     const getGridContainerStyles = () => {
-      return "relative bg-gray-800 rounded-lg w-full flex justify-center p-3 overflow-x-auto";
+      return "relative bg-gray-800 rounded-lg w-full max-h-80 p-3 overflow-auto";
     };
 
     return (

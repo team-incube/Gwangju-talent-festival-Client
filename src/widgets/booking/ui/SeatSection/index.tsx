@@ -168,24 +168,20 @@ export const SeatSection = memo<SeatSectionProps>(
 
     return (
       <div className={cn("pb-20", className)}>
-        <div className="h-80">
-          <SeatGrid
-            layout={layout}
-            selectedSeat={selectedSeat}
-            onSeatSelect={isLoading || !!error ? NOOP_SEAT_SELECT : onSeatSelect}
-            allSeats={realTimeSeats}
-            selectedSeats={selectedSeats}
-            isSeatSelected={isSeatSelected}
-            isPerformerMode={isPerformerMode}
-            mySeat={!isPerformerMode && !allowOccupiedSelect ? (myBookedSeats?.[0] ?? null) : null}
-            myAllSeats={myBookedSeats}
-            allowOccupiedSelect={allowOccupiedSelect}
-          />
-        </div>
+        <SeatGrid
+          layout={layout}
+          selectedSeat={selectedSeat}
+          onSeatSelect={isLoading || !!error ? NOOP_SEAT_SELECT : onSeatSelect}
+          allSeats={realTimeSeats}
+          selectedSeats={selectedSeats}
+          isSeatSelected={isSeatSelected}
+          isPerformerMode={isPerformerMode}
+          mySeat={!isPerformerMode && !allowOccupiedSelect ? (myBookedSeats?.[0] ?? null) : null}
+          myAllSeats={myBookedSeats}
+          allowOccupiedSelect={allowOccupiedSelect}
+        />
 
-        <div className="h-24"></div>
-
-        <div className="h-24">
+        <div className="mt-6">
           <SelectedSeatDisplay
             selectedSeat={!isPerformerMode ? selectedSeatInfo : null}
             selectedSection={selectedSection}

@@ -198,13 +198,17 @@ const BookingPage = () => {
             allowOccupiedSelect={isAdmin}
           />
         </div>
-        <Button
-          className="fixed bottom-[48px] left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-[448px] h-[48px]"
-          onClick={handleBookingClick}
-          disabled={isPerformer ? !canBook || maxSelectableSeats === 0 : !isComplete}
-        >
-          {getButtonText()}
-        </Button>
+        <div className="fixed bottom-[48px] inset-x-0 px-4">
+          <div className="w-full max-w-[448px] mx-auto">
+            <Button
+              className="w-full h-[48px]"
+              onClick={handleBookingClick}
+              disabled={isPerformer ? !canBook || maxSelectableSeats === 0 : !isComplete}
+            >
+              {getButtonText()}
+            </Button>
+          </div>
+        </div>
       </div>
     </main>
   );
