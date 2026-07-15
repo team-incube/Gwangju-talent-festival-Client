@@ -83,6 +83,27 @@ describe("downloadJudgingSummary - 성공", () => {
     expect(appendedLink?.download).toBe("심사결과.xlsx");
   });
 
+  it("RFC 2047 MIME 인코디드 워드(=?UTF-8?Q?...?=) 파일명을 디코딩한다", async () => {
+    const response = createResponse({
+      ok: true,
+      headers: {
+        "content-disposition":
+          'attachment; filename="=?UTF-8?Q?=EC=8B=AC=EC=82=AC=EC=A7=91=EA=B3=84=ED=91=9C?=.xlsx"',
+      },
+    });
+    vi.mocked(fetch).mockResolvedValueOnce(response);
+
+    let appendedLink: HTMLAnchorElement | undefined;
+    appendChildSpy.mockImplementation(node => {
+      appendedLink = node as HTMLAnchorElement;
+      return node;
+    });
+
+    await downloadJudgingSummary();
+
+    expect(appendedLink?.download).toBe("심사집계표.xlsx");
+  });
+
   it("Content-Disposition 헤더가 없으면 기본 파일명을 사용한다", async () => {
     const response = createResponse({ ok: true });
     vi.mocked(fetch).mockResolvedValueOnce(response);
