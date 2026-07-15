@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { SeatChangeEvent } from "../model/types";
+import { fromApiSeat } from "../model/seatLayouts";
 
 const MAX_RETRIES = 5;
 const BASE_DELAY = 1000;
@@ -38,12 +39,28 @@ export function useSeatChangeSSE(options: UseSeatChangeSSEOptions = {}) {
       eventSource.addEventListener("SEAT_CHANGE", event => {
         try {
           const data = JSON.parse(event.data);
-          const seatChangeEvent: SeatChangeEvent = {
-            seat_section: data.seat_section,
-            seat_number: data.seat_number,
-            is_available: data.is_available,
-          };
-          if (onSeatChangeRef.current) {
+
+          let seatChangeEvent: SeatChangeEvent | null = null;
+          if (data.seat_row != null) {
+            seatChangeEvent = {
+              seat_section: data.seat_section,
+              seat_row: data.seat_row,
+              seat_number: data.seat_number,
+              is_available: data.is_available,
+            };
+          } else {
+            const seat = fromApiSeat(data.seatSection, data.seatNumber);
+            if (seat) {
+              seatChangeEvent = {
+                seat_section: seat.section,
+                seat_row: seat.row,
+                seat_number: Number(seat.seatNumber),
+                is_available: data.available ?? data.isAvailable ?? data.is_available,
+              };
+            }
+          }
+
+          if (seatChangeEvent && onSeatChangeRef.current) {
             try {
               onSeatChangeRef.current(seatChangeEvent);
             } catch {

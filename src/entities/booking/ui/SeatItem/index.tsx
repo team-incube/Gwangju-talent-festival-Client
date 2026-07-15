@@ -21,12 +21,12 @@ export const SeatItem = memo<SeatItemProps>(({ seat, isSelected, onSelect, class
     const baseStyles =
       "w-5 h-5 text-xs font-medium transition-all duration-200 flex items-center justify-center";
 
-    if (seat.status === SEAT_STATUS.OCCUPIED) {
-      return cn(baseStyles, "bg-gray-400 text-gray-600 cursor-not-allowed");
+    if (isSelected) {
+      return cn(baseStyles, "bg-orange-500 text-white shadow-lg scale-110 cursor-pointer");
     }
 
-    if (isSelected) {
-      return cn(baseStyles, "bg-purple-600 text-white shadow-lg scale-110 cursor-pointer");
+    if (seat.status === SEAT_STATUS.OCCUPIED) {
+      return cn(baseStyles, "bg-gray-400 text-gray-600 cursor-not-allowed");
     }
 
     return cn(baseStyles, "bg-white text-gray-700 cursor-pointer");

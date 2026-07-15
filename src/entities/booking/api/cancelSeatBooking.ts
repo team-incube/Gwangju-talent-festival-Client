@@ -1,15 +1,9 @@
-import { Seat } from "../model/types";
 import axios from "@/shared/lib/axios";
 import { AxiosError } from "axios";
 
-export const cancelSeatBooking = async (data: Omit<Seat, "status">) => {
+export const cancelSeatBooking = async () => {
   try {
-    const response = await axios.delete("/api/seat", {
-      data: {
-        seat_section: data.section,
-        seat_number: data.seatNumber,
-      },
-    });
+    const response = await axios.delete("/seat");
 
     return { data: response.data };
   } catch (error: unknown) {

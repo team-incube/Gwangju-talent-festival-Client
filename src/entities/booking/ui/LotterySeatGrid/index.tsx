@@ -4,8 +4,8 @@ import { memo, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { cn } from "@/shared/utils/cn";
-import { Seat, SeatLayout, SECTIONS } from "@/entities/booking/model/types";
-import { getSeatPattern, getSeatLayout } from "@/entities/booking/model/seatLayouts";
+import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
+import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 import { SeatItem } from "../SeatItem";
 
 const NOOP_SEAT_SELECT = () => {};
@@ -16,14 +16,14 @@ export interface LotterySeatGridProps {
   currentSeat: Seat | null;
   isAnimating: boolean;
   revealedSeats: Seat[];
-  disabledSeats?: Array<{ section: Seat["section"]; seatNumber: string }>;
+  disabledSeats?: Array<{ section: Seat["section"]; row: string; seatNumber: string }>;
   className?: string;
 }
 
 const ANIMATING_COUNT = 10;
 
-const keyOf = (s: { section: Seat["section"]; seatNumber: string }) =>
-  `${s.section}-${s.seatNumber}`;
+const keyOf = (s: { section: Seat["section"]; row: string; seatNumber: string }) =>
+  `${s.section}-${s.row}-${s.seatNumber}`;
 
 const parseNum = (v: string) => {
   const n = Number(v);
@@ -57,7 +57,7 @@ const shuffleDet = <T,>(arr: T[], seed: number) => {
 };
 
 const isAdjacentSameSection = (a: Seat, b: Seat) => {
-  if (a.section !== b.section) return false;
+  if (a.section !== b.section || a.row !== b.row) return false;
   const na = parseNum(a.seatNumber);
   const nb = parseNum(b.seatNumber);
   if (na == null || nb == null) return false;
@@ -83,7 +83,9 @@ export const LotterySeatGrid = memo<LotterySeatGridProps>(
     }, [disabledSeats]);
 
     const isRevealed = (s: Seat) =>
-      revealedSeats?.some(r => r.section === s.section && r.seatNumber === s.seatNumber);
+      revealedSeats?.some(
+        r => r.section === s.section && r.row === s.row && r.seatNumber === s.seatNumber,
+      );
 
     const animatingKeys = useMemo(() => {
       if (!isAnimating || !currentSeat) return new Set<string>();
@@ -97,7 +99,9 @@ export const LotterySeatGrid = memo<LotterySeatGridProps>(
 
       const candidates = lotterySeats.filter(s => !isRevealed(s) && keyOf(s) !== curKey);
 
-      const seed = hash(`${currentSeat.section}-${currentSeat.seatNumber}-${revealedSeats.length}`);
+      const seed = hash(
+        `${currentSeat.section}-${currentSeat.row}-${currentSeat.seatNumber}-${revealedSeats.length}`,
+      );
       const shuffled = shuffleDet(candidates, seed);
 
       for (const s of shuffled) {
@@ -119,30 +123,42 @@ export const LotterySeatGrid = memo<LotterySeatGridProps>(
       }
 
       return set;
-    }, [isAnimating, currentSeat?.section, currentSeat?.seatNumber, lotterySeats, revealedSeats]);
+    }, [
+      isAnimating,
+      currentSeat?.section,
+      currentSeat?.row,
+      currentSeat?.seatNumber,
+      lotterySeats,
+      revealedSeats,
+    ]);
 
     const seatGrid = useMemo(() => {
       if (!layout?.section) return [];
 
       const pattern = getSeatPattern(layout.section);
+      const rowLabels = getRowLabels(layout.section);
       const seatMap = new Map<string, Seat>();
       layout.seats.forEach(seat => {
-        seatMap.set(seat.seatNumber, seat);
+        seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
       });
 
       return pattern.map((row, rowIndex) =>
         row.map((seatNumber, colIndex) => {
-          const seat = seatNumber ? seatMap.get(seatNumber.toString()) || null : null;
-          const key = seat ? `${seat.section}-${seat.seatNumber}` : `${rowIndex}-${colIndex}`;
+          const seat = seatNumber
+            ? seatMap.get(`${rowLabels[rowIndex]}-${seatNumber}`) || null
+            : null;
+          const key = seat
+            ? `${seat.section}-${seat.row}-${seat.seatNumber}`
+            : `${rowIndex}-${colIndex}`;
           return { seatNumber, seat, key };
         }),
       );
     }, [layout?.section, layout?.seats]);
 
     const allSectionsGrid = useMemo(() => {
-      const sectionsRow1 = SECTIONS.slice(0, 5);
-      const sectionsRow2 = SECTIONS.slice(5, 10);
-      return [sectionsRow1, sectionsRow2];
+      return [SECTIONS.slice(0, 3), SECTIONS.slice(3, 6), SECTIONS.slice(6)].filter(
+        row => row.length > 0,
+      );
     }, []);
 
     const getSeatStatus = (seat: Seat) => {
@@ -185,23 +201,26 @@ export const LotterySeatGrid = memo<LotterySeatGridProps>(
       const cachedSeats = queryClient.getQueryData<Seat[]>(seatQueryKeys.seatState(section));
       const sectionLayout = getSeatLayout(section);
       const pattern = getSeatPattern(section);
+      const rowLabels = getRowLabels(section);
 
       const seatMap = new Map<string, Seat>();
       const seatsToUse = cachedSeats || sectionLayout.seats;
       seatsToUse.forEach(seat => {
-        seatMap.set(seat.seatNumber, seat);
+        seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
       });
 
       return (
         <div className="flex flex-col items-center border rounded-lg mb-28">
-          <div className="text-white text-lg font-bold mb-2">{section}</div>
+          <div className="text-white text-lg font-bold mb-2">{getSectionLabel(section)}</div>
           <div className="flex flex-col gap-4">
             {pattern.map((row, rowIndex) => (
               <div key={rowIndex} className="flex gap-4">
                 {row.map((seatNumber, colIndex) => {
-                  const seat = seatNumber ? seatMap.get(seatNumber.toString()) || null : null;
+                  const seat = seatNumber
+                    ? seatMap.get(`${rowLabels[rowIndex]}-${seatNumber}`) || null
+                    : null;
                   const key = seat
-                    ? `${seat.section}-${seat.seatNumber}`
+                    ? `${seat.section}-${seat.row}-${seat.seatNumber}`
                     : `${rowIndex}-${colIndex}`;
 
                   if (!seat) return <div key={key} className="w-20 h-20" />;

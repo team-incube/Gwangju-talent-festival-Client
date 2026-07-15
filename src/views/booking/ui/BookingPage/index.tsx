@@ -75,17 +75,25 @@ const BookingPage = () => {
   const handleBookingClick = useCallback(() => {
     if (isPerformer) {
       if (canBook && selectedSeats.length > 0) {
-        multipleSeatBookingMutation.mutate(selectedSeats);
-        router.push("/home");
+        multipleSeatBookingMutation.mutate(selectedSeats, {
+          onSuccess: () => router.push("/booking/my"),
+        });
       }
     } else {
       if (isComplete && selectedSeatInfo) {
-        seatBookingMutation.mutate({
-          section: selectedSeatInfo.seat.section,
-          seatNumber: selectedSeatInfo.seat.seatNumber,
-        });
-        toast.success("예매가 완료되었습니다.");
-        router.push("/home");
+        seatBookingMutation.mutate(
+          {
+            section: selectedSeatInfo.seat.section,
+            row: selectedSeatInfo.seat.row,
+            seatNumber: selectedSeatInfo.seat.seatNumber,
+          },
+          {
+            onSuccess: () => {
+              toast.success("예매가 완료되었습니다.");
+              router.push("/booking/my");
+            },
+          },
+        );
       }
     }
   }, [
@@ -130,14 +138,19 @@ const BookingPage = () => {
   };
 
   return (
-    <main className="w-[375px] h-screen bg-white flex flex-col fixed  overflow-hidden">
-      <BackHeader goto="/home" text="예매하기" />
+    <main className="w-full max-w-[480px] mx-auto min-h-screen bg-white flex flex-col">
+      <div className="px-4">
+        <BackHeader goto="/home" text="예매하기" />
+      </div>
 
-      <div className="flex-1 flex flex-col p-4 gap-8 min-h-0">
-        <div className="flex-shrink-0">
-          <SelectSection onSectionSelect={handleSectionSelect} />
+      <div className="flex flex-col p-4 pt-8 gap-8">
+        <div>
+          <SelectSection
+            selectedSection={isPerformer ? performerSelectedSection : selectedSection}
+            onSectionSelect={handleSectionSelect}
+          />
         </div>
-        <div className="flex-shrink-0 overflow-hidden">
+        <div>
           <SeatSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             selectedSeat={isPerformer ? null : selectedSeat}
@@ -146,12 +159,12 @@ const BookingPage = () => {
             selectedSeats={isPerformer ? selectedSeats : undefined}
             isSeatSelected={isPerformer ? isSeatSelected : undefined}
             isPerformerMode={isPerformer}
-            myBookedSeats={isPerformer ? myBookedSeats : undefined}
+            myBookedSeats={myBookedSeats}
             removeOccupiedSeat={isPerformer ? removeOccupiedSeat : undefined}
           />
         </div>
         <Button
-          className="fixed bottom-[48px] w-[375px] h-[48px]"
+          className="fixed bottom-[48px] left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-[448px] h-[48px]"
           onClick={handleBookingClick}
           disabled={isPerformer ? !canBook || maxSelectableSeats === 0 : !isComplete}
         >

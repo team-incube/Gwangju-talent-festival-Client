@@ -6,7 +6,7 @@ import Button from "@/shared/ui/Button";
 import { LotterySeatGrid } from "@/entities/booking/ui/LotterySeatGrid";
 import { useLotteryAnimation } from "@/entities/booking/lib/useLotteryAnimation";
 import { getLotteryConfig, convertToSeats } from "@/entities/booking/model/lotterySeats";
-import { Seat, SECTIONS } from "@/entities/booking/model/types";
+import { Seat, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
 import { cn } from "@/shared/utils/cn";
 import { redirect } from "next/navigation";
@@ -105,7 +105,7 @@ const LotteryView = () => {
         if (allSeats.length === 0) return;
         const r = Math.floor(Math.random() * allSeats.length);
         const s = allSeats[r];
-        setSlotLabel(`${s.section}${s.seatNumber}`);
+        setSlotLabel(`${getSectionLabel(s.section)}${s.row}${s.seatNumber}`);
       }, 60);
     } else {
       cleanupSlotInterval();
@@ -127,7 +127,9 @@ const LotteryView = () => {
         setRevealedSeats(prev => {
           const exists = prev.some(
             seat =>
-              seat.section === targetSeat.section && seat.seatNumber === targetSeat.seatNumber,
+              seat.section === targetSeat.section &&
+              seat.row === targetSeat.row &&
+              seat.seatNumber === targetSeat.seatNumber,
           );
           return exists ? prev : [...prev, targetSeat];
         });
@@ -176,10 +178,11 @@ const LotteryView = () => {
             <div className="flex flex-wrap justify-center gap-2 mx-4">
               {revealedSeats.map(s => (
                 <span
-                  key={`${s.section}-${s.seatNumber}`}
-                  className="inline-flex items-center justify-center rounded-full border border-purple-200 text-purple-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8"
+                  key={`${s.section}-${s.row}-${s.seatNumber}`}
+                  className="inline-flex items-center justify-center rounded-full border border-orange-200 text-orange-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8"
                 >
                   {s.section}
+                  {s.row}
                   {s.seatNumber}
                 </span>
               ))}
@@ -188,15 +191,16 @@ const LotteryView = () => {
                 !revealedSeats.some(
                   rs =>
                     rs.section === currentTarget.section &&
+                    rs.row === currentTarget.row &&
                     rs.seatNumber === currentTarget.seatNumber,
                 ) && (
                   <span
-                    key={`target-${currentTarget.section}-${currentTarget.seatNumber}`}
+                    key={`target-${currentTarget.section}-${currentTarget.row}-${currentTarget.seatNumber}`}
                     className="inline-flex items-center justify-center rounded-full border border-purple-200 text-purple-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8 animate-pulse"
                   >
                     {isAnimating && slotLabel
                       ? slotLabel
-                      : `${currentTarget.section}${currentTarget.seatNumber}`}
+                      : `${getSectionLabel(currentTarget.section)}${currentTarget.row}${currentTarget.seatNumber}`}
                   </span>
                 )}
             </div>
@@ -211,7 +215,7 @@ const LotteryView = () => {
                   className={cn(
                     "flex items-center justify-center w-full h-24 rounded-md text-body2b font-semibold border-2 transition-colors",
                     Number(lotteryId) === teamNumber
-                      ? "bg-main-600 text-white text-body3b border-main-800"
+                      ? "bg-orange-500 text-white text-body3b border-orange-500"
                       : "bg-transparent text-white text-body3r border-gray-400 hover:border-gray-300",
                   )}
                   onClick={() => {
@@ -231,7 +235,7 @@ const LotteryView = () => {
                 "px-8 py-3 text-lg font-bold bottom-4 right-4 absolute",
                 isBatchRunning || isAnimating
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-purple-600 hover:bg-purple-700",
+                  : "bg-orange-500 hover:bg-orange-400",
               )}
             >
               {isBatchRunning || isAnimating

@@ -1,4 +1,9 @@
-import { Section, AllSeatsApiResponse, SectionSeatsApiResponse } from "../model/types";
+import {
+  Section,
+  AllSeatsApiResponse,
+  SectionSeatsApiResponse,
+  SECTION_LABELS,
+} from "../model/types";
 import axios from "@/shared/lib/axios";
 import { AxiosError } from "axios";
 
@@ -8,7 +13,7 @@ export async function getSeatState(
   section?: Section,
 ): Promise<AllSeatsApiResponse | SectionSeatsApiResponse> {
   try {
-    const url = `/api/seat${section ? `?section=${section}` : "/all"}`;
+    const url = `/seat${section ? `?section=${SECTION_LABELS[section]}` : "/all"}`;
 
     const response = await axios.get<AllSeatsApiResponse | SectionSeatsApiResponse>(url);
 

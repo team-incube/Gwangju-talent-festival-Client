@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { seatBooking } from "@/entities/booking/api/seatBooking";
-import { Seat } from "@/entities/booking/model/types";
+import { Seat, getSectionLabel } from "@/entities/booking/model/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 
@@ -38,7 +38,7 @@ export function useMultipleSeatBooking() {
           .map((result, index) => {
             if (result.status === "rejected") {
               const seat = seats[index];
-              return `${seat.section}${seat.seatNumber} 좌석 예매 실패`;
+              return `${getSectionLabel(seat.section)}${seat.row}${seat.seatNumber} 좌석 예매 실패`;
             }
             return "";
           })

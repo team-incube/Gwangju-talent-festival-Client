@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, memo, useMemo, useEffect } from "react";
+import { useCallback, memo, useMemo, useEffect } from "react";
 import { useQueryClient, useQueries } from "@tanstack/react-query";
 import { cn } from "@/shared/utils/cn";
 import { SectionButtons } from "@/entities/booking/ui/SectionButtons";
@@ -21,12 +21,13 @@ import { useSeatChangeSSE } from "@/entities/booking/lib/useSeatChangeSSE";
 import { toast } from "sonner";
 
 interface SelectSectionProps {
+  selectedSection?: SectionType;
   onSectionSelect?: (section: SectionType) => void;
   className?: string;
 }
 
-export const SelectSection = memo<SelectSectionProps>(({ onSectionSelect, className }) => {
-  const [selectedSection, setSelectedSection] = useState<SectionType>(null);
+export const SelectSection = memo<SelectSectionProps>(
+  ({ selectedSection = null, onSectionSelect, className }) => {
   const queryClient = useQueryClient();
 
   const { isLoading: isPrefetching, error: prefetchError } = usePrefetchSeatCaches();
@@ -37,13 +38,13 @@ export const SelectSection = memo<SelectSectionProps>(({ onSectionSelect, classN
   } = useAllSectionsSeatState();
 
   const handleSeatChange = useCallback(
-    (event: { seat_section: Section; seat_number: number; is_available: boolean }) => {
+    (event: { seat_section: Section; seat_row: string; seat_number: number; is_available: boolean }) => {
       const cachedSeats = queryClient.getQueryData<Seat[]>(
         seatQueryKeys.seatState(event.seat_section),
       );
       if (cachedSeats) {
         const updatedSeats = cachedSeats.map(seat => {
-          if (seat.seatNumber === event.seat_number.toString()) {
+          if (seat.seatNumber === event.seat_number.toString() && seat.row === event.seat_row) {
             const newStatus = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
             return {
               ...seat,
@@ -60,6 +61,7 @@ export const SelectSection = memo<SelectSectionProps>(({ onSectionSelect, classN
         const updatedAllSeats = allSeatsCache.map(seat => {
           if (
             seat.section === event.seat_section &&
+            seat.row === event.seat_row &&
             seat.seatNumber === event.seat_number.toString()
           ) {
             const newStatus = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
@@ -94,7 +96,6 @@ export const SelectSection = memo<SelectSectionProps>(({ onSectionSelect, classN
 
   const handleSectionSelect = useCallback(
     (section: SectionType) => {
-      setSelectedSection(section);
       onSectionSelect?.(section);
     },
     [onSectionSelect],

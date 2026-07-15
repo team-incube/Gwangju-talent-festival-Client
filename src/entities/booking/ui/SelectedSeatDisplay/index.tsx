@@ -9,6 +9,7 @@ import {
   Section,
   SEAT_STATUS,
   Seat,
+  getSectionLabel,
 } from "../../model/types";
 import { useAllSectionsSeatState } from "../../lib/useSeatState";
 
@@ -34,7 +35,7 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
           <span className="text-gray-600 text-caption1r">불가능</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-purple-600 border border-purple-600"></div>
+          <div className="w-3 h-3 bg-orange-500 border border-orange-500"></div>
           <span className="text-gray-600 text-caption1r">선택</span>
         </div>
       </div>
@@ -43,9 +44,11 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     const section = selectedSeat?.section || selectedSection;
     const seatPosition =
       selectedSeats && selectedSeats.length > 0
-        ? selectedSeats.map(seat => `${seat.section}${seat.seatNumber}`).join(", ")
+        ? selectedSeats
+            .map(seat => `${getSectionLabel(seat.section)}${seat.row}${seat.seatNumber}`)
+            .join(", ")
         : selectedSeat
-          ? `${selectedSeat.section}${selectedSeat.seat.seatNumber}`
+          ? `${getSectionLabel(selectedSeat.section)}${selectedSeat.seat.row}${selectedSeat.seat.seatNumber}`
           : null;
 
     let availableSeatsCount = 0;
@@ -73,12 +76,12 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     }
 
     return (
-      <div className={cn("h-24 p-4 rounded-lg border border-purple-200", className)}>
+      <div className={cn("h-24 p-4 rounded-lg border border-orange-200", className)}>
         <div className="flex items-center justify-between h-full">
           <div className="flex flex-col justify-center gap-1">
             <div>
               <span className="text-body3r text-gray-600">좌석번호 </span>
-              <span className="text-body3b font-bold text-purple-600">{seatPosition || ""}</span>
+              <span className="text-body3b font-bold text-orange-500">{seatPosition || ""}</span>
             </div>
 
             <div>

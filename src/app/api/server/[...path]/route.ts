@@ -12,8 +12,8 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
 
   const pathSegments = pathname.split("/").slice(3);
   const path = pathSegments.join("/");
-  const isBodyRequired = method === "POST" || method === "PUT" || method === "PATCH";
-  const queryString = !isBodyRequired ? searchParams.toString() : "";
+  const canHaveBody = method !== "GET";
+  const queryString = searchParams.toString();
   const url = `${BASE_URL}/${path}${queryString ? `?${queryString}` : ""}`;
 
   const token = request.cookies.get("accessToken")?.value ?? "";
@@ -28,9 +28,11 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
       credentials: "include",
     };
 
-    if (isBodyRequired) {
-      const body = await request.json();
-      options.body = JSON.stringify(body);
+    if (canHaveBody) {
+      const body = await request.text();
+      if (body) {
+        options.body = body;
+      }
     }
 
     const response = await fetch(url, { ...options, cache: "no-store" });

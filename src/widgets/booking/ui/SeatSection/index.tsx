@@ -26,7 +26,7 @@ interface SeatSectionProps {
   isSeatSelected?: (seat: Seat) => boolean;
   isPerformerMode?: boolean;
   myBookedSeats?: Seat[];
-  removeOccupiedSeat?: (section: Section, seatNumber: string) => void;
+  removeOccupiedSeat?: (section: Section, row: string, seatNumber: string) => void;
 }
 
 export const SeatSection = memo<SeatSectionProps>(
@@ -48,18 +48,23 @@ export const SeatSection = memo<SeatSectionProps>(
     const queryClient = useQueryClient();
 
     const handleSeatChange = useCallback(
-      (event: { seat_section: Section; seat_number: number; is_available: boolean }) => {
+      (event: {
+        seat_section: Section;
+        seat_row: string;
+        seat_number: number;
+        is_available: boolean;
+      }) => {
         if (event.seat_section !== selectedSection) return;
 
         if (!event.is_available && isPerformerMode && removeOccupiedSeat) {
-          removeOccupiedSeat(event.seat_section, event.seat_number.toString());
+          removeOccupiedSeat(event.seat_section, event.seat_row, event.seat_number.toString());
         }
 
         setRealTimeSeats(prevSeats => {
           if (!prevSeats) return prevSeats;
 
           return prevSeats.map(seat => {
-            if (seat.seatNumber === event.seat_number.toString()) {
+            if (seat.seatNumber === event.seat_number.toString() && seat.row === event.seat_row) {
               return {
                 ...seat,
                 status: event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
@@ -74,7 +79,7 @@ export const SeatSection = memo<SeatSectionProps>(
         );
         if (sectionCache) {
           const updatedSeats = sectionCache.map(seat => {
-            if (seat.seatNumber === event.seat_number.toString()) {
+            if (seat.seatNumber === event.seat_number.toString() && seat.row === event.seat_row) {
               return {
                 ...seat,
                 status: event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
@@ -90,6 +95,7 @@ export const SeatSection = memo<SeatSectionProps>(
           const updatedAllSeats = allSeatsCache.map(seat => {
             if (
               seat.section === event.seat_section &&
+              seat.row === event.seat_row &&
               seat.seatNumber === event.seat_number.toString()
             ) {
               const newStatus = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
@@ -169,11 +175,12 @@ export const SeatSection = memo<SeatSectionProps>(
             selectedSeats={selectedSeats}
             isSeatSelected={isSeatSelected}
             isPerformerMode={isPerformerMode}
+            mySeat={!isPerformerMode ? (myBookedSeats?.[0] ?? null) : null}
             myAllSeats={myBookedSeats}
           />
         </div>
 
-        <div className="h-28"></div>
+        <div className="h-24"></div>
 
         <div className="h-24">
           <SelectedSeatDisplay

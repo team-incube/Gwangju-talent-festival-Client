@@ -5,6 +5,7 @@ export interface LotterySeatConfig {
   seats: Array<{
     no: number;
     seat_section: Section;
+    seat_row: string;
     seat_number: number;
     to: string;
   }>;
@@ -17,7 +18,8 @@ export const LOTTERY_SEAT_CONFIGS: Record<string, LotterySeatConfig> = {
       {
         no: 1,
         to: "01012341234",
-        seat_section: "A",
+        seat_section: "RED",
+        seat_row: "F",
         seat_number: 1,
       },
     ],
@@ -33,6 +35,7 @@ export const convertToSeats = (config: LotterySeatConfig): Seat[] => {
     seatNumber: seat.seat_number.toString(),
     no: seat.no.toString(),
     section: seat.seat_section,
+    row: seat.seat_row,
     status: SEAT_STATUS.AVAILABLE,
     to: seat.to,
   }));

@@ -4,7 +4,7 @@ import {
   Section,
   Seat,
   SEAT_STATUS,
-  getSectionFromKey,
+  getSectionFromLabel,
   SeatChangeEvent,
 } from "@/entities/booking/model/types";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
@@ -40,11 +40,11 @@ export function usePrefetchSeatCaches() {
     queryFn: async () => {
       const response = await getSeatState();
 
-      (Object.keys(response) as Array<keyof typeof response>).forEach(sectionKey => {
-        const section = getSectionFromKey(sectionKey);
-        const sectionData = response[sectionKey];
+      Object.entries(response.sections).forEach(([label, sectionData]) => {
+        const section = getSectionFromLabel(label);
+        if (!section) return;
 
-        if (sectionData && sectionData.seats && Array.isArray(sectionData.seats)) {
+        if (sectionData && Array.isArray(sectionData.seats)) {
           const sectionSeats = sectionData.seats;
           const layout = getSeatLayout(section);
           const transformedSeats: Seat[] = layout.seats.map((seat, index) => ({
@@ -76,11 +76,11 @@ export function useAllSectionsSeatState() {
 
       const allSeats: Seat[] = [];
 
-      (Object.keys(response) as Array<keyof typeof response>).forEach(sectionKey => {
-        const section = getSectionFromKey(sectionKey);
-        const sectionData = response[sectionKey];
+      Object.entries(response.sections).forEach(([label, sectionData]) => {
+        const section = getSectionFromLabel(label);
+        if (!section) return;
 
-        if (sectionData && sectionData.seats && Array.isArray(sectionData.seats)) {
+        if (sectionData && Array.isArray(sectionData.seats)) {
           const sectionSeats = sectionData.seats;
 
           const layout = getSeatLayout(section);
@@ -109,6 +109,7 @@ export function updateSeatInCache(
 ): void {
   const {
     seat_section: section,
+    seat_row: seatRow,
     seat_number: seatNumber,
     is_available: isAvailable,
   } = seatChangeEvent;
@@ -117,7 +118,7 @@ export function updateSeatInCache(
     if (!oldData) return oldData;
 
     return oldData.map(seat => {
-      if (seat.seatNumber === seatNumber.toString()) {
+      if (seat.seatNumber === seatNumber.toString() && seat.row === seatRow) {
         return {
           ...seat,
           status: isAvailable ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
