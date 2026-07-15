@@ -31,7 +31,7 @@ const IntroFirstSection = () => {
           "mobile:pb-[6%]",
         )}
       >
-        <div className={cn("w-full", "max-w-[1060px]", "mx-auto", "px-4", "text-white", "tablet:px-8", "mobile:px-6")}>
+        <div className={cn("font-sans", "w-full", "max-w-[1060px]", "mx-auto", "px-4", "text-white", "tablet:px-8", "mobile:px-6")}>
           <h1 className={cn("text-[clamp(0.875rem,calc(-1.982rem+7.14vw),2.75rem)]", "tablet:text-[clamp(0.875rem,calc(-1.5rem+6vw),2rem)]", "mobile:text-[clamp(1.125rem,5.3vw,2rem)]", "font-bold", "leading-[120%]")}>
             光탈페 (광주학생탈렌트페스티벌)
           </h1>

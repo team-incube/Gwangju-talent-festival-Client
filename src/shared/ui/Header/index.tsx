@@ -46,8 +46,9 @@ export default function Header() {
     <>
       <header
         className={cn(
-          "flex items-center h-[var(--header-height)] justify-around mobile:justify-between mobile:px-16",
+          "font-sans flex items-center justify-around mobile:justify-between mobile:px-16",
         )}
+        style={{ height: "var(--header-height, 4.625rem)" }}
       >
         <Link href="/">
           <Logo className="h-[42px] w-[67px] mobile:h-[32px] mobile:w-[52px]" color="#FF9644" />

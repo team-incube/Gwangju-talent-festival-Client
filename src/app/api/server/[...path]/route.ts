@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -33,15 +35,16 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    const response = await fetch(url, options);
+    const response = await fetch(url, { ...options, cache: "no-store" });
 
     const contentLength = response.headers.get("content-length");
     const hasBody = contentLength !== "0" && response.status !== 204;
-    const data = hasBody ? await response.json().catch(() => null) : null;
 
-    if (data === null) {
+    if (!hasBody) {
       return new NextResponse(null, { status: response.status });
     }
+
+    const data = await response.json().catch(() => null);
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     console.error(`${method} ${url}:`, error);
