@@ -62,7 +62,9 @@ describe("downloadJudgingSummary - 성공", () => {
     expect(createObjectURLMock).toHaveBeenCalled();
     expect(appendChildSpy).toHaveBeenCalled();
     expect(clickMock).toHaveBeenCalled();
-    expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url");
+    await vi.waitFor(() => {
+      expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url");
+    });
   });
 
   it("Content-Disposition 헤더에서 파일명을 추출해 link.download에 설정한다", async () => {
@@ -102,6 +104,24 @@ describe("downloadJudgingSummary - 성공", () => {
     await downloadJudgingSummary();
 
     expect(appendedLink?.download).toBe("심사집계표.xlsx");
+  });
+
+  it("따옴표로 감싼 파일명 안에 세미콜론이 있어도 전체를 추출한다", async () => {
+    const response = createResponse({
+      ok: true,
+      headers: { "content-disposition": 'attachment; filename="심사;결과.xlsx"' },
+    });
+    vi.mocked(fetch).mockResolvedValueOnce(response);
+
+    let appendedLink: HTMLAnchorElement | undefined;
+    appendChildSpy.mockImplementation(node => {
+      appendedLink = node as HTMLAnchorElement;
+      return node;
+    });
+
+    await downloadJudgingSummary();
+
+    expect(appendedLink?.download).toBe("심사;결과.xlsx");
   });
 
   it("Content-Disposition 헤더가 없으면 기본 파일명을 사용한다", async () => {
