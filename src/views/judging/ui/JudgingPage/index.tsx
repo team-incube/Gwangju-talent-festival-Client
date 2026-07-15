@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { DescriptionCard } from "@/entities/apply/ui/DescriptionCard";
 import BackHeader from "@/shared/ui/BackHeader";
 import { EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
+import { downloadJudgingSummary } from "@/entities/judging/api/downloadJudgingSummary";
 import TeamGrid from "@/widgets/judging/ui/TeamGrid";
 import ScoreForm from "@/widgets/judging/ui/ScoreForm";
 import HandwritingCanvas from "@/widgets/judging/ui/HandwritingCanvas";
@@ -24,6 +26,7 @@ const JudgingPage = () => {
   const isTeamGridUnavailable = isLoading || isError || teams.length === 0;
 
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (selectedTeamId === null && teams.length > 0) {
@@ -31,7 +34,7 @@ const JudgingPage = () => {
     }
   }, [selectedTeamId, teams]);
 
-  const { getScore, updateScore, submitScore, isSaving } = useTeamScores(teams);
+  const { getScore, updateScore, submitScore, isSaving, hasUnsavedEdit } = useTeamScores(teams);
   const { data: judgeComment } = useGetJudgeComment(selectedTeamId);
   const { save: saveJudgeComment, saveImmediately: clearJudgeComment } =
     useSaveJudgeComment(selectedTeamId);
@@ -39,17 +42,38 @@ const JudgingPage = () => {
   const selectedTeam = teams.find(team => team.teamId === selectedTeamId);
   const score = selectedTeamId !== null ? getScore(selectedTeamId) : null;
 
+  const handleSelectTeam = (teamId: number) => {
+    if (selectedTeamId !== null && selectedTeamId !== teamId && hasUnsavedEdit(selectedTeamId)) {
+      submitScore(selectedTeamId);
+    }
+    setSelectedTeamId(teamId);
+  };
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      await downloadJudgingSummary();
+      toast.success("심사 집계표 다운로드를 시작합니다");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "심사 집계표를 다운로드하지 못했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-40 px-40 mobile:px-16">
       <div className="max-w-[1280px] w-full flex flex-col gap-24">
         <div className="flex items-center justify-between">
           <BackHeader text="심사 안내" />
-          <a
-            href="/api/excel/summary"
-            className="shrink-0 text-caption1b text-orange-500 underline underline-offset-4 hover:text-orange-400 transition-colors"
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="shrink-0 text-caption1b text-orange-500 underline underline-offset-4 hover:text-orange-400 transition-colors disabled:opacity-50"
           >
-            심사 결과 다운로드
-          </a>
+            {isDownloading ? "다운로드 중..." : "심사 결과 다운로드"}
+          </button>
         </div>
 
         {isTeamGridUnavailable ? (
@@ -62,7 +86,7 @@ const JudgingPage = () => {
           <TeamGrid
             teams={teams}
             selectedTeamId={selectedTeamId ?? teams[0].teamId}
-            onSelect={setSelectedTeamId}
+            onSelect={handleSelectTeam}
             onReorder={reorderTeams}
           />
         )}

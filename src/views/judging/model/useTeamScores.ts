@@ -36,6 +36,8 @@ export const useTeamScores = (teams: Score[]) => {
     [getScore],
   );
 
+  const hasUnsavedEdit = useCallback((teamId: number) => teamId in edits, [edits]);
+
   const { mutate: submitScore, isPending: isSaving } = useMutation({
     mutationFn: (teamId: number) => saveScore(teamId, getScore(teamId)),
     onMutate: async (teamId: number) => {
@@ -67,5 +69,5 @@ export const useTeamScores = (teams: Score[]) => {
     },
   });
 
-  return { getScore, updateScore, submitScore, isSaving };
+  return { getScore, updateScore, submitScore, isSaving, hasUnsavedEdit };
 };

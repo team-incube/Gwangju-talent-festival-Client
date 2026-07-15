@@ -94,7 +94,7 @@ const TeamCard = ({ team, order, isSelected, onSelect }: TeamCardProps) => {
           {team.teamName}
         </p>
         <span className={cn("text-body3b", team.isJudged ? "text-orange-500" : "text-gray-300")}>
-          {team.isJudged ? getScoreTotal(team) : "/"}
+          {team.isJudged ? getScoreTotal(team) : 0}
         </span>
       </div>
     </button>
