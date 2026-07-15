@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { DescriptionCard } from "@/entities/apply/ui/DescriptionCard";
 import BackHeader from "@/shared/ui/BackHeader";
 import { EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
-import { getVisibleTeams } from "@/entities/judging/model/teams";
 import TeamGrid from "@/widgets/judging/ui/TeamGrid";
 import ScoreForm from "@/widgets/judging/ui/ScoreForm";
 import HandwritingCanvas from "@/widgets/judging/ui/HandwritingCanvas";
-import { useGetJudgeList } from "../../model/useGetJudgeList";
+import { useTeamGridData } from "../../model/useTeamGridData";
+import { useReorderTeams } from "../../model/useReorderTeams";
 import { useTeamScores } from "../../model/useTeamScores";
 import { useGetJudgeComment } from "../../model/useGetJudgeComment";
 import { useSaveJudgeComment } from "../../model/useSaveJudgeComment";
@@ -19,8 +19,8 @@ const CRITERIA_ITEMS: string[] = EVALUATION_CRITERIA.map(
 const TEAM_SKELETON_COUNT = 12;
 
 const JudgingPage = () => {
-  const { data: scores = [], isLoading, isError } = useGetJudgeList();
-  const teams = getVisibleTeams(scores);
+  const { teams, isLoading, isError } = useTeamGridData();
+  const { reorderTeams } = useReorderTeams();
   const isTeamGridUnavailable = isLoading || isError || teams.length === 0;
 
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
@@ -31,7 +31,7 @@ const JudgingPage = () => {
     }
   }, [selectedTeamId, teams]);
 
-  const { getScore, updateScore, submitScore, isSaving } = useTeamScores(scores);
+  const { getScore, updateScore, submitScore, isSaving } = useTeamScores(teams);
   const { data: judgeComment } = useGetJudgeComment(selectedTeamId);
   const { save: saveJudgeComment, saveImmediately: clearJudgeComment } =
     useSaveJudgeComment(selectedTeamId);
@@ -63,6 +63,7 @@ const JudgingPage = () => {
             teams={teams}
             selectedTeamId={selectedTeamId ?? teams[0].teamId}
             onSelect={setSelectedTeamId}
+            onReorder={reorderTeams}
           />
         )}
 
