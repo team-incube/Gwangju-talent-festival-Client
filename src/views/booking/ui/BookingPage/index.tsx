@@ -75,18 +75,25 @@ const BookingPage = () => {
   const handleBookingClick = useCallback(() => {
     if (isPerformer) {
       if (canBook && selectedSeats.length > 0) {
-        multipleSeatBookingMutation.mutate(selectedSeats);
-        router.push("/home");
+        multipleSeatBookingMutation.mutate(selectedSeats, {
+          onSuccess: () => router.push("/booking/my"),
+        });
       }
     } else {
       if (isComplete && selectedSeatInfo) {
-        seatBookingMutation.mutate({
-          section: selectedSeatInfo.seat.section,
-          row: selectedSeatInfo.seat.row,
-          seatNumber: selectedSeatInfo.seat.seatNumber,
-        });
-        toast.success("예매가 완료되었습니다.");
-        router.push("/home");
+        seatBookingMutation.mutate(
+          {
+            section: selectedSeatInfo.seat.section,
+            row: selectedSeatInfo.seat.row,
+            seatNumber: selectedSeatInfo.seat.seatNumber,
+          },
+          {
+            onSuccess: () => {
+              toast.success("예매가 완료되었습니다.");
+              router.push("/booking/my");
+            },
+          },
+        );
       }
     }
   }, [
@@ -138,7 +145,10 @@ const BookingPage = () => {
 
       <div className="flex flex-col p-4 pt-8 gap-8">
         <div>
-          <SelectSection onSectionSelect={handleSectionSelect} />
+          <SelectSection
+            selectedSection={isPerformer ? performerSelectedSection : selectedSection}
+            onSectionSelect={handleSectionSelect}
+          />
         </div>
         <div>
           <SeatSection
@@ -149,7 +159,7 @@ const BookingPage = () => {
             selectedSeats={isPerformer ? selectedSeats : undefined}
             isSeatSelected={isPerformer ? isSeatSelected : undefined}
             isPerformerMode={isPerformer}
-            myBookedSeats={isPerformer ? myBookedSeats : undefined}
+            myBookedSeats={myBookedSeats}
             removeOccupiedSeat={isPerformer ? removeOccupiedSeat : undefined}
           />
         </div>

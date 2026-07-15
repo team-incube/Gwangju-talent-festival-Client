@@ -172,6 +172,7 @@ export const SeatSection = memo<SeatSectionProps>(
           selectedSeats={selectedSeats}
           isSeatSelected={isSeatSelected}
           isPerformerMode={isPerformerMode}
+          mySeat={!isPerformerMode ? (myBookedSeats?.[0] ?? null) : null}
           myAllSeats={myBookedSeats}
         />
 
