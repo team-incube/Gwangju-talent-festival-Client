@@ -226,7 +226,7 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     const getGridContainerStyles = () => {
-      return "relative bg-gray-800 rounded-lg w-full max-h-80 p-3 overflow-auto";
+      return "relative bg-gray-800 rounded-lg w-full p-3 overflow-x-auto";
     };
 
     return (
