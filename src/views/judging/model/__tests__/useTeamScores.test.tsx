@@ -88,6 +88,39 @@ describe("useTeamScores - hasUnsavedEdit", () => {
   });
 });
 
+describe("useTeamScores - savingTeamId", () => {
+  it("저장 중인 팀의 id만 savingTeamId로 노출되고, 완료되면 다시 null이 된다", async () => {
+    let resolveSave: () => void = () => {};
+    vi.mocked(saveScore).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          resolveSave = () => resolve(undefined as never);
+        }),
+    );
+    const teams = [makeScore(1), makeScore(2)];
+    const { result } = renderHook(() => useTeamScores(teams), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    expect(result.current.savingTeamId).toBeNull();
+
+    act(() => {
+      result.current.submitScore(1);
+    });
+
+    await waitFor(() => {
+      expect(result.current.savingTeamId).toBe(1);
+    });
+    expect(result.current.savingTeamId).not.toBe(2);
+
+    resolveSave();
+
+    await waitFor(() => {
+      expect(result.current.savingTeamId).toBeNull();
+    });
+  });
+});
+
 describe("useTeamScores - getScore", () => {
   it("이미 채점된 팀은 해당 팀의 점수를 반환한다", () => {
     const teams = [
