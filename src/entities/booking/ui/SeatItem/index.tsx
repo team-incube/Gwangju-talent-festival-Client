@@ -9,45 +9,55 @@ export interface SeatItemProps {
   isSelected: boolean;
   onSelect: (seat: Seat) => void;
   className?: string;
+  allowOccupiedSelect?: boolean;
 }
 
-export const SeatItem = memo<SeatItemProps>(({ seat, isSelected, onSelect, className }) => {
-  const handleClick = useCallback(() => {
-    if (seat.status === SEAT_STATUS.OCCUPIED) return;
-    onSelect(seat);
-  }, [seat, onSelect]);
+export const SeatItem = memo<SeatItemProps>(
+  ({ seat, isSelected, onSelect, className, allowOccupiedSelect = false }) => {
+    const isOccupied = seat.status === SEAT_STATUS.OCCUPIED;
+    const isDisabled = isOccupied && !allowOccupiedSelect;
 
-  const getSeatStyles = () => {
-    const baseStyles =
-      "w-5 h-5 text-xs font-medium transition-all duration-200 flex items-center justify-center";
+    const handleClick = useCallback(() => {
+      if (seat.status === SEAT_STATUS.OCCUPIED && !allowOccupiedSelect) return;
+      onSelect(seat);
+    }, [seat, onSelect, allowOccupiedSelect]);
 
-    if (isSelected) {
-      return cn(baseStyles, "bg-orange-500 text-white shadow-lg scale-110 cursor-pointer");
-    }
+    const getSeatStyles = () => {
+      const baseStyles =
+        "w-5 h-5 text-xs font-medium transition-all duration-200 flex items-center justify-center";
 
-    if (seat.status === SEAT_STATUS.OCCUPIED) {
-      return cn(baseStyles, "bg-gray-400 text-gray-600 cursor-not-allowed");
-    }
+      if (isSelected) {
+        return cn(baseStyles, "bg-orange-500 text-white shadow-lg scale-110 cursor-pointer");
+      }
 
-    return cn(baseStyles, "bg-white text-gray-700 cursor-pointer");
-  };
+      if (isOccupied) {
+        return cn(
+          baseStyles,
+          "bg-gray-400 text-gray-600",
+          isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+        );
+      }
 
-  const getSeatNumber = () => {
-    return seat.seatNumber;
-  };
+      return cn(baseStyles, "bg-white text-gray-700 cursor-pointer");
+    };
 
-  return (
-    <button
-      className={cn(getSeatStyles(), className)}
-      onClick={handleClick}
-      disabled={seat.status === SEAT_STATUS.OCCUPIED}
-      title={`좌석 ${seat.seatNumber} - ${seat.status === SEAT_STATUS.OCCUPIED ? "선택불가" : "선택가능"}`}
-      aria-label={`좌석 ${seat.seatNumber}`}
-    >
-      {getSeatNumber()}
-    </button>
-  );
-});
+    const getSeatNumber = () => {
+      return seat.seatNumber;
+    };
+
+    return (
+      <button
+        className={cn(getSeatStyles(), className)}
+        onClick={handleClick}
+        disabled={isDisabled}
+        title={`좌석 ${seat.seatNumber} - ${isDisabled ? "선택불가" : "선택가능"}`}
+        aria-label={`좌석 ${seat.seatNumber}`}
+      >
+        {getSeatNumber()}
+      </button>
+    );
+  },
+);
 
 SeatItem.displayName = "SeatItem";
 

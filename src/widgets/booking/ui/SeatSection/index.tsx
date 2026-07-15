@@ -27,6 +27,7 @@ interface SeatSectionProps {
   isPerformerMode?: boolean;
   myBookedSeats?: Seat[];
   removeOccupiedSeat?: (section: Section, row: string, seatNumber: string) => void;
+  allowOccupiedSelect?: boolean;
 }
 
 export const SeatSection = memo<SeatSectionProps>(
@@ -41,6 +42,7 @@ export const SeatSection = memo<SeatSectionProps>(
     isPerformerMode = false,
     myBookedSeats,
     removeOccupiedSeat,
+    allowOccupiedSelect = false,
   }) => {
     const { data: sectionSeats, isLoading, error } = useSectionSeatState(selectedSection!);
     const { data: allSeats, isLoading: isAllSeatsLoading } = useAllSectionsSeatState();
@@ -175,8 +177,9 @@ export const SeatSection = memo<SeatSectionProps>(
             selectedSeats={selectedSeats}
             isSeatSelected={isSeatSelected}
             isPerformerMode={isPerformerMode}
-            mySeat={!isPerformerMode ? (myBookedSeats?.[0] ?? null) : null}
+            mySeat={!isPerformerMode && !allowOccupiedSelect ? (myBookedSeats?.[0] ?? null) : null}
             myAllSeats={myBookedSeats}
+            allowOccupiedSelect={allowOccupiedSelect}
           />
         </div>
 

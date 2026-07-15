@@ -22,6 +22,7 @@ export interface SeatGridProps {
   isPerformerMode?: boolean;
   myAllSeats?: Seat[];
   selectedSeatsForCancel?: Set<string>;
+  allowOccupiedSelect?: boolean;
 }
 
 export const SeatGrid = memo<SeatGridProps>(
@@ -36,6 +37,7 @@ export const SeatGrid = memo<SeatGridProps>(
     isPerformerMode = false,
     myAllSeats,
     selectedSeatsForCancel,
+    allowOccupiedSelect = false,
   }) => {
     const queryClient = useQueryClient();
 
@@ -127,6 +129,7 @@ export const SeatGrid = memo<SeatGridProps>(
                     seat={seat}
                     isSelected={getSeatSelectedState(seat)}
                     onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
+                    allowOccupiedSelect={allowOccupiedSelect}
                   />
                 ) : (
                   <div className="w-5 h-5" />

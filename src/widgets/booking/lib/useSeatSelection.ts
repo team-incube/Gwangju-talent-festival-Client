@@ -6,13 +6,27 @@ import { banSeat, cancelSeatBan, SeatBanError } from "@/entities/booking/api/ban
 const isSameSeat = (a: Seat, b: Seat) =>
   a.seatNumber === b.seatNumber && a.row === b.row && a.section === b.section;
 
-export const useSeatSelection = () => {
+interface UseSeatSelectionOptions {
+  // 어드민은 선택이 홀드가 아니라 밴 대상 지정이므로 홀드 요청을 보내지 않고,
+  // 밴 해제를 위해 점유(회색) 좌석도 선택할 수 있어야 한다
+  holdOnSelect?: boolean;
+  allowOccupied?: boolean;
+}
+
+export const useSeatSelection = ({
+  holdOnSelect = true,
+  allowOccupied = false,
+}: UseSeatSelectionOptions = {}) => {
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [selectedSeat, setSelectedSeat] = useState<Seat | null>(null);
 
-  const releaseHold = useCallback((seat: Seat) => {
-    cancelSeatBan(seat).catch(() => {});
-  }, []);
+  const releaseHold = useCallback(
+    (seat: Seat) => {
+      if (!holdOnSelect) return;
+      cancelSeatBan(seat).catch(() => {});
+    },
+    [holdOnSelect],
+  );
 
   const holdSeat = useCallback((seat: Seat) => {
     banSeat(seat)
@@ -42,7 +56,7 @@ export const useSeatSelection = () => {
 
   const selectSeat = useCallback(
     (seat: Seat) => {
-      if (seat.status === SEAT_STATUS.OCCUPIED) return;
+      if (seat.status === SEAT_STATUS.OCCUPIED && !allowOccupied) return;
 
       if (selectedSeat && isSameSeat(selectedSeat, seat)) {
         releaseHold(selectedSeat);
@@ -51,10 +65,10 @@ export const useSeatSelection = () => {
         if (selectedSeat) releaseHold(selectedSeat);
         setSelectedSeat(seat);
         setSelectedSection(seat.section);
-        holdSeat(seat);
+        if (holdOnSelect) holdSeat(seat);
       }
     },
-    [selectedSeat, releaseHold, holdSeat],
+    [selectedSeat, releaseHold, holdSeat, holdOnSelect, allowOccupied],
   );
 
   const canSelectSeat = useCallback((seat: Seat) => {

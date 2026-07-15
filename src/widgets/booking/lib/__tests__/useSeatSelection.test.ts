@@ -276,6 +276,39 @@ describe("useSeatSelection - 임시 저장(좌석 홀드)", () => {
   })
 })
 
+describe("useSeatSelection - 어드민 옵션", () => {
+  it("holdOnSelect가 false면 좌석 선택 시 임시 저장 API를 호출하지 않는다", () => {
+    const { result } = renderHook(() => useSeatSelection({ holdOnSelect: false }))
+    const seat = makeSeat("1")
+
+    act(() => { result.current.selectSeat(seat) })
+
+    expect(banSeat).not.toHaveBeenCalled()
+    expect(result.current.selectedSeat).toEqual(seat)
+  })
+
+  it("holdOnSelect가 false면 선택 해제·교체 시에도 해제 API를 호출하지 않는다", () => {
+    const { result } = renderHook(() => useSeatSelection({ holdOnSelect: false }))
+
+    act(() => { result.current.selectSeat(makeSeat("1")) })
+    act(() => { result.current.selectSeat(makeSeat("2")) })
+    act(() => { result.current.setSelectedSection("YELLOW") })
+
+    expect(cancelSeatBan).not.toHaveBeenCalled()
+  })
+
+  it("allowOccupied가 true면 OCCUPIED 좌석도 선택할 수 있다", () => {
+    const { result } = renderHook(() =>
+      useSeatSelection({ holdOnSelect: false, allowOccupied: true }),
+    )
+    const seat = makeSeat("1", SEAT_STATUS.OCCUPIED)
+
+    act(() => { result.current.selectSeat(seat) })
+
+    expect(result.current.selectedSeat).toEqual(seat)
+  })
+})
+
 describe("useSeatSelection - isComplete", () => {
   it("섹션과 좌석이 모두 선택되면 true다", () => {
     const { result } = renderHook(() => useSeatSelection())

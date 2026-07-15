@@ -9,6 +9,8 @@ import { useSeatSelection } from "@/widgets/booking/lib/useSeatSelection";
 import { usePerformerSeatSelection } from "@/widgets/booking/lib/usePerformerSeatSelection";
 import { SectionType, Seat } from "@/entities/booking/model/types";
 import { useSeatBooking, useMultipleSeatBooking } from "@/widgets/booking/lib/useSeatBooking";
+import { useAdminSeatBan } from "@/widgets/booking/lib/useAdminSeatBan";
+import { SEAT_STATUS } from "@/entities/booking/model/types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/shared/utils/auth";
@@ -19,6 +21,9 @@ const BookingPage = () => {
   const router = useRouter();
   const { seats: myBookedSeats } = useMyBookedSeats();
 
+  const isAdmin = userRole === "ADMIN";
+  const isPerformer = userRole === "PERFORMER";
+
   const {
     selectedSection,
     selectedSeat,
@@ -26,7 +31,7 @@ const BookingPage = () => {
     setSelectedSection,
     selectSeat,
     isComplete,
-  } = useSeatSelection();
+  } = useSeatSelection({ holdOnSelect: !isAdmin, allowOccupied: isAdmin });
 
   const {
     selectedSection: performerSelectedSection,
@@ -41,13 +46,13 @@ const BookingPage = () => {
 
   const seatBookingMutation = useSeatBooking();
   const multipleSeatBookingMutation = useMultipleSeatBooking();
+  const { ban: seatBanMutation, unban: seatUnbanMutation } = useAdminSeatBan();
 
   useEffect(() => {
     const role = getTokenFromCookie("role");
     setUserRole(role);
   }, []);
 
-  const isPerformer = userRole === "PERFORMER";
   const handleSectionSelect = useCallback(
     (section: SectionType) => {
       if (isPerformer) {
@@ -73,6 +78,17 @@ const BookingPage = () => {
   );
 
   const handleBookingClick = useCallback(() => {
+    if (isAdmin) {
+      if (!isComplete || !selectedSeat) return;
+
+      const seat = selectedSeat;
+      const mutation = seat.status === SEAT_STATUS.OCCUPIED ? seatUnbanMutation : seatBanMutation;
+      mutation.mutate(seat, {
+        onSuccess: () => selectSeat(seat),
+      });
+      return;
+    }
+
     if (isPerformer) {
       if (canBook && selectedSeats.length > 0) {
         multipleSeatBookingMutation.mutate(selectedSeats, {
@@ -97,17 +113,35 @@ const BookingPage = () => {
       }
     }
   }, [
+    isAdmin,
     isPerformer,
     canBook,
     selectedSeats,
     multipleSeatBookingMutation,
     isComplete,
+    selectedSeat,
     selectedSeatInfo,
     seatBookingMutation,
+    seatBanMutation,
+    seatUnbanMutation,
+    selectSeat,
     router,
   ]);
 
   const getButtonText = () => {
+    if (isAdmin) {
+      if (seatBanMutation.isPending || seatUnbanMutation.isPending) {
+        return "처리 중...";
+      }
+      if (!selectedSection) {
+        return "구역을 선택해주세요";
+      }
+      if (!selectedSeat) {
+        return "좌석을 선택해주세요";
+      }
+      return selectedSeat.status === SEAT_STATUS.OCCUPIED ? "좌석 밴 해제하기" : "좌석 밴하기";
+    }
+
     if (isPerformer) {
       if (multipleSeatBookingMutation.isPending) {
         return "예매 중...";
@@ -161,6 +195,7 @@ const BookingPage = () => {
             isPerformerMode={isPerformer}
             myBookedSeats={myBookedSeats}
             removeOccupiedSeat={isPerformer ? removeOccupiedSeat : undefined}
+            allowOccupiedSelect={isAdmin}
           />
         </div>
         <Button
