@@ -45,8 +45,11 @@ const extractFilename = (contentDisposition: string | null): string => {
     }
   }
 
-  const match = contentDisposition.match(/filename="?([^";]+)"?/i);
-  return match ? decodeMimeEncodedWords(match[1]) : DEFAULT_FILENAME;
+  const quotedMatch = contentDisposition.match(/filename="([^"]+)"/i);
+  if (quotedMatch) return decodeMimeEncodedWords(quotedMatch[1]);
+
+  const unquotedMatch = contentDisposition.match(/filename=([^;]+)/i);
+  return unquotedMatch ? decodeMimeEncodedWords(unquotedMatch[1]) : DEFAULT_FILENAME;
 };
 
 export const downloadJudgingSummary = async (): Promise<void> => {
@@ -65,5 +68,6 @@ export const downloadJudgingSummary = async (): Promise<void> => {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  // 일부 브라우저는 다운로드 트리거가 비동기로 처리돼 즉시 revoke하면 다운로드가 실패할 수 있다
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 };
