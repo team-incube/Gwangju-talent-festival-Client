@@ -3,7 +3,8 @@
 import {
   DndContext,
   DragEndEvent,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -21,7 +22,10 @@ type TeamGridProps = {
 };
 
 const TeamGrid = ({ teams, selectedTeamId, onSelect, onReorder }: TeamGridProps) => {
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -75,7 +79,7 @@ const TeamCard = ({ team, order, isSelected, onSelect }: TeamCardProps) => {
       onClick={() => onSelect(team.teamId)}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "relative overflow-hidden rounded-2xl p-16 mobile:p-12 text-left transition-colors touch-none",
+        "relative overflow-hidden rounded-2xl p-16 mobile:p-12 text-left transition-colors touch-pan-y",
         "bg-gradient-to-br from-orange-50 to-white border",
         isSelected ? "border-orange-500" : "border-orange-100 hover:border-orange-300",
         isDragging && "z-10 shadow-lg",
