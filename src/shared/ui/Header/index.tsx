@@ -46,7 +46,7 @@ export default function Header() {
     <>
       <header
         className={cn(
-          "font-sans flex items-center h-[var(--header-height)] justify-around mobile:justify-between mobile:px-16",
+          "font-sans flex items-center justify-around mobile:justify-between mobile:px-16",
         )}
         style={{ height: "var(--header-height, 4.625rem)" }}
       >
