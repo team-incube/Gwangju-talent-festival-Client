@@ -14,6 +14,8 @@ import { useSeatChangeSSE } from "@/entities/booking/lib/useSeatChangeSSE";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
 import { useQueryClient } from "@tanstack/react-query";
 
+const NOOP_SEAT_SELECT = () => {};
+
 interface SeatSectionProps {
   selectedSection: Section | null;
   selectedSeat: Seat | null;
@@ -164,17 +166,19 @@ export const SeatSection = memo<SeatSectionProps>(
 
     return (
       <div className={cn("pb-20", className)}>
-        <SeatGrid
-          layout={layout}
-          selectedSeat={selectedSeat}
-          onSeatSelect={isLoading || !!error ? () => {} : onSeatSelect}
-          allSeats={realTimeSeats}
-          selectedSeats={selectedSeats}
-          isSeatSelected={isSeatSelected}
-          isPerformerMode={isPerformerMode}
-          mySeat={!isPerformerMode ? (myBookedSeats?.[0] ?? null) : null}
-          myAllSeats={myBookedSeats}
-        />
+        <div className="h-80">
+          <SeatGrid
+            layout={layout}
+            selectedSeat={selectedSeat}
+            onSeatSelect={isLoading || !!error ? NOOP_SEAT_SELECT : onSeatSelect}
+            allSeats={realTimeSeats}
+            selectedSeats={selectedSeats}
+            isSeatSelected={isSeatSelected}
+            isPerformerMode={isPerformerMode}
+            mySeat={!isPerformerMode ? (myBookedSeats?.[0] ?? null) : null}
+            myAllSeats={myBookedSeats}
+          />
+        </div>
 
         <div className="h-24"></div>
 

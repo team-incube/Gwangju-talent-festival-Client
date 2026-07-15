@@ -8,6 +8,8 @@ import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/
 import { SeatItem } from "../SeatItem";
 import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 
+const NOOP_SEAT_SELECT = () => {};
+
 export interface SeatGridProps {
   layout: SeatLayout | null;
   selectedSeat: Seat | null;
@@ -124,7 +126,7 @@ export const SeatGrid = memo<SeatGridProps>(
                   <SeatItem
                     seat={seat}
                     isSelected={getSeatSelectedState(seat)}
-                    onSelect={mySeat ? () => {} : handleSeatSelect}
+                    onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
                   />
                 ) : (
                   <div className="w-5 h-5" />
@@ -136,22 +138,42 @@ export const SeatGrid = memo<SeatGridProps>(
       </div>
     );
 
+    const sectionSeatMaps = useMemo(() => {
+      const seatsBySection = new Map<(typeof SECTIONS)[number], Seat[]>();
+      allSeats?.forEach(seat => {
+        const bucket = seatsBySection.get(seat.section);
+        if (bucket) {
+          bucket.push(seat);
+        } else {
+          seatsBySection.set(seat.section, [seat]);
+        }
+      });
+
+      const maps = new Map<(typeof SECTIONS)[number], Map<string, Seat>>();
+
+      SECTIONS.forEach(section => {
+        const cachedSeats = queryClient.getQueryData<Seat[]>(seatQueryKeys.seatState(section));
+        const allSectionSeats = seatsBySection.get(section);
+        const sectionLayout = getSeatLayout(section);
+        const seatsToUse =
+          allSectionSeats && allSectionSeats.length > 0
+            ? allSectionSeats
+            : cachedSeats || sectionLayout.seats;
+
+        const seatMap = new Map<string, Seat>();
+        seatsToUse.forEach(seat => {
+          seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
+        });
+        maps.set(section, seatMap);
+      });
+
+      return maps;
+    }, [allSeats, queryClient]);
+
     const renderSectionMiniGrid = (section: (typeof SECTIONS)[number]) => {
-      const cachedSeats = queryClient.getQueryData<Seat[]>(seatQueryKeys.seatState(section));
-      const allSectionSeats = allSeats?.filter(seat => seat.section === section);
-      const sectionLayout = getSeatLayout(section);
       const pattern = getSeatPattern(section);
       const rowLabels = getRowLabels(section);
-
-      const seatMap = new Map<string, Seat>();
-      const seatsToUse =
-        allSectionSeats && allSectionSeats.length > 0
-          ? allSectionSeats
-          : cachedSeats || sectionLayout.seats;
-
-      seatsToUse.forEach(seat => {
-        seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
-      });
+      const seatMap = sectionSeatMaps.get(section)!;
 
       return (
         <div className="flex flex-col items-center border rounded-lg mb-6">
@@ -172,7 +194,7 @@ export const SeatGrid = memo<SeatGridProps>(
                         <SeatItem
                           seat={seat}
                           isSelected={getSeatSelectedState(seat)}
-                          onSelect={mySeat ? () => {} : handleSeatSelect}
+                          onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
                           className="w-6 h-6 text-transparent"
                         />
                       ) : (

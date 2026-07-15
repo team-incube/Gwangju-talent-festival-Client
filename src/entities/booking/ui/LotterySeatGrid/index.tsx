@@ -8,6 +8,8 @@ import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/
 import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 import { SeatItem } from "../SeatItem";
 
+const NOOP_SEAT_SELECT = () => {};
+
 export interface LotterySeatGridProps {
   layout: SeatLayout | null;
   lotterySeats: Seat[];
@@ -179,7 +181,7 @@ export const LotterySeatGrid = memo<LotterySeatGridProps>(
                   <SeatItem
                     seat={{ ...seat, status: getSeatStatus(seat) }}
                     isSelected={isSeatSelected(seat)}
-                    onSelect={() => {}}
+                    onSelect={NOOP_SEAT_SELECT}
                     className={cn(
                       "w-5 h-5 border-2 bg-gray-500",
                       disabledSet.has(keyOf(seat)) && "pointer-events-none opacity-40",
@@ -240,7 +242,7 @@ export const LotterySeatGrid = memo<LotterySeatGridProps>(
                       <SeatItem
                         seat={{ ...seat, status }}
                         isSelected={isRevealedSeat || isAnimatingSeat}
-                        onSelect={() => {}}
+                        onSelect={NOOP_SEAT_SELECT}
                         className={cn(
                           "w-20 h-20 text-sm",
                           disabled && "pointer-events-none opacity-40",
