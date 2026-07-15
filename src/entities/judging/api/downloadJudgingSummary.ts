@@ -1,6 +1,52 @@
+const DEFAULT_FILENAME = "judging-summary.xlsx";
+
+const decodeQEncodedWord = (text: string): string => {
+  const bytes: number[] = [];
+  for (let i = 0; i < text.length; ) {
+    if (text[i] === "=" && i + 2 < text.length) {
+      bytes.push(parseInt(text.slice(i + 1, i + 3), 16));
+      i += 3;
+    } else if (text[i] === "_") {
+      bytes.push(0x20);
+      i += 1;
+    } else {
+      bytes.push(text.charCodeAt(i));
+      i += 1;
+    }
+  }
+  return new TextDecoder("utf-8").decode(Uint8Array.from(bytes));
+};
+
+const decodeBase64EncodedWord = (text: string): string => {
+  const binary = atob(text);
+  return new TextDecoder("utf-8").decode(Uint8Array.from(binary, char => char.charCodeAt(0)));
+};
+
+// 백엔드가 Content-Disposition의 filename에 RFC 2047 MIME 인코디드 워드(=?UTF-8?Q?...?=)를
+// 그대로 내려주는 경우가 있어, 브라우저가 기본 다운로드로 처리할 때와 동일하게 직접 디코딩한다.
+const decodeMimeEncodedWords = (value: string): string =>
+  value.replace(/=\?[^?]+\?([BbQq])\?([^?]*)\?=/g, (match, encoding: string, text: string) => {
+    try {
+      return encoding.toUpperCase() === "Q" ? decodeQEncodedWord(text) : decodeBase64EncodedWord(text);
+    } catch {
+      return match;
+    }
+  });
+
 const extractFilename = (contentDisposition: string | null): string => {
-  const match = contentDisposition?.match(/filename="?([^"]+)"?/);
-  return match?.[1] ?? "judging-summary.xlsx";
+  if (!contentDisposition) return DEFAULT_FILENAME;
+
+  const extendedMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+  if (extendedMatch) {
+    try {
+      return decodeURIComponent(extendedMatch[1]);
+    } catch {
+      // 잘못된 percent-encoding이면 아래 일반 filename 파싱으로 대체
+    }
+  }
+
+  const match = contentDisposition.match(/filename="?([^";]+)"?/i);
+  return match ? decodeMimeEncodedWords(match[1]) : DEFAULT_FILENAME;
 };
 
 export const downloadJudgingSummary = async (): Promise<void> => {
