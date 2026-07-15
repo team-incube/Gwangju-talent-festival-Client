@@ -74,10 +74,9 @@ export const SeatGrid = memo<SeatGridProps>(
     }, [layout?.section, layout?.seats]);
 
     const allSectionsGrid = useMemo(() => {
-      const sectionsRow1 = SECTIONS.slice(0, 3);
-      const sectionsRow2 = SECTIONS.slice(3, 6);
-
-      return [sectionsRow1, sectionsRow2];
+      return [SECTIONS.slice(0, 3), SECTIONS.slice(3, 6), SECTIONS.slice(6)].filter(
+        row => row.length > 0,
+      );
     }, []);
 
     const getSeatSelectedState = useCallback(
