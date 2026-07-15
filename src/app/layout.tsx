@@ -5,6 +5,7 @@ import Header from "@/shared/ui/Header";
 import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
 import GA from "@/shared/lib/ga";
+import pretendard from "@/shared/lib/font";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
@@ -157,7 +158,7 @@ export default function RootLayout({
       <head>
         <meta name="naver-site-verification" content="9b809c2b47126fcb57113f690708d63c39eb9681" />
       </head>
-      <body className="font-['Pretendard-Regular'] antialiased">
+      <body className={`${pretendard.className} antialiased`}>
         <Header />
         <TanstackProviders>
           <ToastProvider>{children}</ToastProvider>
