@@ -1,4 +1,12 @@
-import { Section, SeatLayout, Seat, SEAT_STATUS, SEAT_INFO } from "./types";
+import {
+  Section,
+  SeatLayout,
+  Seat,
+  SEAT_STATUS,
+  SEAT_INFO,
+  SECTION_LABELS,
+  getSectionFromLabel,
+} from "./types";
 
 const SECTION_SEAT_PATTERNS: Record<Section, (number | null)[][]> = {
   RED: [
@@ -42,6 +50,7 @@ const SECTION_SEAT_PATTERNS: Record<Section, (number | null)[][]> = {
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   ],
 
   GREEN: Array.from({ length: 8 }, () =>
@@ -57,11 +66,14 @@ const SECTION_SEAT_PATTERNS: Record<Section, (number | null)[][]> = {
     [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
     [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
     [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
   ],
+
+  WHEELCHAIR: [[1, 2, 3, 4, 5, 6]],
 };
 
 const TOP_BLOCK_ROWS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
-const BOTTOM_BLOCK_ROWS = ["L", "M", "N", "O", "P", "Q", "R", "S"];
+const BOTTOM_BLOCK_ROWS = ["L", "M", "N", "O", "P", "Q", "R", "S", "T"];
 
 const SECTION_ROW_LABELS: Record<Section, string[]> = {
   RED: TOP_BLOCK_ROWS,
@@ -70,6 +82,7 @@ const SECTION_ROW_LABELS: Record<Section, string[]> = {
   BLUE: BOTTOM_BLOCK_ROWS,
   GREEN: BOTTOM_BLOCK_ROWS,
   PURPLE: BOTTOM_BLOCK_ROWS,
+  WHEELCHAIR: ["W"],
 };
 
 const generateSeatLayout = (section: Section): SeatLayout => {
@@ -111,6 +124,7 @@ export const SEAT_LAYOUTS: Record<Section, SeatLayout> = Object.freeze({
   BLUE: Object.freeze(generateSeatLayout("BLUE")),
   GREEN: Object.freeze(generateSeatLayout("GREEN")),
   PURPLE: Object.freeze(generateSeatLayout("PURPLE")),
+  WHEELCHAIR: Object.freeze(generateSeatLayout("WHEELCHAIR")),
 });
 
 export const getSeatLayout = (section: Section): SeatLayout => {
@@ -137,4 +151,25 @@ export const getSeatPattern = (section: Section): (number | null)[][] => {
 
 export const getRowLabels = (section: Section): string[] => {
   return SECTION_ROW_LABELS[section];
+};
+
+export interface ApiSeat {
+  seatSection: string;
+  seatNumber: number;
+}
+
+export const toApiSeat = (seat: Pick<Seat, "section" | "row" | "seatNumber">): ApiSeat => {
+  const index = SEAT_LAYOUTS[seat.section].seats.findIndex(
+    s => s.row === seat.row && s.seatNumber === seat.seatNumber,
+  );
+  if (index === -1) {
+    throw new Error(`존재하지 않는 좌석입니다: ${seat.section} ${seat.row}${seat.seatNumber}`);
+  }
+  return { seatSection: SECTION_LABELS[seat.section], seatNumber: index + 1 };
+};
+
+export const fromApiSeat = (seatSection: string, seatNumber: number): Seat | null => {
+  const section = getSectionFromLabel(seatSection);
+  if (!section) return null;
+  return SEAT_LAYOUTS[section].seats[seatNumber - 1] ?? null;
 };

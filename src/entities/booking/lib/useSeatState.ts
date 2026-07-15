@@ -4,7 +4,7 @@ import {
   Section,
   Seat,
   SEAT_STATUS,
-  getSectionFromKey,
+  getSectionFromLabel,
   SeatChangeEvent,
 } from "@/entities/booking/model/types";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
@@ -40,11 +40,11 @@ export function usePrefetchSeatCaches() {
     queryFn: async () => {
       const response = await getSeatState();
 
-      (Object.keys(response) as Array<keyof typeof response>).forEach(sectionKey => {
-        const section = getSectionFromKey(sectionKey);
-        const sectionData = response[sectionKey];
+      Object.entries(response.sections).forEach(([label, sectionData]) => {
+        const section = getSectionFromLabel(label);
+        if (!section) return;
 
-        if (sectionData && sectionData.seats && Array.isArray(sectionData.seats)) {
+        if (sectionData && Array.isArray(sectionData.seats)) {
           const sectionSeats = sectionData.seats;
           const layout = getSeatLayout(section);
           const transformedSeats: Seat[] = layout.seats.map((seat, index) => ({
@@ -76,11 +76,11 @@ export function useAllSectionsSeatState() {
 
       const allSeats: Seat[] = [];
 
-      (Object.keys(response) as Array<keyof typeof response>).forEach(sectionKey => {
-        const section = getSectionFromKey(sectionKey);
-        const sectionData = response[sectionKey];
+      Object.entries(response.sections).forEach(([label, sectionData]) => {
+        const section = getSectionFromLabel(label);
+        if (!section) return;
 
-        if (sectionData && sectionData.seats && Array.isArray(sectionData.seats)) {
+        if (sectionData && Array.isArray(sectionData.seats)) {
           const sectionSeats = sectionData.seats;
 
           const layout = getSeatLayout(section);

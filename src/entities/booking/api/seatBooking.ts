@@ -1,14 +1,11 @@
 import { Seat } from "../model/types";
+import { toApiSeat } from "../model/seatLayouts";
 import axios from "@/shared/lib/axios";
 import { AxiosError } from "axios";
 
 export const seatBooking = async (data: Omit<Seat, "status">) => {
   try {
-    const response = await axios.post("/api/seat", {
-      seat_section: data.section,
-      seat_row: data.row,
-      seat_number: data.seatNumber,
-    });
+    const response = await axios.post("/seat", toApiSeat(data));
 
     return { data: response.data };
   } catch (error: unknown) {
