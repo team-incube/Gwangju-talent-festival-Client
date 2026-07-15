@@ -9,7 +9,7 @@ import {
   Section,
   SEAT_STATUS,
   Seat,
-  getSectionLabel,
+  formatSeatLabel,
 } from "../../model/types";
 import { useAllSectionsSeatState } from "../../lib/useSeatState";
 
@@ -44,11 +44,9 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     const section = selectedSeat?.section || selectedSection;
     const seatPosition =
       selectedSeats && selectedSeats.length > 0
-        ? selectedSeats
-            .map(seat => `${getSectionLabel(seat.section)}${seat.row}${seat.seatNumber}`)
-            .join(", ")
+        ? selectedSeats.map(formatSeatLabel).join(", ")
         : selectedSeat
-          ? `${getSectionLabel(selectedSeat.section)}${selectedSeat.seat.row}${selectedSeat.seat.seatNumber}`
+          ? formatSeatLabel(selectedSeat.seat)
           : null;
 
     let availableSeatsCount = 0;

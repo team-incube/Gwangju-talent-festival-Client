@@ -2,7 +2,7 @@
 
 import { memo, ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
-import { Seat, getSectionLabel } from "../../model/types";
+import { Seat, formatSeatLabel } from "../../model/types";
 
 interface InfoRowProps {
   label: string;
@@ -34,11 +34,9 @@ export const BookingInfoDisplay = memo<BookingInfoDisplayProps>(
         <div className="space-y-8">
           <InfoRow className="text-main-600 text-body1b" label="예약좌석">
             {mySeats && mySeats.length > 0
-              ? mySeats
-                  .map(seat => `${getSectionLabel(seat.section)}${seat.row}${seat.seatNumber}`)
-                  .join(", ")
+              ? mySeats.map(formatSeatLabel).join(", ")
               : mySeat
-                ? `${getSectionLabel(mySeat.section)}${mySeat.row}${mySeat.seatNumber}`
+                ? formatSeatLabel(mySeat)
                 : "좌석이 없습니다"}
           </InfoRow>
           <InfoRow label="관람일자">2025.9.27.(토)</InfoRow>
