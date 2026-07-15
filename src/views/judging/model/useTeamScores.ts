@@ -38,7 +38,11 @@ export const useTeamScores = (teams: Score[]) => {
 
   const hasUnsavedEdit = useCallback((teamId: number) => teamId in edits, [edits]);
 
-  const { mutate: submitScore, isPending: isSaving } = useMutation({
+  const {
+    mutate: submitScore,
+    isPending,
+    variables: savingVariables,
+  } = useMutation({
     mutationFn: (teamId: number) => saveScore(teamId, getScore(teamId)),
     onMutate: async (teamId: number) => {
       await queryClient.cancelQueries({ queryKey: judgeListQueryKey });
@@ -69,5 +73,7 @@ export const useTeamScores = (teams: Score[]) => {
     },
   });
 
-  return { getScore, updateScore, submitScore, isSaving, hasUnsavedEdit };
+  const savingTeamId = isPending ? (savingVariables ?? null) : null;
+
+  return { getScore, updateScore, submitScore, savingTeamId, hasUnsavedEdit };
 };

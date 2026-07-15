@@ -34,7 +34,8 @@ const JudgingPage = () => {
     }
   }, [selectedTeamId, teams]);
 
-  const { getScore, updateScore, submitScore, isSaving, hasUnsavedEdit } = useTeamScores(teams);
+  const { getScore, updateScore, submitScore, savingTeamId, hasUnsavedEdit } =
+    useTeamScores(teams);
   const { data: judgeComment } = useGetJudgeComment(selectedTeamId);
   const { save: saveJudgeComment, saveImmediately: clearJudgeComment } =
     useSaveJudgeComment(selectedTeamId);
@@ -108,7 +109,7 @@ const JudgingPage = () => {
             score={score}
             onChange={(key, value) => updateScore(selectedTeamId, key, value)}
             onSave={() => submitScore(selectedTeamId)}
-            isSaving={isSaving}
+            isSaving={savingTeamId === selectedTeamId}
           />
         )}
 
