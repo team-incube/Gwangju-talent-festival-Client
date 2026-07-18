@@ -105,7 +105,7 @@ export const SeatSection = memo<SeatSectionProps>(
           allowOccupiedSelect={allowOccupiedSelect}
         />
 
-        <div className="mt-6">
+        <div className="pt-8">
           <SelectedSeatDisplay
             selectedSeat={!isPerformerMode ? selectedSeatInfo : null}
             selectedSection={selectedSection}

@@ -74,7 +74,7 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     }
 
     return (
-      <div className={cn("h-24 p-4 rounded-lg border border-orange-200", className)}>
+      <div className={cn("relative min-h-24 p-4 rounded-lg border border-orange-200 bg-white", className)}>
         <div className="flex items-center justify-between h-full">
           <div className="flex flex-col justify-center gap-1">
             <div>
