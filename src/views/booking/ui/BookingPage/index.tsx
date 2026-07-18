@@ -214,7 +214,7 @@ const BookingPage = () => {
             allowOccupiedSelect={isAdmin}
           />
         </div>
-        <div className="fixed bottom-[48px] inset-x-0 px-4">
+        <div className="fixed bottom-4 inset-x-0 px-4">
           <div className="w-full max-w-[448px] mx-auto">
             <Button
               className="w-full h-[48px]"
