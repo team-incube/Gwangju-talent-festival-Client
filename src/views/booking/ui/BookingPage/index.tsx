@@ -7,10 +7,12 @@ import Button from "@/shared/ui/Button";
 import BackHeader from "@/shared/ui/BackHeader";
 import { useSeatSelection } from "@/widgets/booking/lib/useSeatSelection";
 import { usePerformerSeatSelection } from "@/widgets/booking/lib/usePerformerSeatSelection";
-import { SectionType, Seat } from "@/entities/booking/model/types";
+import { SectionType, Seat, SeatChangeEvent, SEAT_STATUS } from "@/entities/booking/model/types";
 import { useSeatBooking, useMultipleSeatBooking } from "@/widgets/booking/lib/useSeatBooking";
 import { useAdminSeatBan } from "@/widgets/booking/lib/useAdminSeatBan";
-import { SEAT_STATUS } from "@/entities/booking/model/types";
+import { useSeatChangeSSE } from "@/entities/booking/lib/useSeatChangeSSE";
+import { applySeatChange } from "@/entities/booking/lib/useSeatState";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/shared/utils/auth";
@@ -52,6 +54,21 @@ const BookingPage = () => {
     const role = getTokenFromCookie("role");
     setUserRole(role);
   }, []);
+
+  const queryClient = useQueryClient();
+
+  // 백엔드가 유저당 SSE 연결을 1개만 유지하므로 페이지에서 연결 하나만 열고 공용 처리
+  const handleSeatChange = useCallback(
+    (event: SeatChangeEvent) => {
+      applySeatChange(queryClient, event);
+      if (!event.is_available && isPerformer) {
+        removeOccupiedSeat(event.seat_section, event.seat_row, event.seat_number.toString());
+      }
+    },
+    [queryClient, isPerformer, removeOccupiedSeat],
+  );
+
+  useSeatChangeSSE({ onSeatChange: handleSeatChange });
 
   const handleSectionSelect = useCallback(
     (section: SectionType) => {
@@ -194,7 +211,6 @@ const BookingPage = () => {
             isSeatSelected={isPerformer ? isSeatSelected : undefined}
             isPerformerMode={isPerformer}
             myBookedSeats={myBookedSeats}
-            removeOccupiedSeat={isPerformer ? removeOccupiedSeat : undefined}
             allowOccupiedSelect={isAdmin}
           />
         </div>
