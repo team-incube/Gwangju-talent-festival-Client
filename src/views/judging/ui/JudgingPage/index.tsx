@@ -54,7 +54,7 @@ const JudgingPage = () => {
     setIsDownloading(true);
     try {
       await downloadJudgingSummary();
-      toast.success("심사 집계표 다운로드를 시작합니다");
+      toast.success("다운로드 되었습니다");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "심사 집계표를 다운로드하지 못했습니다.");
     } finally {
