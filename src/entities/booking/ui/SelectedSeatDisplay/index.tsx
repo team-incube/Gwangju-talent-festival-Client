@@ -9,7 +9,7 @@ import {
   Section,
   SEAT_STATUS,
   Seat,
-  getSectionLabel,
+  formatSeatLabel,
 } from "../../model/types";
 import { useAllSectionsSeatState } from "../../lib/useSeatState";
 
@@ -44,11 +44,9 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     const section = selectedSeat?.section || selectedSection;
     const seatPosition =
       selectedSeats && selectedSeats.length > 0
-        ? selectedSeats
-            .map(seat => `${getSectionLabel(seat.section)}${seat.row}${seat.seatNumber}`)
-            .join(", ")
+        ? selectedSeats.map(formatSeatLabel).join(", ")
         : selectedSeat
-          ? `${getSectionLabel(selectedSeat.section)}${selectedSeat.seat.row}${selectedSeat.seat.seatNumber}`
+          ? formatSeatLabel(selectedSeat.seat)
           : null;
 
     let availableSeatsCount = 0;
@@ -76,7 +74,7 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
     }
 
     return (
-      <div className={cn("h-24 p-4 rounded-lg border border-orange-200", className)}>
+      <div className={cn("relative min-h-24 p-4 rounded-lg border border-orange-200 bg-white", className)}>
         <div className="flex items-center justify-between h-full">
           <div className="flex flex-col justify-center gap-1">
             <div>

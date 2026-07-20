@@ -7,8 +7,12 @@ import Button from "@/shared/ui/Button";
 import BackHeader from "@/shared/ui/BackHeader";
 import { useSeatSelection } from "@/widgets/booking/lib/useSeatSelection";
 import { usePerformerSeatSelection } from "@/widgets/booking/lib/usePerformerSeatSelection";
-import { SectionType, Seat } from "@/entities/booking/model/types";
+import { SectionType, Seat, SeatChangeEvent, SEAT_STATUS } from "@/entities/booking/model/types";
 import { useSeatBooking, useMultipleSeatBooking } from "@/widgets/booking/lib/useSeatBooking";
+import { useAdminSeatBan } from "@/widgets/booking/lib/useAdminSeatBan";
+import { useSeatChangeSSE } from "@/entities/booking/lib/useSeatChangeSSE";
+import { applySeatChange } from "@/entities/booking/lib/useSeatState";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/shared/utils/auth";
@@ -19,6 +23,9 @@ const BookingPage = () => {
   const router = useRouter();
   const { seats: myBookedSeats } = useMyBookedSeats();
 
+  const isAdmin = userRole === "ADMIN";
+  const isPerformer = userRole === "PERFORMER";
+
   const {
     selectedSection,
     selectedSeat,
@@ -26,7 +33,7 @@ const BookingPage = () => {
     setSelectedSection,
     selectSeat,
     isComplete,
-  } = useSeatSelection();
+  } = useSeatSelection({ allowOccupied: isAdmin });
 
   const {
     selectedSection: performerSelectedSection,
@@ -41,13 +48,28 @@ const BookingPage = () => {
 
   const seatBookingMutation = useSeatBooking();
   const multipleSeatBookingMutation = useMultipleSeatBooking();
+  const { ban: seatBanMutation, unban: seatUnbanMutation } = useAdminSeatBan();
 
   useEffect(() => {
     const role = getTokenFromCookie("role");
     setUserRole(role);
   }, []);
 
-  const isPerformer = userRole === "PERFORMER";
+  const queryClient = useQueryClient();
+
+  // 백엔드가 유저당 SSE 연결을 1개만 유지하므로 페이지에서 연결 하나만 열고 공용 처리
+  const handleSeatChange = useCallback(
+    (event: SeatChangeEvent) => {
+      applySeatChange(queryClient, event);
+      if (!event.is_available && isPerformer) {
+        removeOccupiedSeat(event.seat_section, event.seat_row, event.seat_number.toString());
+      }
+    },
+    [queryClient, isPerformer, removeOccupiedSeat],
+  );
+
+  useSeatChangeSSE({ onSeatChange: handleSeatChange });
+
   const handleSectionSelect = useCallback(
     (section: SectionType) => {
       if (isPerformer) {
@@ -71,6 +93,23 @@ const BookingPage = () => {
     },
     [isPerformer, selectPerformerSeat, selectSeat],
   );
+
+  const handleBanClick = useCallback(() => {
+    if (!isComplete || !selectedSeat) return;
+
+    const seat = selectedSeat;
+    const isOccupied = seat.status === SEAT_STATUS.OCCUPIED;
+    const mutation = isOccupied ? seatUnbanMutation : seatBanMutation;
+    mutation.mutate(seat, {
+      onSuccess: () => {
+        // 선택을 해제하지 않고 바뀐 상태로 유지 — 밴 해제 직후 바로 예매 가능
+        selectSeat({
+          ...seat,
+          status: isOccupied ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
+        });
+      },
+    });
+  }, [isComplete, selectedSeat, seatBanMutation, seatUnbanMutation, selectSeat]);
 
   const handleBookingClick = useCallback(() => {
     if (isPerformer) {
@@ -106,6 +145,18 @@ const BookingPage = () => {
     seatBookingMutation,
     router,
   ]);
+
+  const isSelectedSeatOccupied = selectedSeat?.status === SEAT_STATUS.OCCUPIED;
+
+  const getBanButtonText = () => {
+    if (seatBanMutation.isPending || seatUnbanMutation.isPending) {
+      return "처리 중...";
+    }
+    if (!selectedSeat) {
+      return "좌석을 선택해주세요";
+    }
+    return isSelectedSeatOccupied ? "밴 해제하기" : "밴하기";
+  };
 
   const getButtonText = () => {
     if (isPerformer) {
@@ -160,16 +211,29 @@ const BookingPage = () => {
             isSeatSelected={isPerformer ? isSeatSelected : undefined}
             isPerformerMode={isPerformer}
             myBookedSeats={myBookedSeats}
-            removeOccupiedSeat={isPerformer ? removeOccupiedSeat : undefined}
+            allowOccupiedSelect={isAdmin}
           />
         </div>
-        <Button
-          className="fixed bottom-[48px] left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-[448px] h-[48px]"
-          onClick={handleBookingClick}
-          disabled={isPerformer ? !canBook || maxSelectableSeats === 0 : !isComplete}
-        >
-          {getButtonText()}
-        </Button>
+        <div className="pb-4">
+          <div className={`w-full ${isAdmin ? "flex gap-2" : ""}`}>
+            <Button
+              className={`h-[48px] ${isAdmin ? "flex-1" : "w-full"}`}
+              onClick={handleBookingClick}
+              disabled={
+                isPerformer
+                  ? !canBook || maxSelectableSeats === 0
+                  : !isComplete || isSelectedSeatOccupied
+              }
+            >
+              {getButtonText()}
+            </Button>
+            {isAdmin && (
+              <Button className="flex-1 h-[48px]" onClick={handleBanClick} disabled={!isComplete}>
+                {getBanButtonText()}
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </main>
   );

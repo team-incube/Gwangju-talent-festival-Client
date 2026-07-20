@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { getSectionFromLabel, SECTIONS } from "../types"
+import { getSectionFromLabel, formatSeatLabel, SECTIONS } from "../types"
 
 describe("getSectionFromLabel - 섹션 라벨 변환", () => {
   it("A를 RED로 변환한다", () => {
@@ -31,5 +31,15 @@ describe("getSectionFromLabel - 섹션 라벨 변환", () => {
     validLabels.forEach(label => {
       expect(SECTIONS).toContain(getSectionFromLabel(label))
     })
+  })
+})
+
+describe("formatSeatLabel - 좌석 라벨 표기", () => {
+  it("일반 섹션은 섹션라벨+행+번호로 표기한다", () => {
+    expect(formatSeatLabel({ section: "RED", row: "A", seatNumber: "1" })).toBe("AA1")
+  })
+
+  it("휠체어석은 행을 생략해 WW1이 아닌 W1로 표기한다", () => {
+    expect(formatSeatLabel({ section: "WHEELCHAIR", row: "W", seatNumber: "1" })).toBe("W1")
   })
 })

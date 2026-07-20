@@ -6,7 +6,7 @@ import Button from "@/shared/ui/Button";
 import { LotterySeatGrid } from "@/entities/booking/ui/LotterySeatGrid";
 import { useLotteryAnimation } from "@/entities/booking/lib/useLotteryAnimation";
 import { getLotteryConfig, convertToSeats } from "@/entities/booking/model/lotterySeats";
-import { Seat, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
+import { Seat, SECTIONS, formatSeatLabel } from "@/entities/booking/model/types";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
 import { cn } from "@/shared/utils/cn";
 import { redirect } from "next/navigation";
@@ -105,7 +105,7 @@ const LotteryView = () => {
         if (allSeats.length === 0) return;
         const r = Math.floor(Math.random() * allSeats.length);
         const s = allSeats[r];
-        setSlotLabel(`${getSectionLabel(s.section)}${s.row}${s.seatNumber}`);
+        setSlotLabel(formatSeatLabel(s));
       }, 60);
     } else {
       cleanupSlotInterval();
@@ -198,9 +198,7 @@ const LotteryView = () => {
                     key={`target-${currentTarget.section}-${currentTarget.row}-${currentTarget.seatNumber}`}
                     className="inline-flex items-center justify-center rounded-full border border-purple-200 text-purple-100 px-1 py-1 text-body2b font-semibold min-w-[60px] h-8 my-8 animate-pulse"
                   >
-                    {isAnimating && slotLabel
-                      ? slotLabel
-                      : `${getSectionLabel(currentTarget.section)}${currentTarget.row}${currentTarget.seatNumber}`}
+                    {isAnimating && slotLabel ? slotLabel : formatSeatLabel(currentTarget)}
                   </span>
                 )}
             </div>

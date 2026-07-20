@@ -103,28 +103,20 @@ export function useAllSectionsSeatState() {
   });
 }
 
-export function updateSeatInCache(
+export function applySeatChange(
   queryClient: ReturnType<typeof useQueryClient>,
-  seatChangeEvent: SeatChangeEvent,
+  event: SeatChangeEvent,
 ): void {
-  const {
-    seat_section: section,
-    seat_row: seatRow,
-    seat_number: seatNumber,
-    is_available: isAvailable,
-  } = seatChangeEvent;
+  const status = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
+  const matches = (seat: Seat) =>
+    seat.section === event.seat_section &&
+    seat.row === event.seat_row &&
+    seat.seatNumber === event.seat_number.toString();
 
-  queryClient.setQueryData<Seat[]>(seatQueryKeys.seatState(section), oldData => {
-    if (!oldData) return oldData;
-
-    return oldData.map(seat => {
-      if (seat.seatNumber === seatNumber.toString() && seat.row === seatRow) {
-        return {
-          ...seat,
-          status: isAvailable ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
-        };
-      }
-      return seat;
-    });
-  });
+  queryClient.setQueryData<Seat[]>(seatQueryKeys.seatState(event.seat_section), oldData =>
+    oldData?.map(seat => (matches(seat) ? { ...seat, status } : seat)),
+  );
+  queryClient.setQueryData<Seat[]>(["allSectionsSeatState"], oldData =>
+    oldData?.map(seat => (matches(seat) ? { ...seat, status } : seat)),
+  );
 }

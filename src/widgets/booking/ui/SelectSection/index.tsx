@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, memo, useMemo, useEffect } from "react";
-import { useQueryClient, useQueries } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { cn } from "@/shared/utils/cn";
 import { SectionButtons } from "@/entities/booking/ui/SectionButtons";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
@@ -17,7 +17,6 @@ import {
   usePrefetchSeatCaches,
   useAllSectionsSeatState,
 } from "@/entities/booking/lib/useSeatState";
-import { useSeatChangeSSE } from "@/entities/booking/lib/useSeatChangeSSE";
 import { toast } from "sonner";
 
 interface SelectSectionProps {
@@ -28,60 +27,12 @@ interface SelectSectionProps {
 
 export const SelectSection = memo<SelectSectionProps>(
   ({ selectedSection = null, onSectionSelect, className }) => {
-  const queryClient = useQueryClient();
-
   const { isLoading: isPrefetching, error: prefetchError } = usePrefetchSeatCaches();
   const {
     data: allSeats,
     isLoading: isAllSeatsLoading,
     error: allSeatsError,
   } = useAllSectionsSeatState();
-
-  const handleSeatChange = useCallback(
-    (event: { seat_section: Section; seat_row: string; seat_number: number; is_available: boolean }) => {
-      const cachedSeats = queryClient.getQueryData<Seat[]>(
-        seatQueryKeys.seatState(event.seat_section),
-      );
-      if (cachedSeats) {
-        const updatedSeats = cachedSeats.map(seat => {
-          if (seat.seatNumber === event.seat_number.toString() && seat.row === event.seat_row) {
-            const newStatus = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
-            return {
-              ...seat,
-              status: newStatus,
-            };
-          }
-          return seat;
-        });
-        queryClient.setQueryData(seatQueryKeys.seatState(event.seat_section), updatedSeats);
-      }
-
-      const allSeatsCache = queryClient.getQueryData<Seat[]>(["allSectionsSeatState"]);
-      if (allSeatsCache) {
-        const updatedAllSeats = allSeatsCache.map(seat => {
-          if (
-            seat.section === event.seat_section &&
-            seat.row === event.seat_row &&
-            seat.seatNumber === event.seat_number.toString()
-          ) {
-            const newStatus = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
-            return {
-              ...seat,
-              status: newStatus,
-            };
-          }
-          return seat;
-        });
-        queryClient.setQueryData(["allSectionsSeatState"], updatedAllSeats);
-      }
-    },
-    [queryClient],
-  );
-
-  useSeatChangeSSE({
-    onSeatChange: handleSeatChange,
-    enabled: true,
-  });
 
   useEffect(() => {
     if (prefetchError) {

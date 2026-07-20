@@ -1,60 +1,36 @@
 import { useState, useCallback, useMemo } from "react";
-import { toast } from "sonner";
 import { Section, Seat, SelectedSeatInfo, SEAT_STATUS } from "@/entities/booking/model/types";
-import { banSeat, cancelSeatBan, SeatBanError } from "@/entities/booking/api/banSeat";
 
 const isSameSeat = (a: Seat, b: Seat) =>
   a.seatNumber === b.seatNumber && a.row === b.row && a.section === b.section;
 
-export const useSeatSelection = () => {
+interface UseSeatSelectionOptions {
+  // 어드민은 밴 해제를 위해 점유(회색) 좌석도 선택할 수 있어야 한다
+  allowOccupied?: boolean;
+}
+
+export const useSeatSelection = ({ allowOccupied = false }: UseSeatSelectionOptions = {}) => {
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [selectedSeat, setSelectedSeat] = useState<Seat | null>(null);
 
-  const releaseHold = useCallback((seat: Seat) => {
-    cancelSeatBan(seat).catch(() => {});
+  const handleSectionChange = useCallback((section: Section | null) => {
+    setSelectedSection(section);
+    setSelectedSeat(null);
   }, []);
-
-  const holdSeat = useCallback((seat: Seat) => {
-    banSeat(seat)
-      .catch(async (error: SeatBanError) => {
-        // 409 외(권한 없음 등)는 선택 유지하고 예매 시점에 판정
-        if (error.status !== 409) return;
-        // 본인이 이전에 남긴 홀드일 수 있으니 해제 후 1회 재시도
-        await cancelSeatBan(seat).catch(() => {});
-        await banSeat(seat);
-      })
-      .catch(() => {
-        setSelectedSeat(current => (current && isSameSeat(current, seat) ? null : current));
-        toast.error("이미 다른 사용자가 선택한 좌석입니다.");
-      });
-  }, []);
-
-  const handleSectionChange = useCallback(
-    (section: Section | null) => {
-      setSelectedSection(section);
-      setSelectedSeat(current => {
-        if (current) releaseHold(current);
-        return null;
-      });
-    },
-    [releaseHold],
-  );
 
   const selectSeat = useCallback(
     (seat: Seat) => {
-      if (seat.status === SEAT_STATUS.OCCUPIED) return;
+      if (seat.status === SEAT_STATUS.OCCUPIED && !allowOccupied) return;
 
       if (selectedSeat && isSameSeat(selectedSeat, seat)) {
-        releaseHold(selectedSeat);
-        setSelectedSeat(null);
+        // 같은 좌석이라도 상태가 바뀐 경우(밴/해제)는 선택을 유지하고 상태만 갱신
+        setSelectedSeat(selectedSeat.status !== seat.status ? seat : null);
       } else {
-        if (selectedSeat) releaseHold(selectedSeat);
         setSelectedSeat(seat);
         setSelectedSection(seat.section);
-        holdSeat(seat);
       }
     },
-    [selectedSeat, releaseHold, holdSeat],
+    [selectedSeat, allowOccupied],
   );
 
   const canSelectSeat = useCallback((seat: Seat) => {
