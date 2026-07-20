@@ -194,7 +194,7 @@ const BookingPage = () => {
         <BackHeader goto="/home" text="예매하기" />
       </div>
 
-      <div className="flex flex-col p-4 pt-8 gap-8">
+      <div className="flex-1 flex flex-col p-4 pt-8 gap-8">
         <div>
           <SelectSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
@@ -214,7 +214,7 @@ const BookingPage = () => {
             allowOccupiedSelect={isAdmin}
           />
         </div>
-        <div className="pb-4">
+        <div className="mt-auto pb-4">
           <div className={`w-full ${isAdmin ? "flex gap-2" : ""}`}>
             <Button
               className={`h-[48px] ${isAdmin ? "flex-1" : "w-full"}`}
