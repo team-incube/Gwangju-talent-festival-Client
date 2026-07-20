@@ -94,18 +94,17 @@ const BookingPage = () => {
     [isPerformer, selectPerformerSeat, selectSeat],
   );
 
+  const handleBanClick = useCallback(() => {
+    if (!isComplete || !selectedSeat) return;
+
+    const seat = selectedSeat;
+    const mutation = seat.status === SEAT_STATUS.OCCUPIED ? seatUnbanMutation : seatBanMutation;
+    mutation.mutate(seat, {
+      onSuccess: () => selectSeat(seat),
+    });
+  }, [isComplete, selectedSeat, seatBanMutation, seatUnbanMutation, selectSeat]);
+
   const handleBookingClick = useCallback(() => {
-    if (isAdmin) {
-      if (!isComplete || !selectedSeat) return;
-
-      const seat = selectedSeat;
-      const mutation = seat.status === SEAT_STATUS.OCCUPIED ? seatUnbanMutation : seatBanMutation;
-      mutation.mutate(seat, {
-        onSuccess: () => selectSeat(seat),
-      });
-      return;
-    }
-
     if (isPerformer) {
       if (canBook && selectedSeats.length > 0) {
         multipleSeatBookingMutation.mutate(selectedSeats, {
@@ -130,35 +129,29 @@ const BookingPage = () => {
       }
     }
   }, [
-    isAdmin,
     isPerformer,
     canBook,
     selectedSeats,
     multipleSeatBookingMutation,
     isComplete,
-    selectedSeat,
     selectedSeatInfo,
     seatBookingMutation,
-    seatBanMutation,
-    seatUnbanMutation,
-    selectSeat,
     router,
   ]);
 
-  const getButtonText = () => {
-    if (isAdmin) {
-      if (seatBanMutation.isPending || seatUnbanMutation.isPending) {
-        return "처리 중...";
-      }
-      if (!selectedSection) {
-        return "구역을 선택해주세요";
-      }
-      if (!selectedSeat) {
-        return "좌석을 선택해주세요";
-      }
-      return selectedSeat.status === SEAT_STATUS.OCCUPIED ? "좌석 밴 해제하기" : "좌석 밴하기";
-    }
+  const isSelectedSeatOccupied = selectedSeat?.status === SEAT_STATUS.OCCUPIED;
 
+  const getBanButtonText = () => {
+    if (seatBanMutation.isPending || seatUnbanMutation.isPending) {
+      return "처리 중...";
+    }
+    if (!selectedSeat) {
+      return "좌석을 선택해주세요";
+    }
+    return isSelectedSeatOccupied ? "밴 해제하기" : "밴하기";
+  };
+
+  const getButtonText = () => {
     if (isPerformer) {
       if (multipleSeatBookingMutation.isPending) {
         return "예매 중...";
@@ -215,14 +208,23 @@ const BookingPage = () => {
           />
         </div>
         <div className="fixed bottom-4 inset-x-0 px-4">
-          <div className="w-full max-w-[448px] mx-auto">
+          <div className={`w-full max-w-[448px] mx-auto ${isAdmin ? "flex gap-2" : ""}`}>
             <Button
-              className="w-full h-[48px]"
+              className={`h-[48px] ${isAdmin ? "flex-1" : "w-full"}`}
               onClick={handleBookingClick}
-              disabled={isPerformer ? !canBook || maxSelectableSeats === 0 : !isComplete}
+              disabled={
+                isPerformer
+                  ? !canBook || maxSelectableSeats === 0
+                  : !isComplete || isSelectedSeatOccupied
+              }
             >
               {getButtonText()}
             </Button>
+            {isAdmin && (
+              <Button className="flex-1 h-[48px]" onClick={handleBanClick} disabled={!isComplete}>
+                {getBanButtonText()}
+              </Button>
+            )}
           </div>
         </div>
       </div>
