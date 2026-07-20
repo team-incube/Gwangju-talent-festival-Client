@@ -194,6 +194,15 @@ describe("useSeatSelection - 어드민 옵션", () => {
 
     expect(result.current.selectedSeat).toEqual(seat)
   })
+
+  it("같은 좌석이라도 상태가 바뀌면 선택 해제 대신 상태만 갱신된다", () => {
+    const { result } = renderHook(() => useSeatSelection({ allowOccupied: true }))
+
+    act(() => { result.current.selectSeat(makeSeat("1", SEAT_STATUS.OCCUPIED)) })
+    act(() => { result.current.selectSeat(makeSeat("1", SEAT_STATUS.AVAILABLE)) })
+
+    expect(result.current.selectedSeat).toEqual(makeSeat("1", SEAT_STATUS.AVAILABLE))
+  })
 })
 
 describe("useSeatSelection - isComplete", () => {

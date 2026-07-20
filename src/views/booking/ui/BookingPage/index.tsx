@@ -98,9 +98,16 @@ const BookingPage = () => {
     if (!isComplete || !selectedSeat) return;
 
     const seat = selectedSeat;
-    const mutation = seat.status === SEAT_STATUS.OCCUPIED ? seatUnbanMutation : seatBanMutation;
+    const isOccupied = seat.status === SEAT_STATUS.OCCUPIED;
+    const mutation = isOccupied ? seatUnbanMutation : seatBanMutation;
     mutation.mutate(seat, {
-      onSuccess: () => selectSeat(seat),
+      onSuccess: () => {
+        // 선택을 해제하지 않고 바뀐 상태로 유지 — 밴 해제 직후 바로 예매 가능
+        selectSeat({
+          ...seat,
+          status: isOccupied ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
+        });
+      },
     });
   }, [isComplete, selectedSeat, seatBanMutation, seatUnbanMutation, selectSeat]);
 

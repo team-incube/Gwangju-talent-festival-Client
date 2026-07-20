@@ -23,7 +23,8 @@ export const useSeatSelection = ({ allowOccupied = false }: UseSeatSelectionOpti
       if (seat.status === SEAT_STATUS.OCCUPIED && !allowOccupied) return;
 
       if (selectedSeat && isSameSeat(selectedSeat, seat)) {
-        setSelectedSeat(null);
+        // 같은 좌석이라도 상태가 바뀐 경우(밴/해제)는 선택을 유지하고 상태만 갱신
+        setSelectedSeat(selectedSeat.status !== seat.status ? seat : null);
       } else {
         setSelectedSeat(seat);
         setSelectedSection(seat.section);
