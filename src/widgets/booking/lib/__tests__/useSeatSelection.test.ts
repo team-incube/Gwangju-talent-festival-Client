@@ -1,17 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { renderHook, act } from "@testing-library/react"
 import { useSeatSelection } from "../useSeatSelection"
-import { banSeat, cancelSeatBan } from "@/entities/booking/api/banSeat"
 import { Seat, Section, SeatStatus, SEAT_STATUS } from "@/entities/booking/model/types"
-
-vi.mock("@/entities/booking/api/banSeat", () => ({
-  banSeat: vi.fn(() => Promise.resolve({ data: null })),
-  cancelSeatBan: vi.fn(() => Promise.resolve({ data: null })),
-}))
-
-vi.mock("sonner", () => ({
-  toast: { error: vi.fn(), success: vi.fn() },
-}))
 
 const makeSeat = (
   seatNumber: string,
@@ -195,112 +185,9 @@ describe("useSeatSelection - 초기 상태", () => {
   })
 })
 
-describe("useSeatSelection - 임시 저장(좌석 홀드)", () => {
-  it("좌석 선택 시 임시 저장 API를 호출한다", () => {
-    const { result } = renderHook(() => useSeatSelection())
-    const seat = makeSeat("1")
-
-    act(() => { result.current.selectSeat(seat) })
-
-    expect(banSeat).toHaveBeenCalledWith(seat)
-  })
-
-  it("좌석 선택 해제 시 임시 저장 해제 API를 호출한다", () => {
-    const { result } = renderHook(() => useSeatSelection())
-    const seat = makeSeat("1")
-
-    act(() => { result.current.selectSeat(seat) })
-    act(() => { result.current.selectSeat(seat) })
-
-    expect(cancelSeatBan).toHaveBeenCalledWith(seat)
-  })
-
-  it("다른 좌석으로 교체 시 이전 좌석의 임시 저장을 해제한다", () => {
-    const { result } = renderHook(() => useSeatSelection())
-    const seatA = makeSeat("1")
-    const seatB = makeSeat("2")
-
-    act(() => { result.current.selectSeat(seatA) })
-    act(() => { result.current.selectSeat(seatB) })
-
-    expect(cancelSeatBan).toHaveBeenCalledWith(seatA)
-    expect(banSeat).toHaveBeenCalledWith(seatB)
-  })
-
-  it("섹션 변경 시 선택돼 있던 좌석의 임시 저장을 해제한다", () => {
-    const { result } = renderHook(() => useSeatSelection())
-    const seat = makeSeat("1")
-
-    act(() => { result.current.setSelectedSection("RED") })
-    act(() => { result.current.selectSeat(seat) })
-    act(() => { result.current.setSelectedSection("YELLOW") })
-
-    expect(cancelSeatBan).toHaveBeenCalledWith(seat)
-  })
-
-  it("다른 사용자가 선점한 좌석(409)이면 재시도 후에도 실패 시 선택이 해제된다", async () => {
-    const conflict = Object.assign(new Error("이미 차단된 좌석"), { status: 409 })
-    vi.mocked(banSeat).mockRejectedValueOnce(conflict).mockRejectedValueOnce(conflict)
-    const { result } = renderHook(() => useSeatSelection())
-    const seat = makeSeat("1")
-
-    await act(async () => { result.current.selectSeat(seat) })
-
-    expect(result.current.selectedSeat).toBeNull()
-  })
-
-  it("본인의 이전 홀드로 409가 나면 해제 후 재시도해 선택을 유지한다", async () => {
-    vi.mocked(banSeat).mockRejectedValueOnce(
-      Object.assign(new Error("이미 차단된 좌석"), { status: 409 }),
-    )
-    const { result } = renderHook(() => useSeatSelection())
-    const seat = makeSeat("1")
-
-    await act(async () => { result.current.selectSeat(seat) })
-
-    expect(cancelSeatBan).toHaveBeenCalledWith(seat)
-    expect(banSeat).toHaveBeenCalledTimes(2)
-    expect(result.current.selectedSeat).toEqual(seat)
-  })
-
-  it("선점 외 사유(권한 없음 등)로 임시 저장이 실패해도 선택은 유지된다", async () => {
-    vi.mocked(banSeat).mockRejectedValueOnce(
-      Object.assign(new Error("권한 없음"), { status: 403 }),
-    )
-    const { result } = renderHook(() => useSeatSelection())
-    const seat = makeSeat("1")
-
-    await act(async () => { result.current.selectSeat(seat) })
-
-    expect(result.current.selectedSeat).toEqual(seat)
-  })
-})
-
 describe("useSeatSelection - 어드민 옵션", () => {
-  it("holdOnSelect가 false면 좌석 선택 시 임시 저장 API를 호출하지 않는다", () => {
-    const { result } = renderHook(() => useSeatSelection({ holdOnSelect: false }))
-    const seat = makeSeat("1")
-
-    act(() => { result.current.selectSeat(seat) })
-
-    expect(banSeat).not.toHaveBeenCalled()
-    expect(result.current.selectedSeat).toEqual(seat)
-  })
-
-  it("holdOnSelect가 false면 선택 해제·교체 시에도 해제 API를 호출하지 않는다", () => {
-    const { result } = renderHook(() => useSeatSelection({ holdOnSelect: false }))
-
-    act(() => { result.current.selectSeat(makeSeat("1")) })
-    act(() => { result.current.selectSeat(makeSeat("2")) })
-    act(() => { result.current.setSelectedSection("YELLOW") })
-
-    expect(cancelSeatBan).not.toHaveBeenCalled()
-  })
-
   it("allowOccupied가 true면 OCCUPIED 좌석도 선택할 수 있다", () => {
-    const { result } = renderHook(() =>
-      useSeatSelection({ holdOnSelect: false, allowOccupied: true }),
-    )
+    const { result } = renderHook(() => useSeatSelection({ allowOccupied: true }))
     const seat = makeSeat("1", SEAT_STATUS.OCCUPIED)
 
     act(() => { result.current.selectSeat(seat) })

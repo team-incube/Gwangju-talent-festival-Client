@@ -33,7 +33,7 @@ const BookingPage = () => {
     setSelectedSection,
     selectSeat,
     isComplete,
-  } = useSeatSelection({ holdOnSelect: !isAdmin, allowOccupied: isAdmin });
+  } = useSeatSelection({ allowOccupied: isAdmin });
 
   const {
     selectedSection: performerSelectedSection,
