@@ -189,19 +189,19 @@ const BookingPage = () => {
   };
 
   return (
-    <main className="w-full max-w-[480px] mx-auto min-h-screen bg-white flex flex-col">
+    <main className="w-full max-w-[480px] mx-auto h-screen bg-white flex flex-col overflow-hidden">
       <div className="px-4">
         <BackHeader goto="/home" text="예매하기" />
       </div>
 
-      <div className="flex-1 flex flex-col p-4 pt-8 gap-8">
+      <div className="flex-1 flex flex-col min-h-0 p-4 pt-8 gap-4">
         <div>
           <SelectSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             onSectionSelect={handleSectionSelect}
           />
         </div>
-        <div>
+        <div className="flex-1 min-h-0">
           <SeatSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             selectedSeat={isPerformer ? null : selectedSeat}
@@ -214,7 +214,7 @@ const BookingPage = () => {
             allowOccupiedSelect={isAdmin}
           />
         </div>
-        <div className="mt-auto pb-4">
+        <div className="shrink-0 pb-4">
           <div className={`w-full ${isAdmin ? "flex gap-2" : ""}`}>
             <Button
               className={`h-[48px] ${isAdmin ? "flex-1" : "w-full"}`}

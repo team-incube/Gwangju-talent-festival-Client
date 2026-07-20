@@ -226,11 +226,11 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     const getGridContainerStyles = () => {
-      return "relative bg-gray-800 rounded-lg w-full p-3 overflow-x-auto";
+      return "relative bg-gray-800 rounded-lg w-full h-full p-3 overflow-auto";
     };
 
     return (
-      <div className={cn(className)}>
+      <div className={cn("min-h-0", className)}>
         <div className={getGridContainerStyles()}>
           {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
         </div>
