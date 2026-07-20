@@ -207,8 +207,8 @@ const BookingPage = () => {
             allowOccupiedSelect={isAdmin}
           />
         </div>
-        <div className="fixed bottom-4 inset-x-0 px-4">
-          <div className={`w-full max-w-[448px] mx-auto ${isAdmin ? "flex gap-2" : ""}`}>
+        <div className="pb-4">
+          <div className={`w-full ${isAdmin ? "flex gap-2" : ""}`}>
             <Button
               className={`h-[48px] ${isAdmin ? "flex-1" : "w-full"}`}
               onClick={handleBookingClick}
