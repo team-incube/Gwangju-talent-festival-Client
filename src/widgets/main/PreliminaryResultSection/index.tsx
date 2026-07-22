@@ -36,6 +36,19 @@ const PreliminaryResultSection = () => {
           description={<>7월 24일(금)·25일(토), 광주학생교육문화회관에서 열립니다</>}
         />
 
+        <div className="flex flex-col gap-12">
+          <h3 className="text-body2b mobile:text-body3b text-black">예선 소개 영상</h3>
+          <video
+            src="/video/preliminary-intro.mp4"
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full rounded-lg border border-gray-100 bg-black"
+          >
+            <track kind="captions" />
+          </video>
+        </div>
+
         <div className="flex flex-col gap-16">
           <h3 className="text-body2b mobile:text-body3b text-black">실시간 중계</h3>
           <div className="flex gap-8">
