@@ -22,6 +22,11 @@ const MAP_LINKS = [
   },
 ] as const;
 
+const BUS_ROUTES = [
+  { stop: "정문 · 교육대 정류장", buses: "순환01, 수완03, 지원15, 문흥80, 충효187" },
+  { stop: "후문 · 풍향삼거리 정류장", buses: "지원15, 문흥80, 충효187" },
+] as const;
+
 const PreliminaryFourthSection = () => {
   return (
     <section className={cn("flex flex-col items-center")}>
@@ -86,13 +91,20 @@ const PreliminaryFourthSection = () => {
                   </a>
                 ))}
               </div>
-              <div
-                className={cn(
-                  "rounded-lg border border-dashed border-gray-300 bg-gray-50 p-20 mobile:p-16",
-                  "text-center text-caption1r mobile:text-caption2r text-gray-400",
-                )}
-              >
-                버스 노선 등 오시는 길 상세 정보가 추가될 예정입니다
+              <div className={cn("flex flex-col gap-12 rounded-lg bg-gray-50 p-20 mobile:p-16")}>
+                {BUS_ROUTES.map(({ stop, buses }) => (
+                  <div key={stop} className={cn("flex flex-col gap-4")}>
+                    <span className="text-caption1b mobile:text-caption2b text-orange-500">
+                      {stop}
+                    </span>
+                    <p className="text-body3r mobile:text-caption1r text-gray-700 break-keep">
+                      {buses}
+                    </p>
+                  </div>
+                ))}
+                <p className="text-caption2r text-gray-400 break-keep">
+                  ※ 버스 노선은 변경될 수 있으니 지도 앱에서 실시간 확인을 권장합니다
+                </p>
               </div>
             </div>
           </div>
