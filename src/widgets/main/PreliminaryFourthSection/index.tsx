@@ -102,9 +102,6 @@ const PreliminaryFourthSection = () => {
                     </p>
                   </div>
                 ))}
-                <p className="text-caption2r text-gray-400 break-keep">
-                  ※ 버스 노선은 변경될 수 있으니 지도 앱에서 실시간 확인을 권장합니다
-                </p>
               </div>
             </div>
           </div>
