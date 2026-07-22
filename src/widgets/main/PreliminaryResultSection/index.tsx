@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import YouTubeLazyEmbed from "@/shared/ui/YouTubeLazyEmbed";
 import { isPreliminaryResultOpen } from "@/shared/config/dateConfig";
 
 const LIVE_STREAMS = [
-  { date: "7월 24일 (금) 1일차", videoId: "nL0pdTRB6Hc" },
-  { date: "7월 25일 (토) 2일차", videoId: "eR3Tx134-dU" },
+  { date: "7월 24일 (금)", label: "1일차", videoId: "nL0pdTRB6Hc" },
+  { date: "7월 25일 (토)", label: "2일차", videoId: "eR3Tx134-dU" },
 ] as const;
 
 const PreliminaryResultSection = () => {
   const isOpen = isPreliminaryResultOpen();
+  const [activeDay, setActiveDay] = useState(0);
+  const activeStream = LIVE_STREAMS[activeDay];
 
   return (
     <section className={cn("relative w-full overflow-hidden bg-white py-[80px] mobile:py-[52px]")}>
@@ -35,16 +38,28 @@ const PreliminaryResultSection = () => {
 
         <div className="flex flex-col gap-16">
           <h3 className="text-body2b mobile:text-body3b text-black">실시간 중계</h3>
-          <div className="flex gap-20 mobile:flex-col mobile:gap-16">
-            {LIVE_STREAMS.map(({ date, videoId }) => (
-              <div key={videoId} className="flex flex-1 flex-col gap-8">
-                <span className="w-fit rounded-full bg-orange-500 px-16 py-6 text-caption1b text-white">
-                  {date}
-                </span>
-                <YouTubeLazyEmbed videoId={videoId} title={`2026 광탈페 예선 ${date} 실시간 중계`} />
-              </div>
+          <div className="flex gap-8">
+            {LIVE_STREAMS.map(({ date, label }, index) => (
+              <button
+                key={label}
+                onClick={() => setActiveDay(index)}
+                className={cn(
+                  "flex flex-1 flex-col items-center gap-2 rounded-lg py-12 transition-colors duration-200",
+                  activeDay === index
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+                )}
+              >
+                <span className="text-body3b mobile:text-caption1b">{label}</span>
+                <span className="text-caption2r opacity-90">{date}</span>
+              </button>
             ))}
           </div>
+          <YouTubeLazyEmbed
+            key={activeStream.videoId}
+            videoId={activeStream.videoId}
+            title={`2026 광탈페 예선 ${activeStream.label} 실시간 중계`}
+          />
         </div>
 
         <div className="flex flex-col gap-16">
