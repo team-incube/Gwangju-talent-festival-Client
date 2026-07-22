@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
-import MediaPlaceholder from "@/shared/ui/MediaPlaceholder";
 
 const VENUE = {
   name: "광주교육대학교 풍향문화관",
@@ -109,7 +108,14 @@ const PreliminaryFourthSection = () => {
           {/* 풍향문화관 사진 */}
           <div className={cn("flex w-1/2 mobile:w-full flex-col gap-12")}>
             <h3 className="text-body2b mobile:text-body3b text-black">풍향문화관</h3>
-            <MediaPlaceholder label="풍향문화관 전경 사진 준비 중" aspectRatio="4 / 3" />
+            <Image
+              src="/images/punghyang-hall.png"
+              alt="광주교육대학교 풍향문화관 전경"
+              width={2560}
+              height={1002}
+              className="w-full h-auto rounded-lg border border-gray-100"
+              sizes="(max-width: 768px) 100vw, 35vw"
+            />
           </div>
         </div>
       </div>
