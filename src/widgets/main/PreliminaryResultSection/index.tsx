@@ -4,8 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
-import MediaPlaceholder from "@/shared/ui/MediaPlaceholder";
+import YouTubeLazyEmbed from "@/shared/ui/YouTubeLazyEmbed";
 import { isPreliminaryResultOpen } from "@/shared/config/dateConfig";
+
+const LIVE_STREAMS = [
+  { date: "7월 24일 (금) 1일차", videoId: "nL0pdTRB6Hc" },
+  { date: "7월 25일 (토) 2일차", videoId: "eR3Tx134-dU" },
+] as const;
 
 const PreliminaryResultSection = () => {
   const isOpen = isPreliminaryResultOpen();
@@ -28,12 +33,18 @@ const PreliminaryResultSection = () => {
           description={<>7월 24일(금)·25일(토), 광주학생교육문화회관에서 열립니다</>}
         />
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-16">
           <h3 className="text-body2b mobile:text-body3b text-black">실시간 중계</h3>
-          <MediaPlaceholder
-            label="실시간 중계 준비 중"
-            description="예선 당일 이곳에서 생중계됩니다"
-          />
+          <div className="flex gap-20 mobile:flex-col mobile:gap-16">
+            {LIVE_STREAMS.map(({ date, videoId }) => (
+              <div key={videoId} className="flex flex-1 flex-col gap-8">
+                <span className="w-fit rounded-full bg-orange-500 px-16 py-6 text-caption1b text-white">
+                  {date}
+                </span>
+                <YouTubeLazyEmbed videoId={videoId} title={`2026 광탈페 예선 ${date} 실시간 중계`} />
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="flex flex-col gap-16">
