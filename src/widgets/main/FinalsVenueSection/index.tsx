@@ -30,7 +30,7 @@ const FinalsVenueSection = () => {
     <section className={cn("flex flex-col items-center")}>
       <div className={cn("w-[70%] mobile:w-full mobile:px-16")}>
         <SectionTitle
-          title="2026 광탈페 光트로 본선"
+          title="2026 광탈페 본선"
           description={<>{VENUE.date} · {VENUE.name}</>}
           className={cn("mt-66 mobile:mt-[1.7rem] mb-40 mobile:mb-24")}
         />

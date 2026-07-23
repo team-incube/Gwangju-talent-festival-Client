@@ -29,7 +29,7 @@ const PreliminaryLiveSection = () => {
 
       <div className="relative z-10 mx-auto flex w-[70%] mobile:w-full flex-col gap-40 mobile:gap-28 px-16">
         <SectionTitle
-          title="2026 광탈페 光트로 예선"
+          title="2026 광탈페 예선(光트로)"
           description={<>7월 24일(금)·25일(토), 광주학생교육문화회관에서 열립니다</>}
         />
 
