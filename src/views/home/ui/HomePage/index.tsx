@@ -13,22 +13,7 @@ const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryL
   ssr: false,
 });
 
-const PreliminaryFourthSection = dynamic(() => import("@/widgets/main/PreliminaryFourthSection"), {
-  loading: () => <SectionPlaceholder />,
-  ssr: false,
-});
-
 const FinalsVenueSection = dynamic(() => import("@/widgets/main/FinalsVenueSection"), {
-  loading: () => <SectionPlaceholder />,
-  ssr: false,
-});
-
-// const ReservationFifthSection = dynamic(() => import("@/widgets/main/ReservationFifthSection"), {
-//   loading: () => <SectionPlaceholder />,
-//   ssr: false,
-// });
-
-const FinalsSixthSection = dynamic(() => import("@/widgets/main/FinalsSixthSection"), {
   loading: () => <SectionPlaceholder />,
   ssr: false,
 });
@@ -78,22 +63,6 @@ const HomePage = () => {
       >
         <FinalsVenueSection />
       </LazySection>
-
-      <LazySection
-        id="PreliminaryFourthSection"
-        fallback={<SectionPlaceholder height="600px" />}
-        rootMargin="200px"
-      >
-        <PreliminaryFourthSection />
-      </LazySection>
-
-      <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
-        <FinalsSixthSection />
-      </LazySection>
-
-      {/* <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
-        <ReservationFifthSection />
-      </LazySection> */}
 
       <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
         <SeventhSection />
