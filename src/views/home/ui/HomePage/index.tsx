@@ -13,7 +13,17 @@ const PreliminaryResultSection = dynamic(
   { loading: () => <SectionPlaceholder height="400px" />, ssr: false },
 );
 
+const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryLiveSection"), {
+  loading: () => <SectionPlaceholder />,
+  ssr: false,
+});
+
 const PreliminaryFourthSection = dynamic(() => import("@/widgets/main/PreliminaryFourthSection"), {
+  loading: () => <SectionPlaceholder />,
+  ssr: false,
+});
+
+const FinalsVenueSection = dynamic(() => import("@/widgets/main/FinalsVenueSection"), {
   loading: () => <SectionPlaceholder />,
   ssr: false,
 });
@@ -67,11 +77,27 @@ const HomePage = () => {
       </LazySection>
 
       <LazySection
+        id="PreliminaryLiveSection"
+        fallback={<SectionPlaceholder height="600px" />}
+        rootMargin="200px"
+      >
+        <PreliminaryLiveSection />
+      </LazySection>
+
+      <LazySection
         id="PreliminaryFourthSection"
         fallback={<SectionPlaceholder height="600px" />}
         rootMargin="200px"
       >
         <PreliminaryFourthSection />
+      </LazySection>
+
+      <LazySection
+        id="FinalsVenueSection"
+        fallback={<SectionPlaceholder height="600px" />}
+        rootMargin="200px"
+      >
+        <FinalsVenueSection />
       </LazySection>
 
       <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
