@@ -6,7 +6,6 @@ import { SectionTitle } from "@/shared/ui/SectionTitle";
 
 const VENUE = {
   name: "광주교육대학교 풍향문화관",
-  address: "광주광역시 북구 필문대로 55",
   date: "2026년 9월 5일 (토)",
 };
 
@@ -50,26 +49,8 @@ const FinalsVenueSection = () => {
         </div>
 
         <div className={cn("flex gap-24 mb-90 mobile:mb-38 mobile:flex-col mobile:gap-20")}>
-          {/* 장소·오시는 길 */}
+          {/* 오시는 길 */}
           <div className={cn("flex w-1/2 mobile:w-full flex-col gap-24")}>
-            <div className={cn("flex flex-col gap-12 rounded-xl bg-gray-50 p-24 mobile:p-16")}>
-              <div className={cn("flex gap-12")}>
-                <span className="shrink-0 text-body3b mobile:text-caption1b text-orange-500">일시</span>
-                <p className="text-body3r mobile:text-caption1r text-gray-700">{VENUE.date}</p>
-              </div>
-              <div className={cn("flex gap-12")}>
-                <span className="shrink-0 text-body3b mobile:text-caption1b text-orange-500">장소</span>
-                <div className="flex flex-col gap-4">
-                  <p className="text-body3r mobile:text-caption1r text-gray-700 break-keep">
-                    {VENUE.name}
-                  </p>
-                  <p className="text-caption1r mobile:text-caption2r text-gray-400">
-                    {VENUE.address}
-                  </p>
-                </div>
-              </div>
-            </div>
-
             <div className={cn("flex flex-col gap-12")}>
               <h3 className="text-body2b mobile:text-body3b text-black">오시는 길</h3>
               <div className={cn("flex gap-10 mobile:flex-col")}>
