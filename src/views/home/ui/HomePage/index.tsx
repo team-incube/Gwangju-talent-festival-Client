@@ -8,12 +8,17 @@ import JudgingCtaSection from "@/widgets/main/JudgingCtaSection";
 import LazySection from "@/shared/ui/LazySection";
 import SloganPosterPopup from "@/widgets/main/SloganPosterPopup";
 
-const PreliminaryResultSection = dynamic(
-  () => import("@/widgets/main/PreliminaryResultSection"),
-  { loading: () => <SectionPlaceholder height="400px" />, ssr: false },
-);
+const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryLiveSection"), {
+  loading: () => <SectionPlaceholder />,
+  ssr: false,
+});
 
 const PreliminaryFourthSection = dynamic(() => import("@/widgets/main/PreliminaryFourthSection"), {
+  loading: () => <SectionPlaceholder />,
+  ssr: false,
+});
+
+const FinalsVenueSection = dynamic(() => import("@/widgets/main/FinalsVenueSection"), {
   loading: () => <SectionPlaceholder />,
   ssr: false,
 });
@@ -59,11 +64,19 @@ const HomePage = () => {
       <SloganSecondSection />
 
       <LazySection
-        id="PreliminaryResultSection"
-        fallback={<SectionPlaceholder height="400px" />}
+        id="PreliminaryLiveSection"
+        fallback={<SectionPlaceholder height="600px" />}
         rootMargin="200px"
       >
-        <PreliminaryResultSection />
+        <PreliminaryLiveSection />
+      </LazySection>
+
+      <LazySection
+        id="FinalsVenueSection"
+        fallback={<SectionPlaceholder height="600px" />}
+        rootMargin="200px"
+      >
+        <FinalsVenueSection />
       </LazySection>
 
       <LazySection
