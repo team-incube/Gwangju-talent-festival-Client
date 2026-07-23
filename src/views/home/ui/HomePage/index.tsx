@@ -92,16 +92,16 @@ const HomePage = () => {
         <PreliminaryFourthSection />
       </LazySection>
 
+      <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
+        <FinalsSixthSection />
+      </LazySection>
+
       <LazySection
         id="FinalsVenueSection"
         fallback={<SectionPlaceholder height="600px" />}
         rootMargin="200px"
       >
         <FinalsVenueSection />
-      </LazySection>
-
-      <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
-        <FinalsSixthSection />
       </LazySection>
 
       {/* <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
