@@ -4,7 +4,7 @@ import { festivalDate, sloganStartDate, sloganEndDate, applyStartDate, applyEndD
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api|images|video|files).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|images|video|files|fonts).*)",
     "/signin",
     "/robots.txt",
   ],
@@ -17,7 +17,8 @@ export function middleware(request: NextRequest) {
   const isPublicAdminPath =
     pathname.match(/^\/admin\/lottery\/[^/]+$/) ||
     pathname.match(/^\/admin\/score\/[^/]+$/) ||
-    pathname.match(/^\/admin\/apply\/[^/]+$/);
+    pathname.match(/^\/admin\/apply\/[^/]+$/) ||
+    pathname === "/admin/evaluation";
   if (role !== "ADMIN" && pathname.startsWith("/admin") && !isPublicAdminPath) {
     return NextResponse.redirect(new URL("/home", request.url));
   }

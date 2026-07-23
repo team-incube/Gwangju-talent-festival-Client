@@ -1,7 +1,15 @@
 import { useState, useCallback, useMemo } from "react";
 import { Section, Seat, SelectedSeatInfo, SEAT_STATUS } from "@/entities/booking/model/types";
 
-export const useSeatSelection = () => {
+const isSameSeat = (a: Seat, b: Seat) =>
+  a.seatNumber === b.seatNumber && a.row === b.row && a.section === b.section;
+
+interface UseSeatSelectionOptions {
+  // 어드민은 밴 해제를 위해 점유(회색) 좌석도 선택할 수 있어야 한다
+  allowOccupied?: boolean;
+}
+
+export const useSeatSelection = ({ allowOccupied = false }: UseSeatSelectionOptions = {}) => {
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [selectedSeat, setSelectedSeat] = useState<Seat | null>(null);
 
@@ -12,15 +20,17 @@ export const useSeatSelection = () => {
 
   const selectSeat = useCallback(
     (seat: Seat) => {
-      if (seat.status === SEAT_STATUS.OCCUPIED) return;
+      if (seat.status === SEAT_STATUS.OCCUPIED && !allowOccupied) return;
 
-      if (selectedSeat?.seatNumber === seat.seatNumber && selectedSeat?.section === seat.section) {
-        setSelectedSeat(null);
+      if (selectedSeat && isSameSeat(selectedSeat, seat)) {
+        // 같은 좌석이라도 상태가 바뀐 경우(밴/해제)는 선택을 유지하고 상태만 갱신
+        setSelectedSeat(selectedSeat.status !== seat.status ? seat : null);
       } else {
         setSelectedSeat(seat);
+        setSelectedSection(seat.section);
       }
     },
-    [selectedSeat],
+    [selectedSeat, allowOccupied],
   );
 
   const canSelectSeat = useCallback((seat: Seat) => {

@@ -4,9 +4,9 @@ import { memo, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { cn } from "@/shared/utils/cn";
-import { Seat, SeatLayout, SECTIONS } from "@/entities/booking/model/types";
+import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
 import { SeatItem } from "../SeatItem";
-import { getSeatPattern, getSeatLayout } from "@/entities/booking/model/seatLayouts";
+import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 
 const NOOP_SEAT_SELECT = () => {};
 
@@ -22,6 +22,7 @@ export interface SeatGridProps {
   isPerformerMode?: boolean;
   myAllSeats?: Seat[];
   selectedSeatsForCancel?: Set<string>;
+  allowOccupiedSelect?: boolean;
 }
 
 export const SeatGrid = memo<SeatGridProps>(
@@ -36,6 +37,7 @@ export const SeatGrid = memo<SeatGridProps>(
     isPerformerMode = false,
     myAllSeats,
     selectedSeatsForCancel,
+    allowOccupiedSelect = false,
   }) => {
     const queryClient = useQueryClient();
 
@@ -50,16 +52,21 @@ export const SeatGrid = memo<SeatGridProps>(
       if (!layout?.section) return [];
 
       const pattern = getSeatPattern(layout.section);
+      const rowLabels = getRowLabels(layout.section);
       const seatMap = new Map<string, Seat>();
 
       layout.seats.forEach(seat => {
-        seatMap.set(seat.seatNumber, seat);
+        seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
       });
 
       return pattern.map((row, rowIndex) =>
         row.map((seatNumber, colIndex) => {
-          const seat = seatNumber ? seatMap.get(seatNumber.toString()) || null : null;
-          const key = seat ? `${seat.section}-${seat.seatNumber}` : `${rowIndex}-${colIndex}`;
+          const seat = seatNumber
+            ? seatMap.get(`${rowLabels[rowIndex]}-${seatNumber}`) || null
+            : null;
+          const key = seat
+            ? `${seat.section}-${seat.row}-${seat.seatNumber}`
+            : `${rowIndex}-${colIndex}`;
 
           return {
             seatNumber,
@@ -71,10 +78,9 @@ export const SeatGrid = memo<SeatGridProps>(
     }, [layout?.section, layout?.seats]);
 
     const allSectionsGrid = useMemo(() => {
-      const sectionsRow1 = SECTIONS.slice(0, 5);
-      const sectionsRow2 = SECTIONS.slice(5, 10);
-
-      return [sectionsRow1, sectionsRow2];
+      return [SECTIONS.slice(0, 3), SECTIONS.slice(3, 6), SECTIONS.slice(6)].filter(
+        row => row.length > 0,
+      );
     }, []);
 
     const getSeatSelectedState = useCallback(
@@ -82,31 +88,38 @@ export const SeatGrid = memo<SeatGridProps>(
         if (!seat) return false;
 
         if (selectedSeatsForCancel) {
-          const seatId = `${seat.section}-${seat.seatNumber}`;
+          const seatId = `${seat.section}-${seat.row}-${seat.seatNumber}`;
           return selectedSeatsForCancel.has(seatId);
         }
 
         if (mySeat) {
           if (myAllSeats && myAllSeats.length > 1) {
             return myAllSeats.some(
-              (s: Seat) => s.seatNumber === seat.seatNumber && s.section === seat.section,
+              (s: Seat) =>
+                s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section,
             );
           }
-          return mySeat.seatNumber === seat.seatNumber && mySeat.section === seat.section;
+          return (
+            mySeat.seatNumber === seat.seatNumber &&
+            mySeat.row === seat.row &&
+            mySeat.section === seat.section
+          );
         }
 
         if (isPerformerMode && typeof isSeatSelected === "function") {
           return isSeatSelected(seat) === true;
         }
         return (
-          selectedSeat?.seatNumber === seat.seatNumber && selectedSeat?.section === seat.section
+          selectedSeat?.seatNumber === seat.seatNumber &&
+          selectedSeat?.row === seat.row &&
+          selectedSeat?.section === seat.section
         );
       },
       [mySeat, myAllSeats, isPerformerMode, isSeatSelected, selectedSeat, selectedSeatsForCancel],
     );
 
     const renderSingleSectionGrid = () => (
-      <div className="min-w-max flex flex-col justify-start">
+      <div className="w-max mx-auto flex flex-col justify-start">
         {seatGrid.map((row, rowIndex) => (
           <div key={rowIndex} className="flex items-center gap-4 mb-4">
             {row.map(({ seat, key }) => (
@@ -116,6 +129,7 @@ export const SeatGrid = memo<SeatGridProps>(
                     seat={seat}
                     isSelected={getSeatSelectedState(seat)}
                     onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
+                    allowOccupiedSelect={allowOccupiedSelect}
                   />
                 ) : (
                   <div className="w-5 h-5" />
@@ -151,7 +165,7 @@ export const SeatGrid = memo<SeatGridProps>(
 
         const seatMap = new Map<string, Seat>();
         seatsToUse.forEach(seat => {
-          seatMap.set(seat.seatNumber, seat);
+          seatMap.set(`${seat.row}-${seat.seatNumber}`, seat);
         });
         maps.set(section, seatMap);
       });
@@ -161,18 +175,21 @@ export const SeatGrid = memo<SeatGridProps>(
 
     const renderSectionMiniGrid = (section: (typeof SECTIONS)[number]) => {
       const pattern = getSeatPattern(section);
+      const rowLabels = getRowLabels(section);
       const seatMap = sectionSeatMaps.get(section)!;
 
       return (
-        <div className="flex flex-col items-center border rounded-lg mb-28">
-          <div className="text-white text-sm font-bold mb-1">{section}</div>
+        <div className="flex flex-col items-center border rounded-lg mb-6">
+          <div className="text-white text-sm font-bold mb-1">{getSectionLabel(section)}</div>
           <div className="flex flex-col gap-1">
             {pattern.map((row, rowIndex) => (
               <div key={rowIndex} className="flex gap-1">
                 {row.map((seatNumber, colIndex) => {
-                  const seat = seatNumber ? seatMap.get(seatNumber.toString()) || null : null;
+                  const seat = seatNumber
+                    ? seatMap.get(`${rowLabels[rowIndex]}-${seatNumber}`) || null
+                    : null;
                   const key = seat
-                    ? `${seat.section}-${seat.seatNumber}`
+                    ? `${seat.section}-${seat.row}-${seat.seatNumber}`
                     : `${rowIndex}-${colIndex}`;
                   return (
                     <div key={key} className="w-6 h-6">
@@ -197,7 +214,7 @@ export const SeatGrid = memo<SeatGridProps>(
     };
 
     const renderAllSectionsGrid = () => (
-      <div className="flex flex-col gap-8 items-center">
+      <div className="w-max mx-auto flex flex-col gap-8 items-center">
         {allSectionsGrid.map((sectionsRow, rowIndex) => (
           <div key={rowIndex} className="flex gap-8 items-end">
             {sectionsRow.map(section => (
@@ -209,15 +226,13 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     const getGridContainerStyles = () => {
-      return "relative bg-gray-800 rounded-lg h-80 w-full flex justify-center";
+      return "relative bg-gray-800 rounded-lg w-full h-full p-3 overflow-auto";
     };
 
     return (
-      <div className={cn(className)}>
+      <div className={cn("min-h-0", className)}>
         <div className={getGridContainerStyles()}>
-          <div className="absolute inset-3 overflow-auto flex justify-center">
-            {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
-          </div>
+          {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
         </div>
       </div>
     );

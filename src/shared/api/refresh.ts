@@ -1,17 +1,17 @@
 "use client";
 
 interface RefreshResponse {
-  access_token: string;
-  access_token_expired_at: string;
-  refresh_token: string;
-  refresh_token_expired_at: string;
+  accessToken: string;
+  accessTokenExpiresAt: string;
+  refreshToken: string;
+  refreshTokenExpiresAt: string;
 }
 
 export const refresh = async (refreshToken: string): Promise<RefreshResponse> => {
   const response = await fetch("/api/refresh", {
     method: "PATCH",
     headers: {
-      "Refresh-Token": `Bearer ${refreshToken}`,
+      "Refresh-Token": refreshToken,
     },
   });
 

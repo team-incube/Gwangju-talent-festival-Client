@@ -1,16 +1,12 @@
-import { Seat } from "../model/types";
+import { Seat, getSectionLabel } from "../model/types";
+import { toApiSeat } from "../model/seatLayouts";
 import axios from "@/shared/lib/axios";
 import { AxiosError } from "axios";
 
 export const cancelPerformerSeats = async (seats: Seat[]) => {
   try {
     const cancelPromises = seats.map(seat =>
-      axios.delete("/api/seat/performer", {
-        data: {
-          seat_section: seat.section,
-          seat_number: seat.seatNumber,
-        },
-      }),
+      axios.delete("/seat/performer", { data: toApiSeat(seat) }),
     );
 
     const results = await Promise.allSettled(cancelPromises);
@@ -23,7 +19,7 @@ export const cancelPerformerSeats = async (seats: Seat[]) => {
         .map((result, index) => {
           if (result.status === "rejected") {
             const seat = seats[index];
-            return `${seat.section}-${seat.seatNumber} 좌석 취소 실패`;
+            return `${getSectionLabel(seat.section)}${seat.row}${seat.seatNumber} 좌석 취소 실패`;
           }
           return "";
         })

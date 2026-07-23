@@ -3,26 +3,17 @@
 import dynamic from "next/dynamic";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
+import JudgingCtaSection from "@/widgets/main/JudgingCtaSection";
 
 import LazySection from "@/shared/ui/LazySection";
 import SloganPosterPopup from "@/widgets/main/SloganPosterPopup";
 
-const PreliminaryResultSection = dynamic(
-  () => import("@/widgets/main/PreliminaryResultSection"),
-  { loading: () => <SectionPlaceholder height="400px" />, ssr: false },
-);
-
-const PreliminaryFourthSection = dynamic(() => import("@/widgets/main/PreliminaryFourthSection"), {
+const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryLiveSection"), {
   loading: () => <SectionPlaceholder />,
   ssr: false,
 });
 
-// const ReservationFifthSection = dynamic(() => import("@/widgets/main/ReservationFifthSection"), {
-//   loading: () => <SectionPlaceholder />,
-//   ssr: false,
-// });
-
-const FinalsSixthSection = dynamic(() => import("@/widgets/main/FinalsSixthSection"), {
+const FinalsVenueSection = dynamic(() => import("@/widgets/main/FinalsVenueSection"), {
   loading: () => <SectionPlaceholder />,
   ssr: false,
 });
@@ -58,32 +49,27 @@ const HomePage = () => {
       <SloganSecondSection />
 
       <LazySection
-        id="PreliminaryResultSection"
-        fallback={<SectionPlaceholder height="400px" />}
-        rootMargin="200px"
-      >
-        <PreliminaryResultSection />
-      </LazySection>
-
-      <LazySection
-        id="PreliminaryFourthSection"
+        id="PreliminaryLiveSection"
         fallback={<SectionPlaceholder height="600px" />}
         rootMargin="200px"
       >
-        <PreliminaryFourthSection />
+        <PreliminaryLiveSection />
       </LazySection>
 
-      <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
-        <FinalsSixthSection />
+      <LazySection
+        id="FinalsVenueSection"
+        fallback={<SectionPlaceholder height="600px" />}
+        rootMargin="200px"
+      >
+        <FinalsVenueSection />
       </LazySection>
-
-      {/* <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
-        <ReservationFifthSection />
-      </LazySection> */}
 
       <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
         <SeventhSection />
       </LazySection>
+
+      <JudgingCtaSection />
+
       <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="500px">
         <Footer />
       </LazySection>

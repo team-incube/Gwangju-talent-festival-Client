@@ -1,5 +1,5 @@
-import EvaluationView from "@/views/evaluation/ui/EvaluationView";
+import JudgingPage from "@/views/judging/ui/JudgingPage";
 
 export default function EvaluationPage() {
-  return <EvaluationView />;
+  return <JudgingPage />;
 }

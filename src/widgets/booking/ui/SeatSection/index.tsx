@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { cn } from "@/shared/utils/cn";
 import { Section, Seat, SelectedSeatInfo, SEAT_STATUS } from "@/entities/booking/model/types";
 import { SeatGrid } from "@/entities/booking/ui/SeatGrid";
@@ -8,11 +8,8 @@ import { SelectedSeatDisplay } from "@/entities/booking/ui/SelectedSeatDisplay";
 import {
   useSectionSeatState,
   useAllSectionsSeatState,
-  seatQueryKeys,
 } from "@/entities/booking/lib/useSeatState";
-import { useSeatChangeSSE } from "@/entities/booking/lib/useSeatChangeSSE";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
-import { useQueryClient } from "@tanstack/react-query";
 
 const NOOP_SEAT_SELECT = () => {};
 
@@ -26,7 +23,7 @@ interface SeatSectionProps {
   isSeatSelected?: (seat: Seat) => boolean;
   isPerformerMode?: boolean;
   myBookedSeats?: Seat[];
-  removeOccupiedSeat?: (section: Section, seatNumber: string) => void;
+  allowOccupiedSelect?: boolean;
 }
 
 export const SeatSection = memo<SeatSectionProps>(
@@ -40,76 +37,11 @@ export const SeatSection = memo<SeatSectionProps>(
     isSeatSelected,
     isPerformerMode = false,
     myBookedSeats,
-    removeOccupiedSeat,
+    allowOccupiedSelect = false,
   }) => {
     const { data: sectionSeats, isLoading, error } = useSectionSeatState(selectedSection!);
     const { data: allSeats, isLoading: isAllSeatsLoading } = useAllSectionsSeatState();
     const [realTimeSeats, setRealTimeSeats] = useState<Seat[] | null>(null);
-    const queryClient = useQueryClient();
-
-    const handleSeatChange = useCallback(
-      (event: { seat_section: Section; seat_number: number; is_available: boolean }) => {
-        if (event.seat_section !== selectedSection) return;
-
-        if (!event.is_available && isPerformerMode && removeOccupiedSeat) {
-          removeOccupiedSeat(event.seat_section, event.seat_number.toString());
-        }
-
-        setRealTimeSeats(prevSeats => {
-          if (!prevSeats) return prevSeats;
-
-          return prevSeats.map(seat => {
-            if (seat.seatNumber === event.seat_number.toString()) {
-              return {
-                ...seat,
-                status: event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
-              };
-            }
-            return seat;
-          });
-        });
-
-        const sectionCache = queryClient.getQueryData<Seat[]>(
-          seatQueryKeys.seatState(event.seat_section),
-        );
-        if (sectionCache) {
-          const updatedSeats = sectionCache.map(seat => {
-            if (seat.seatNumber === event.seat_number.toString()) {
-              return {
-                ...seat,
-                status: event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
-              };
-            }
-            return seat;
-          });
-          queryClient.setQueryData(seatQueryKeys.seatState(event.seat_section), updatedSeats);
-        }
-
-        const allSeatsCache = queryClient.getQueryData<Seat[]>(["allSectionsSeatState"]);
-        if (allSeatsCache) {
-          const updatedAllSeats = allSeatsCache.map(seat => {
-            if (
-              seat.section === event.seat_section &&
-              seat.seatNumber === event.seat_number.toString()
-            ) {
-              const newStatus = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
-              return {
-                ...seat,
-                status: newStatus,
-              };
-            }
-            return seat;
-          });
-          queryClient.setQueryData(["allSectionsSeatState"], updatedAllSeats);
-        }
-      },
-      [selectedSection, queryClient, isPerformerMode, removeOccupiedSeat],
-    );
-
-    useSeatChangeSSE({
-      onSeatChange: handleSeatChange,
-      enabled: !!selectedSection,
-    });
 
     useEffect(() => {
       if (!selectedSection) {
@@ -159,23 +91,22 @@ export const SeatSection = memo<SeatSectionProps>(
     const layout = getLayout();
 
     return (
-      <div className={cn("pb-20", className)}>
-        <div className="h-80">
-          <SeatGrid
-            layout={layout}
-            selectedSeat={selectedSeat}
-            onSeatSelect={isLoading || !!error ? NOOP_SEAT_SELECT : onSeatSelect}
-            allSeats={realTimeSeats}
-            selectedSeats={selectedSeats}
-            isSeatSelected={isSeatSelected}
-            isPerformerMode={isPerformerMode}
-            myAllSeats={myBookedSeats}
-          />
-        </div>
+      <div className={cn("flex flex-col h-full min-h-0", className)}>
+        <SeatGrid
+          className="flex-1 min-h-0"
+          layout={layout}
+          selectedSeat={selectedSeat}
+          onSeatSelect={isLoading || !!error ? NOOP_SEAT_SELECT : onSeatSelect}
+          allSeats={realTimeSeats}
+          selectedSeats={selectedSeats}
+          isSeatSelected={isSeatSelected}
+          isPerformerMode={isPerformerMode}
+          mySeat={!isPerformerMode && !allowOccupiedSelect ? (myBookedSeats?.[0] ?? null) : null}
+          myAllSeats={myBookedSeats}
+          allowOccupiedSelect={allowOccupiedSelect}
+        />
 
-        <div className="h-28"></div>
-
-        <div className="h-24">
+        <div className="shrink-0 pt-4">
           <SelectedSeatDisplay
             selectedSeat={!isPerformerMode ? selectedSeatInfo : null}
             selectedSection={selectedSection}

@@ -59,22 +59,16 @@ instance.interceptors.response.use(
     if (!originalRequest) return Promise.reject(error);
 
     const status = error.response?.status;
+    const requestUrl = originalRequest.url ?? "";
 
-    if (status === 403 || status === 401) {
-      clearTokens();
-      const currentPath = window.location.pathname;
-      const search = window.location.search;
-
-      if (currentPath !== "/signin") {
-        const shouldSaveNext = !publicPages.some((p: string) => currentPath.startsWith(p));
-        const nextParam = shouldSaveNext ? `?next=${encodeURIComponent(currentPath + search)}` : "";
-        window.location.href = `/signin${nextParam}`;
-      }
-
+    // 심사 페이지는 비로그인 상태에서도 화면에 머물러야 해서(스켈레톤 표시),
+    // 이 엔드포인트들의 401/403은 자동 리다이렉트/토큰 갱신 없이 그대로 호출부로 전달한다.
+    if ((status === 401 || status === 403) && requestUrl.startsWith("/judge")) {
       return Promise.reject(error);
     }
 
-    if (status !== 401 && status !== 403) return Promise.reject(error);
+    // 403(권한 없음)은 토큰 재발급으로 해결되지 않으므로 그대로 호출부에 전달
+    if (status !== 401) return Promise.reject(error);
 
     const url = originalRequest.url ?? "";
     if (publicPages.some(p => url.includes(p))) {
@@ -103,13 +97,13 @@ instance.interceptors.response.use(
 
     try {
       const {
-        access_token: accessToken,
-        access_token_expired_at: accessTokenExpiredAt,
-        refresh_token: refreshToken,
-        refresh_token_expired_at: refreshTokenExpiredAt,
+        accessToken,
+        accessTokenExpiresAt,
+        refreshToken,
+        refreshTokenExpiresAt,
       } = await refresh(getTokenFromCookie("refreshToken") ?? "");
 
-      setTokens(accessToken, accessTokenExpiredAt, refreshToken, refreshTokenExpiredAt);
+      setTokens(accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt);
 
       processQueue(null, accessToken);
 

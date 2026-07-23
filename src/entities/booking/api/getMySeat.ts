@@ -1,24 +1,26 @@
-import { Seat, Section } from "../model/types";
+import { Seat } from "../model/types";
+import { fromApiSeat } from "../model/seatLayouts";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import axios from "@/shared/lib/axios";
 import { AxiosError } from "axios";
 
 interface MySeatApiResponse {
-  seat_section: string;
-  seat_number: number;
+  seatSection: string;
+  seatNumber: number;
 }
 
 type PerformerSeatsApiResponse = MySeatApiResponse[];
 
+const toSeat = ({ seatSection, seatNumber }: MySeatApiResponse): Seat | null => {
+  const seat = fromApiSeat(seatSection, seatNumber);
+  return seat ? { ...seat, status: "selected" as const } : null;
+};
+
 export const getMySeats = async (): Promise<Seat[]> => {
   try {
-    const response = await axios.get<PerformerSeatsApiResponse>("/api/seat/myself/performer");
+    const response = await axios.get<PerformerSeatsApiResponse>("/seat/myself/performer");
 
-    return response.data.map(({ seat_section, seat_number }) => ({
-      section: seat_section as Section,
-      seatNumber: seat_number.toString(),
-      status: "selected" as const,
-    }));
+    return response.data.map(toSeat).filter((seat): seat is Seat => seat !== null);
   } catch (error: unknown) {
     const axiosError = error as AxiosError;
     const errorMessage =
@@ -35,7 +37,7 @@ export const getMySeat = async (): Promise<Seat | null> => {
   try {
     const role = getTokenFromCookie("role");
 
-    const endpoint = role === "PERFORMER" ? "/api/seat/myself/performer" : "/api/seat/myself";
+    const endpoint = role === "PERFORMER" ? "/seat/myself/performer" : "/seat/myself";
 
     const response = await axios.get<MySeatApiResponse | PerformerSeatsApiResponse>(endpoint);
 
@@ -44,21 +46,9 @@ export const getMySeat = async (): Promise<Seat | null> => {
       if (data.length === 0) {
         return null;
       }
-      const { seat_section, seat_number } = data[0];
-      return {
-        section: seat_section as Section,
-        seatNumber: seat_number.toString(),
-        status: "selected" as const,
-      };
+      return toSeat(data[0]);
     } else {
-      const data = response.data as MySeatApiResponse;
-      const { seat_section, seat_number } = data;
-
-      return {
-        section: seat_section as Section,
-        seatNumber: seat_number.toString(),
-        status: "selected" as const,
-      };
+      return toSeat(response.data as MySeatApiResponse);
     }
   } catch (error: unknown) {
     if (

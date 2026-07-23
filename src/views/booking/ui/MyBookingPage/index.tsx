@@ -13,7 +13,7 @@ import { cancelSeatBooking } from "@/entities/booking/api/cancelSeatBooking";
 import { cancelPerformerSeats } from "@/entities/booking/api/cancelPerformerSeats";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Seat } from "@/entities/booking/model/types";
+import { Seat, formatSeatLabel } from "@/entities/booking/model/types";
 
 const MyBookingPage = () => {
   const { seats, isMultiple, isLoading, error } = useMyBookedSeats();
@@ -41,7 +41,7 @@ const MyBookingPage = () => {
 
       const originalSeats = seats;
       const updatedSeats = seats.filter(
-        s => !(s.section === seat.section && s.seatNumber === seat.seatNumber),
+        s => !(s.section === seat.section && s.row === seat.row && s.seatNumber === seat.seatNumber),
       );
 
       queryClient.setQueryData(["mySeats"], updatedSeats);
@@ -51,7 +51,7 @@ const MyBookingPage = () => {
 
       try {
         await cancelPerformerSeats([seat]);
-        toast.success(`${seat.section}${seat.seatNumber} 좌석 예매가 취소되었습니다.`);
+        toast.success(`${formatSeatLabel(seat)} 좌석 예매가 취소되었습니다.`);
 
         queryClient.invalidateQueries({ queryKey: ["mySeat"] });
         queryClient.invalidateQueries({ queryKey: ["mySeats"] });
@@ -85,7 +85,7 @@ const MyBookingPage = () => {
         await cancelPerformerSeats(seats);
         toast.success(`${seats.length}개 좌석 예매가 취소되었습니다.`);
       } else {
-        await cancelSeatBooking(seats[0]);
+        await cancelSeatBooking();
         toast.success("예매가 취소되었습니다.");
       }
 
@@ -141,13 +141,12 @@ const MyBookingPage = () => {
             >
               {seats.map(seat => (
                 <Button
-                  key={`${seat.section}-${seat.seatNumber}`}
+                  key={`${seat.section}-${seat.row}-${seat.seatNumber}`}
                   className="h-[40px] text-sm"
                   onClick={() => handleIndividualSeatCancel(seat)}
                   disabled={seats.length === 0}
                 >
-                  {seat.section}
-                  {seat.seatNumber} 취소
+                  {formatSeatLabel(seat)} 취소
                 </Button>
               ))}
             </div>

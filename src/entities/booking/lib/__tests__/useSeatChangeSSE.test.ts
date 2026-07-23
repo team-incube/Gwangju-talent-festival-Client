@@ -112,7 +112,8 @@ describe("useSeatChangeSSE", () => {
 
       act(() => {
         mockInstances[0].dispatchSeatChange({
-          seat_section: "A",
+          seat_section: "RED",
+          seat_row: "A",
           seat_number: 1,
           is_available: false,
         });
@@ -120,7 +121,8 @@ describe("useSeatChangeSSE", () => {
 
       expect(onSeatChange).toHaveBeenCalledOnce();
       expect(onSeatChange).toHaveBeenCalledWith({
-        seat_section: "A",
+        seat_section: "RED",
+        seat_row: "A",
         seat_number: 1,
         is_available: false,
       });
@@ -144,7 +146,8 @@ describe("useSeatChangeSSE", () => {
 
       act(() => {
         mockInstances[0].dispatchSeatChange({
-          seat_section: "B",
+          seat_section: "YELLOW",
+          seat_row: "A",
           seat_number: 5,
           is_available: true,
         });

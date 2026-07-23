@@ -1,21 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/seat/changes`;
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
 
-    const cookie = request.headers.get("cookie");
+    const token = request.cookies.get("accessToken")?.value ?? "";
     const requestHeaders: HeadersInit = {
       Accept: "text/event-stream",
+      Authorization: `Bearer ${token}`,
     };
-
-    if (cookie) {
-      requestHeaders["Cookie"] = cookie;
-    }
 
     const response = await fetch(backendUrl, {
       headers: requestHeaders,

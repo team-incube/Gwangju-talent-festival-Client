@@ -5,6 +5,7 @@
 - `any` 타입 사용
 - `console.log` 프로덕션 코드 잔재
 - 인라인 스타일 (Tailwind only)
+  - 예외: 외부 스타일시트 로드 전 FOUC/레이아웃 점프를 막기 위해 `:root` CSS 변수에 즉시 폴백값을 줘야 하는 above-the-fold 엘리먼트 (`style={{ height: "var(--x, 4.625rem)" }}`). Tailwind 임의값 클래스는 같은 외부 스타일시트에 정의되므로 이 경우엔 해결책이 안 됨 — SSR HTML에 값 자체가 박혀 있어야 함
 - URL / API 키 하드코딩 (환경 변수 사용)
 - `eslint-disable` (명확한 이유 없이)
 - FSD 역방향 import

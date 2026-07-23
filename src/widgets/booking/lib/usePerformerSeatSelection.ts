@@ -18,12 +18,12 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
 
       setSelectedSeats(prev => {
         const isAlreadySelected = prev.some(
-          s => s.seatNumber === seat.seatNumber && s.section === seat.section,
+          s => s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section,
         );
 
         if (isAlreadySelected) {
           return prev.filter(
-            s => !(s.seatNumber === seat.seatNumber && s.section === seat.section),
+            s => !(s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section),
           );
         } else {
           if (prev.length >= maxSelectableSeats) {
@@ -44,7 +44,7 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
   const isSeatSelected = useCallback(
     (seat: Seat) => {
       return selectedSeats.some(
-        s => s.seatNumber === seat.seatNumber && s.section === seat.section,
+        s => s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section,
       );
     },
     [selectedSeats],
@@ -58,9 +58,11 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
     return selectedSeats.length > 0 && selectedSeats.length <= maxSelectableSeats;
   }, [selectedSeats.length, maxSelectableSeats]);
 
-  const removeOccupiedSeat = useCallback((section: Section, seatNumber: string) => {
+  const removeOccupiedSeat = useCallback((section: Section, row: string, seatNumber: string) => {
     setSelectedSeats(prev =>
-      prev.filter(seat => !(seat.section === section && seat.seatNumber === seatNumber)),
+      prev.filter(
+        seat => !(seat.section === section && seat.row === row && seat.seatNumber === seatNumber),
+      ),
     );
   }, []);
 
