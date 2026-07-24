@@ -23,6 +23,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
+  if (role !== "ADMIN" && pathname === "/download") {
+    return NextResponse.redirect(new URL("/home", request.url));
+  }
+
   if (pathname === "/robots.txt") {
     const host = request.headers.get("host");
     const targetDomain = "www.광탈페.com";
