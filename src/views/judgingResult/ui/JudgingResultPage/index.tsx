@@ -60,12 +60,20 @@ const JudgingResultPage = () => {
 
         <section className="flex flex-col gap-16">
           <h2 className="text-body2b">심사집계표</h2>
-          <ResultTable judges={data?.judges ?? []} rows={data?.scoreRows ?? []} />
+          <ResultTable
+            judges={data?.judges ?? []}
+            rows={data?.scoreRows ?? []}
+            isLoading={data === null}
+          />
         </section>
 
         <section className="flex flex-col gap-16">
           <h2 className="text-body2b">코멘트집계표</h2>
-          <CommentTable judges={data?.judges ?? []} rows={data?.commentRows ?? []} />
+          <CommentTable
+            judges={data?.judges ?? []}
+            rows={data?.commentRows ?? []}
+            isLoading={data === null}
+          />
         </section>
       </div>
     </div>
