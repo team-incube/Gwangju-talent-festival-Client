@@ -83,15 +83,19 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   }, [drawStrokes]);
 
   useEffect(() => {
-    if (loadedTeamId.current === teamId) return;
+    loadedTeamId.current = null;
+    setStrokes([]);
+    setRedoStack([]);
+    drawStrokes([]);
+  }, [teamId, drawStrokes]);
 
-    if (value === undefined) {
-      setStrokes([]);
-      setRedoStack([]);
-      drawStrokes([]);
+  useEffect(() => {
+    if (loadedTeamId.current === teamId || value === undefined) return;
+    // 서버 응답이 늦게 도착하는 사이 이미 손으로 쓰기 시작했다면, 로컬 획을 서버 값으로 덮어써 지우지 않는다
+    if (strokesRef.current.length > 0) {
+      loadedTeamId.current = teamId;
       return;
     }
-
     setStrokes(value);
     setRedoStack([]);
     drawStrokes(value);
@@ -273,8 +277,8 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
-        onPointerLeave={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
+        onLostPointerCapture={handlePointerEnd}
       />
     </div>
   );
