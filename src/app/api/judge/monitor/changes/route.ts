@@ -1,25 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/judge/monitor/changes`;
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
 
-    const cookie = request.headers.get("cookie");
-    const requestHeaders: HeadersInit = {
-      Accept: "text/event-stream",
-    };
-
-    if (cookie) {
-      requestHeaders["Cookie"] = cookie;
-    }
+    // 백엔드 JwtFilter는 Authorization 헤더만 읽고 쿠키는 인증에 쓰지 않는다 —
+    // 브라우저 EventSource는 커스텀 헤더를 못 보내므로, 이 서버 라우트에서 쿠키의
+    // accessToken을 꺼내 Authorization 헤더로 변환해 백엔드에 전달한다
+    const token = request.cookies.get("accessToken")?.value ?? "";
 
     const response = await fetch(backendUrl, {
-      headers: requestHeaders,
-      credentials: "include",
+      headers: {
+        Accept: "text/event-stream",
+        Authorization: "Bearer " + token,
+      },
     });
 
     if (!response.ok) {
