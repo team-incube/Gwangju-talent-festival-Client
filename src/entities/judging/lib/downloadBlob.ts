@@ -1,5 +1,3 @@
-const DEFAULT_FILENAME = "judging-summary.xlsx";
-
 const decodeQEncodedWord = (text: string): string => {
   const bytes: number[] = [];
   for (let i = 0; i < text.length; ) {
@@ -33,8 +31,8 @@ const decodeMimeEncodedWords = (value: string): string =>
     }
   });
 
-const extractFilename = (contentDisposition: string | null): string => {
-  if (!contentDisposition) return DEFAULT_FILENAME;
+const extractFilename = (contentDisposition: string | null, fallback: string): string => {
+  if (!contentDisposition) return fallback;
 
   const extendedMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
   if (extendedMatch) {
@@ -49,22 +47,26 @@ const extractFilename = (contentDisposition: string | null): string => {
   if (quotedMatch) return decodeMimeEncodedWords(quotedMatch[1]);
 
   const unquotedMatch = contentDisposition.match(/filename=([^;]+)/i);
-  return unquotedMatch ? decodeMimeEncodedWords(unquotedMatch[1]) : DEFAULT_FILENAME;
+  return unquotedMatch ? decodeMimeEncodedWords(unquotedMatch[1]) : fallback;
 };
 
-export const downloadJudgingSummary = async (): Promise<void> => {
-  const response = await fetch("/api/excel/summary");
+export const downloadBlobFromApi = async (
+  apiPath: string,
+  fallbackFilename: string,
+  fallbackErrorMessage: string,
+): Promise<void> => {
+  const response = await fetch(apiPath);
 
   if (!response.ok) {
     const data = await response.json().catch(() => null);
-    throw new Error(data?.message ?? "심사 집계표를 다운로드하지 못했습니다.");
+    throw new Error(data?.message ?? fallbackErrorMessage);
   }
 
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = extractFilename(response.headers.get("content-disposition"));
+  link.download = extractFilename(response.headers.get("content-disposition"), fallbackFilename);
   document.body.appendChild(link);
   link.click();
   link.remove();

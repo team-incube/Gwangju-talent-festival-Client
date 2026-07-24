@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { DescriptionCard } from "@/entities/apply/ui/DescriptionCard";
 import BackHeader from "@/shared/ui/BackHeader";
 import { EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
-import { downloadJudgingSummary } from "@/entities/judging/api/downloadJudgingSummary";
 import TeamGrid from "@/widgets/judging/ui/TeamGrid";
 import ScoreForm from "@/widgets/judging/ui/ScoreForm";
 import HandwritingCanvas from "@/widgets/judging/ui/HandwritingCanvas";
@@ -26,7 +24,6 @@ const JudgingPage = () => {
   const isTeamGridUnavailable = isLoading || isError || teams.length === 0;
 
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (selectedTeamId === null && teams.length > 0) {
@@ -50,32 +47,10 @@ const JudgingPage = () => {
     setSelectedTeamId(teamId);
   };
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    try {
-      await downloadJudgingSummary();
-      toast.success("다운로드 되었습니다");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "심사 집계표를 다운로드하지 못했습니다.");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
   return (
-    <div className="w-full min-h-screen flex flex-col items-center py-40 px-40 mobile:px-16">
+    <div className="w-full min-h-screen flex flex-col items-center py-40 px-40 mobile:px-16 tablet:px-24">
       <div className="max-w-[1280px] w-full flex flex-col gap-24">
-        <div className="flex items-center justify-between">
-          <BackHeader text="심사 안내" />
-          <button
-            type="button"
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="shrink-0 text-caption1b text-orange-500 underline underline-offset-4 hover:text-orange-400 transition-colors disabled:opacity-50"
-          >
-            {isDownloading ? "다운로드 중..." : "심사 결과 다운로드"}
-          </button>
-        </div>
+        <BackHeader text="심사 안내" />
 
         {isTeamGridUnavailable ? (
           <div className="grid grid-cols-6 tablet:grid-cols-4 mobile:grid-cols-3 gap-14 mobile:gap-8">

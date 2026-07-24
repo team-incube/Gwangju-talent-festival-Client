@@ -47,15 +47,17 @@ export const useTeamScores = (teams: Score[]) => {
     onMutate: async (teamId: number) => {
       await queryClient.cancelQueries({ queryKey: judgeListQueryKey });
       const previousScores = queryClient.getQueryData<Score[]>(judgeListQueryKey);
+      const wasJudged = previousScores?.find(team => team.teamId === teamId)?.isJudged ?? false;
       const score = getScore(teamId);
 
       queryClient.setQueryData<Score[]>(judgeListQueryKey, old =>
         old?.map(team => (team.teamId === teamId ? { ...team, ...score, isJudged: true } : team)),
       );
 
-      return { previousScores };
+      return { previousScores, wasJudged };
     },
-    onSuccess: (_data, teamId) => {
+    onSuccess: (_data, teamId, context) => {
+      toast.success(context?.wasJudged ? "심사가 수정되었습니다" : "심사가 저장되었습니다");
       setEdits(prev => {
         const next = { ...prev };
         delete next[teamId];

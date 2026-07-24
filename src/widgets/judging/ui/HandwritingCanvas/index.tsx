@@ -27,12 +27,14 @@ const MIN_POINT_DISTANCE = 0.003;
 const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const currentStroke = useRef<Stroke | null>(null);
+  const activePointerId = useRef<number | null>(null);
   const loadedTeamId = useRef<number | null>(null);
   const strokesRef = useRef<Stroke[]>([]);
 
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0].hex);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const [redoStack, setRedoStack] = useState<Stroke[]>([]);
+  // 지우기(Clear)도 한 번에 되돌릴 수 있도록, 되돌리기 스택은 "한 번의 동작으로 사라진 스트로크 묶음" 단위로 쌓는다
+  const [redoStack, setRedoStack] = useState<Stroke[][]>([]);
 
   const drawStrokes = useCallback((list: Stroke[]) => {
     const canvas = canvasRef.current;
@@ -107,9 +109,16 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    // 이미 그리는 중인 포인터가 있으면 손바닥/보조 손가락 등 추가 터치는 무시한다(두 손가락 동시 입력 시 선이 섞이는 문제 방지)
+    if (activePointerId.current !== null) return;
+
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
+
+    activePointerId.current = e.pointerId;
+    canvas.setPointerCapture(e.pointerId);
 
     const point = getPoint(e);
     currentStroke.current = { color: penColor, points: [point] };
@@ -122,6 +131,9 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   const handlePointerMove = (e: ReactPointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerId !== activePointerId.current) return;
+    e.preventDefault();
+
     const stroke = currentStroke.current;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
@@ -158,20 +170,28 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     onChange(next);
   };
 
+  const handlePointerEnd = (e: ReactPointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerId !== activePointerId.current) return;
+    const canvas = canvasRef.current;
+    if (canvas?.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+    activePointerId.current = null;
+    commitCurrentStroke();
+  };
+
   const handleUndo = () => {
     if (strokes.length === 0) return;
     const removed = strokes[strokes.length - 1];
     const next = strokes.slice(0, -1);
     setStrokes(next);
-    setRedoStack(prev => [...prev, removed]);
+    setRedoStack(prev => [...prev, [removed]]);
     drawStrokes(next);
     onChange(next);
   };
 
   const handleRedo = () => {
     if (redoStack.length === 0) return;
-    const restored = redoStack[redoStack.length - 1];
-    const next = [...strokes, restored];
+    const restoredGroup = redoStack[redoStack.length - 1];
+    const next = [...strokes, ...restoredGroup];
     setStrokes(next);
     setRedoStack(prev => prev.slice(0, -1));
     drawStrokes(next);
@@ -179,8 +199,12 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   const handleClear = () => {
+    currentStroke.current = null;
+    if (strokes.length === 0) return;
+
+    // 지우기 전 스트로크 전체를 하나의 묶음으로 보관해, "앞으로가기"로 한 번에 되돌릴 수 있게 한다
+    setRedoStack(prev => [...prev, strokes]);
     setStrokes([]);
-    setRedoStack([]);
     drawStrokes([]);
     onClear();
   };
@@ -245,11 +269,12 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
         ref={canvasRef}
         width={640}
         height={320}
-        className="w-full h-[520px] mobile:h-[360px] touch-none border border-gray-200 rounded-lg bg-gray-50"
+        className="w-full h-[520px] tablet:h-[440px] mobile:h-[360px] touch-none select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_31px,#e2e2e2_31px,#e2e2e2_32px)]"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
-        onPointerUp={commitCurrentStroke}
-        onPointerLeave={commitCurrentStroke}
+        onPointerUp={handlePointerEnd}
+        onPointerLeave={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
       />
     </div>
   );

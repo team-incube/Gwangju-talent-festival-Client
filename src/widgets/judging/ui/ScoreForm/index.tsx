@@ -39,26 +39,26 @@ const ScoreForm = ({ teamId, teamName, score, onChange, onSave, isSaving }: Scor
           ))}
         </div>
 
-        <div className="grid grid-cols-3 py-16 gap-8 mobile:gap-4">
+        <div className="grid grid-cols-3 py-20 gap-16 mobile:py-16 mobile:gap-6">
           {EVALUATION_CRITERIA.map(({ key, label, max }) => {
             const maxAllowed = Math.min(max, score[key] + (TOTAL_MAX - total));
 
             return (
-              <div key={key} className="flex flex-col items-center justify-center gap-4 mobile:gap-2">
-                <div className="flex items-center gap-4 mobile:gap-2">
+              <div key={key} className="flex flex-col items-center justify-center gap-8 mobile:gap-2">
+                <div className="flex items-center gap-10 mobile:gap-4">
                   {NEGATIVE_STEPS.map(step => (
                     <button
                       key={step}
                       type="button"
                       onClick={() => onChange(key, Math.max(score[key] + step, 0))}
                       aria-label={`${label} ${-step}점 내리기`}
-                      className="w-26 h-26 rounded-full border border-gray-200 text-gray-600 text-caption2b hover:bg-gray-50 transition-colors"
+                      className="w-44 h-44 mobile:w-28 mobile:h-28 rounded-full border border-gray-200 text-gray-600 text-body3b mobile:text-caption2b hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation select-none"
                     >
                       {step}
                     </button>
                   ))}
 
-                  <span className="w-32 text-center text-body2b text-gray-900 tabular-nums">
+                  <span className="w-44 mobile:w-32 text-center text-body1b mobile:text-body2b text-gray-900 tabular-nums">
                     {score[key]}
                   </span>
 
@@ -68,7 +68,7 @@ const ScoreForm = ({ teamId, teamName, score, onChange, onSave, isSaving }: Scor
                       type="button"
                       onClick={() => onChange(key, Math.min(score[key] + step, maxAllowed))}
                       aria-label={`${label} ${step}점 올리기`}
-                      className="w-26 h-26 rounded-full border border-orange-300 text-orange-500 text-caption2b hover:bg-orange-50 transition-colors"
+                      className="w-44 h-44 mobile:w-28 mobile:h-28 rounded-full border border-orange-300 text-orange-500 text-body3b mobile:text-caption2b hover:bg-orange-50 active:bg-orange-100 transition-colors touch-manipulation select-none"
                     >
                       +{step}
                     </button>
