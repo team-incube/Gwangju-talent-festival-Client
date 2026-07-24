@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { downloadJudgingSummary } from "../downloadJudgingSummary";
+import { downloadJudgeSheets } from "../downloadJudgeSheets";
 
 const createResponse = ({
   ok,
@@ -51,14 +51,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("downloadJudgingSummary - 성공", () => {
-  it("/api/excel/summary를 호출하고 blob으로 다운로드 링크를 생성해 클릭한다", async () => {
+describe("downloadJudgeSheets - 성공", () => {
+  it("/api/excel/judge-sheets를 호출하고 blob으로 다운로드 링크를 생성해 클릭한다", async () => {
     const response = createResponse({ ok: true });
     vi.mocked(fetch).mockResolvedValueOnce(response);
 
-    await downloadJudgingSummary();
+    await downloadJudgeSheets();
 
-    expect(fetch).toHaveBeenCalledWith("/api/excel/summary");
+    expect(fetch).toHaveBeenCalledWith("/api/excel/judge-sheets");
     expect(createObjectURLMock).toHaveBeenCalled();
     expect(appendChildSpy).toHaveBeenCalled();
     expect(clickMock).toHaveBeenCalled();
@@ -70,7 +70,7 @@ describe("downloadJudgingSummary - 성공", () => {
   it("Content-Disposition 헤더에서 파일명을 추출해 link.download에 설정한다", async () => {
     const response = createResponse({
       ok: true,
-      headers: { "content-disposition": 'attachment; filename="심사결과.xlsx"' },
+      headers: { "content-disposition": 'attachment; filename="심사결과.zip"' },
     });
     vi.mocked(fetch).mockResolvedValueOnce(response);
 
@@ -80,48 +80,9 @@ describe("downloadJudgingSummary - 성공", () => {
       return node;
     });
 
-    await downloadJudgingSummary();
+    await downloadJudgeSheets();
 
-    expect(appendedLink?.download).toBe("심사결과.xlsx");
-  });
-
-  it("RFC 2047 MIME 인코디드 워드(=?UTF-8?Q?...?=) 파일명을 디코딩한다", async () => {
-    const response = createResponse({
-      ok: true,
-      headers: {
-        "content-disposition":
-          'attachment; filename="=?UTF-8?Q?=EC=8B=AC=EC=82=AC=EC=A7=91=EA=B3=84=ED=91=9C?=.xlsx"',
-      },
-    });
-    vi.mocked(fetch).mockResolvedValueOnce(response);
-
-    let appendedLink: HTMLAnchorElement | undefined;
-    appendChildSpy.mockImplementation(node => {
-      appendedLink = node as HTMLAnchorElement;
-      return node;
-    });
-
-    await downloadJudgingSummary();
-
-    expect(appendedLink?.download).toBe("심사집계표.xlsx");
-  });
-
-  it("따옴표로 감싼 파일명 안에 세미콜론이 있어도 전체를 추출한다", async () => {
-    const response = createResponse({
-      ok: true,
-      headers: { "content-disposition": 'attachment; filename="심사;결과.xlsx"' },
-    });
-    vi.mocked(fetch).mockResolvedValueOnce(response);
-
-    let appendedLink: HTMLAnchorElement | undefined;
-    appendChildSpy.mockImplementation(node => {
-      appendedLink = node as HTMLAnchorElement;
-      return node;
-    });
-
-    await downloadJudgingSummary();
-
-    expect(appendedLink?.download).toBe("심사;결과.xlsx");
+    expect(appendedLink?.download).toBe("심사결과.zip");
   });
 
   it("Content-Disposition 헤더가 없으면 기본 파일명을 사용한다", async () => {
@@ -134,24 +95,24 @@ describe("downloadJudgingSummary - 성공", () => {
       return node;
     });
 
-    await downloadJudgingSummary();
+    await downloadJudgeSheets();
 
-    expect(appendedLink?.download).toBe("judging-summary.xlsx");
+    expect(appendedLink?.download).toBe("심사결과.zip");
   });
 });
 
-describe("downloadJudgingSummary - 실패", () => {
+describe("downloadJudgeSheets - 실패", () => {
   it("응답이 실패면 서버 메시지를 담은 에러를 던진다", async () => {
     const response = createResponse({ ok: false, json: { message: "권한이 없습니다." } });
     vi.mocked(fetch).mockResolvedValueOnce(response);
 
-    await expect(downloadJudgingSummary()).rejects.toThrow("권한이 없습니다.");
+    await expect(downloadJudgeSheets()).rejects.toThrow("권한이 없습니다.");
   });
 
   it("실패 응답의 JSON 파싱도 실패하면 기본 메시지로 대체한다", async () => {
     const response = createResponse({ ok: false, jsonRejects: true });
     vi.mocked(fetch).mockResolvedValueOnce(response);
 
-    await expect(downloadJudgingSummary()).rejects.toThrow("심사 집계표를 다운로드하지 못했습니다.");
+    await expect(downloadJudgeSheets()).rejects.toThrow("개별 심사표를 다운로드하지 못했습니다.");
   });
 });
