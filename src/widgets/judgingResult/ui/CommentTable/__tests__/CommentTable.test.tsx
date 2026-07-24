@@ -50,6 +50,15 @@ describe("CommentTable - 렌더링", () => {
   });
 });
 
+describe("CommentTable - 로딩 상태", () => {
+  it("isLoading이면 스켈레톤을 보여주고 안내 문구나 테이블은 보여주지 않는다", () => {
+    render(<CommentTable judges={[]} rows={[]} isLoading />);
+
+    expect(screen.queryByText("집계된 코멘트가 없습니다.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+});
+
 describe("CommentTable - 코멘트 확대", () => {
   it("코멘트 셀을 클릭하면 해당 팀·심사위원의 상세 모달이 열린다", async () => {
     const user = userEvent.setup();

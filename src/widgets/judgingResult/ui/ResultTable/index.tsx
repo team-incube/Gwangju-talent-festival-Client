@@ -3,10 +3,23 @@ import { JudgeHeader, ScoreRow } from "@/entities/judging/model/monitoring";
 type ResultTableProps = {
   judges: JudgeHeader[];
   rows: ScoreRow[];
+  isLoading?: boolean;
 };
 
-const ResultTable = ({ judges, rows }: ResultTableProps) => {
+const SKELETON_ROW_COUNT = 8;
+
+const ResultTable = ({ judges, rows, isLoading = false }: ResultTableProps) => {
   const columnCount = judges.length + 4;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-8">
+        {Array.from({ length: SKELETON_ROW_COUNT }).map((_, index) => (
+          <div key={index} className="h-40 w-full rounded-lg bg-gray-100 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-gray-100">

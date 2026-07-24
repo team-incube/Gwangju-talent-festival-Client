@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
         Accept: "text/event-stream",
         Authorization: "Bearer " + token,
       },
+      signal: request.signal,
     });
 
     if (!response.ok) {
@@ -50,6 +51,9 @@ export async function GET(request: NextRequest) {
         try {
           while (true) {
             const { done, value } = await reader.read();
+            // 클라이언트(브라우저) 쪽 연결이 이미 끊겼으면 컨트롤러도 닫혀있어
+            // enqueue/close를 호출하면 예외가 나므로 조용히 루프만 종료한다
+            if (request.signal.aborted) break;
             if (done) {
               controller.close();
               break;
@@ -57,8 +61,9 @@ export async function GET(request: NextRequest) {
             controller.enqueue(value);
           }
         } catch (error) {
-          console.error(error);
-          controller.error(error);
+          if (!request.signal.aborted) {
+            console.error(error);
+          }
         } finally {
           reader.releaseLock();
         }

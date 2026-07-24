@@ -57,3 +57,12 @@ describe("ResultTable - 렌더링", () => {
     expect(screen.getByText("집계된 심사 데이터가 없습니다.")).toBeInTheDocument();
   });
 });
+
+describe("ResultTable - 로딩 상태", () => {
+  it("isLoading이면 스켈레톤을 보여주고 안내 문구나 테이블은 보여주지 않는다", () => {
+    render(<ResultTable judges={[]} rows={[]} isLoading />);
+
+    expect(screen.queryByText("집계된 심사 데이터가 없습니다.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+});

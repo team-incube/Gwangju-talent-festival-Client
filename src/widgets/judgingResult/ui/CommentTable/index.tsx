@@ -9,6 +9,7 @@ import TeamDetailModal from "../TeamDetailModal";
 type CommentTableProps = {
   judges: JudgeHeader[];
   rows: CommentRow[];
+  isLoading?: boolean;
 };
 
 type SelectedComment = {
@@ -17,9 +18,21 @@ type SelectedComment = {
   strokes: Stroke[] | null;
 };
 
-const CommentTable = ({ judges, rows }: CommentTableProps) => {
+const SKELETON_ROW_COUNT = 8;
+
+const CommentTable = ({ judges, rows, isLoading = false }: CommentTableProps) => {
   const [selected, setSelected] = useState<SelectedComment | null>(null);
   const columnCount = judges.length + 2;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-8">
+        {Array.from({ length: SKELETON_ROW_COUNT }).map((_, index) => (
+          <div key={index} className="h-40 w-full rounded-lg bg-gray-100 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <>
