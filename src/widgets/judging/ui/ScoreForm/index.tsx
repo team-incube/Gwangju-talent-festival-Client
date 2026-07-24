@@ -19,9 +19,20 @@ type ScoreFormProps = {
   onChange: (key: (typeof EVALUATION_CRITERIA)[number]["key"], value: number) => void;
   onSave: () => void;
   isSaving: boolean;
+  statScore: number;
+  rank: number | null;
 };
 
-const ScoreForm = ({ teamId, teamName, score, onChange, onSave, isSaving }: ScoreFormProps) => {
+const ScoreForm = ({
+  teamId,
+  teamName,
+  score,
+  onChange,
+  onSave,
+  isSaving,
+  statScore,
+  rank,
+}: ScoreFormProps) => {
   const total = getScoreTotal(score);
 
   return (
@@ -80,13 +91,10 @@ const ScoreForm = ({ teamId, teamName, score, onChange, onSave, isSaving }: Scor
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl bg-orange-50 px-20 py-16">
-        <span className="text-body2b text-gray-800">
-          {teamId}번 {teamName} 총점
-        </span>
-        <span className="text-title4b text-orange-500">
-          {total}점 / {TOTAL_MAX}점
-        </span>
+      <div className="grid grid-cols-3 gap-8 mobile:grid-cols-1 mobile:gap-6">
+        <StatChip label={`${teamId}번 ${teamName} 내 점수`} value={`${total}점 / ${TOTAL_MAX}점`} />
+        <StatChip label="실시간 통계 점수" value={`${statScore}점`} />
+        <StatChip label="현재 순위" value={rank !== null ? `${rank}위` : "-"} />
       </div>
 
       <Button type="button" onClick={onSave} disabled={isSaving} className="w-full">
@@ -95,5 +103,17 @@ const ScoreForm = ({ teamId, teamName, score, onChange, onSave, isSaving }: Scor
     </div>
   );
 };
+
+type StatChipProps = {
+  label: string;
+  value: string;
+};
+
+const StatChip = ({ label, value }: StatChipProps) => (
+  <div className="flex flex-col gap-4 rounded-2xl bg-orange-50 px-20 py-16 mobile:px-16 mobile:py-12">
+    <span className="text-caption1b text-gray-800">{label}</span>
+    <span className="text-title4b text-orange-500 mobile:text-body1b">{value}</span>
+  </div>
+);
 
 export default ScoreForm;
