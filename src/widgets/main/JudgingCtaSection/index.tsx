@@ -15,7 +15,7 @@ const JudgingCtaSection = () => {
     setUserRole(getTokenFromCookie("role"));
   }, []);
 
-  if (userRole !== "ADMIN") return null;
+  if (userRole !== "ADMIN" && userRole !== "JUDGE") return null;
 
   return (
     <section
