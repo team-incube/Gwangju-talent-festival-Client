@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { DescriptionCard } from "@/entities/apply/ui/DescriptionCard";
 import BackHeader from "@/shared/ui/BackHeader";
 import { EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
@@ -51,15 +50,7 @@ const JudgingPage = () => {
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-40 px-40 mobile:px-16 tablet:px-24">
       <div className="max-w-[1280px] w-full flex flex-col gap-24">
-        <div className="flex items-center justify-between">
-          <BackHeader text="심사 안내" />
-          <Link
-            href="/download"
-            className="shrink-0 text-caption1b text-orange-500 underline underline-offset-4 hover:text-orange-400 transition-colors"
-          >
-            심사표 다운로드
-          </Link>
-        </div>
+        <BackHeader text="심사 안내" />
 
         {isTeamGridUnavailable ? (
           <div className="grid grid-cols-6 tablet:grid-cols-4 mobile:grid-cols-3 gap-14 mobile:gap-8">
