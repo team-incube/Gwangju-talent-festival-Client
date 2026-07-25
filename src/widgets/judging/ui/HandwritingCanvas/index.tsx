@@ -28,6 +28,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const currentStroke = useRef<Stroke | null>(null);
   const activePointerId = useRef<number | null>(null);
+  const activePointerType = useRef<string | null>(null);
   const loadedTeamId = useRef<number | null>(null);
   const strokesRef = useRef<Stroke[]>([]);
 
@@ -82,6 +83,19 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     return () => observer.disconnect();
   }, [drawStrokes]);
 
+  // iOS는 passive 리스너로는 preventDefault가 막히지 않아 필기 중 페이지가 스크롤되고, 그 과정에서 pointercancel이 떠 획이 끊긴다. 네이티브 non-passive 리스너로 터치 기본동작을 직접 막는다
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const prevent = (e: TouchEvent) => e.preventDefault();
+    canvas.addEventListener("touchstart", prevent, { passive: false });
+    canvas.addEventListener("touchmove", prevent, { passive: false });
+    return () => {
+      canvas.removeEventListener("touchstart", prevent);
+      canvas.removeEventListener("touchmove", prevent);
+    };
+  }, []);
+
   useEffect(() => {
     loadedTeamId.current = null;
     setStrokes([]);
@@ -114,14 +128,23 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLCanvasElement>) => {
     e.preventDefault();
-    // 이미 그리는 중인 포인터가 있으면 손바닥/보조 손가락 등 추가 터치는 무시한다(두 손가락 동시 입력 시 선이 섞이는 문제 방지)
-    if (activePointerId.current !== null) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
+    if (activePointerId.current !== null) {
+      // 손가락으로 쓰던 중 펜이 닿으면 손바닥으로 판단해 진행 중이던 터치 획을 버리고 펜에 우선권을 준다. 그 외 추가 포인터(손바닥/보조 손가락)는 무시해 선 섞임을 막는다
+      const penTakesOver = e.pointerType === "pen" && activePointerType.current === "touch";
+      if (!penTakesOver) return;
+      if (canvas.hasPointerCapture(activePointerId.current))
+        canvas.releasePointerCapture(activePointerId.current);
+      currentStroke.current = null;
+      drawStrokes(strokesRef.current);
+    }
+
     activePointerId.current = e.pointerId;
+    activePointerType.current = e.pointerType;
     canvas.setPointerCapture(e.pointerId);
 
     const point = getPoint(e);
@@ -179,6 +202,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     const canvas = canvasRef.current;
     if (canvas?.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
     activePointerId.current = null;
+    activePointerType.current = null;
     commitCurrentStroke();
   };
 
@@ -214,7 +238,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   return (
-    <div className="w-full flex flex-col gap-12 bg-white border border-gray-100 rounded-xl p-22">
+    <div className="w-full flex flex-col gap-12 bg-white border border-gray-100 rounded-xl p-22 select-none">
       <div className="flex items-center justify-between gap-10">
         <h2 className="text-body3b">메모</h2>
         <button type="button" onClick={handleClear} className="text-caption1r text-gray-500 underline">
