@@ -40,35 +40,35 @@ const ScoreForm = ({
       <h2 className="text-body1b">채점</h2>
 
       <div className="w-full border border-gray-100 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-3 text-center text-body1b bg-gray-50 py-16 mobile:text-body3b">
+        <div className="grid grid-cols-3 text-center text-body1b bg-gray-50 py-16 tablet:text-body3b mobile:text-body3b">
           {EVALUATION_CRITERIA.map(({ key, label }) => (
             <div key={key} className="flex items-baseline justify-center gap-6 px-8">
               {label}
-              <span className="text-body2r text-gray-400 mobile:text-caption1r">(최대 {SCORE_MAX[key]}점)</span>
+              <span className="text-body2r text-gray-400 tablet:text-caption1r mobile:text-caption1r">(최대 {SCORE_MAX[key]}점)</span>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-3 py-28 gap-16 mobile:py-16 mobile:gap-6">
+        <div className="grid grid-cols-3 py-28 gap-16 tablet:py-20 tablet:gap-6 mobile:py-16 mobile:gap-6">
           {EVALUATION_CRITERIA.map(({ key, label, max }) => {
             const maxAllowed = Math.min(max, score[key] + (TOTAL_MAX - total));
 
             return (
               <div key={key} className="flex flex-col items-center justify-center gap-8 mobile:gap-2">
-                <div className="flex items-center gap-12 mobile:gap-4">
+                <div className="flex items-center gap-10 tablet:gap-4 mobile:gap-4">
                   {NEGATIVE_STEPS.map(step => (
                     <button
                       key={step}
                       type="button"
                       onClick={() => onChange(key, Math.max(score[key] + step, 0))}
                       aria-label={`${label} ${-step}점 내리기`}
-                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-gray-200 text-gray-600 text-body1b mobile:text-caption1b cursor-pointer hover:bg-gray-100 hover:border-gray-300 active:bg-gray-200 active:scale-95 transition touch-manipulation select-none"
+                      className="w-56 h-56 tablet:w-40 tablet:h-40 mobile:w-36 mobile:h-36 rounded-lg border border-gray-200 text-gray-600 text-body1b mobile:text-caption1b cursor-pointer hover:bg-gray-100 hover:border-gray-300 active:bg-gray-200 active:scale-95 transition touch-manipulation select-none"
                     >
                       {step}
                     </button>
                   ))}
 
-                  <span className="w-60 mobile:w-36 text-center text-title2b mobile:text-title4b text-gray-900 tabular-nums">
+                  <span className="w-52 tablet:w-40 mobile:w-32 text-center text-title2b tablet:text-title4b mobile:text-title4b text-gray-900 tabular-nums">
                     {score[key]}
                   </span>
 
@@ -78,7 +78,7 @@ const ScoreForm = ({
                       type="button"
                       onClick={() => onChange(key, Math.min(score[key] + step, maxAllowed))}
                       aria-label={`${label} ${step}점 올리기`}
-                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-orange-300 text-orange-500 text-body1b mobile:text-caption1b cursor-pointer hover:bg-orange-100 hover:border-orange-400 active:bg-orange-200 active:scale-95 transition touch-manipulation select-none"
+                      className="w-56 h-56 tablet:w-40 tablet:h-40 mobile:w-36 mobile:h-36 rounded-lg border border-orange-300 text-orange-500 text-body1b mobile:text-caption1b cursor-pointer hover:bg-orange-100 hover:border-orange-400 active:bg-orange-200 active:scale-95 transition touch-manipulation select-none"
                     >
                       +{step}
                     </button>
