@@ -238,37 +238,41 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   return (
-    <div className="w-full flex flex-col gap-12 bg-white border border-gray-100 rounded-xl p-22 select-none">
+    <div className="w-full flex flex-col gap-16 bg-white border border-gray-100 rounded-xl p-22 select-none">
       <div className="flex items-center justify-between gap-10">
-        <h2 className="text-body3b">메모</h2>
-        <button type="button" onClick={handleClear} className="text-caption1r text-gray-500 underline">
+        <h2 className="text-body1b">심사 의견</h2>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="text-body2b text-gray-600 px-24 py-12 rounded-lg border border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+        >
           지우기
         </button>
       </div>
 
       <div className="flex items-center justify-between gap-10 flex-wrap">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-10">
           <button
             type="button"
             onClick={handleUndo}
             disabled={strokes.length === 0}
             aria-label="뒤로가기"
-            className="w-22 h-22 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="w-48 h-48 rounded-full border border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
           >
-            <LeftArrow height={12} width={12} color="#4E4E4E" />
+            <LeftArrow height={22} width={22} color="#121212" />
           </button>
           <button
             type="button"
             onClick={handleRedo}
             disabled={redoStack.length === 0}
             aria-label="앞으로가기"
-            className="w-22 h-22 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="w-48 h-48 rounded-full border border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
           >
-            <RightArrow height={12} width={12} color="#4E4E4E" />
+            <RightArrow height={22} width={22} color="#121212" />
           </button>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-12">
           {PEN_COLORS.map(color => {
             const isSelected = penColor === color.hex;
             return (
@@ -279,14 +283,14 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
                 aria-label={`${color.key} 펜 선택`}
                 aria-pressed={isSelected}
                 className={cn(
-                  "relative w-18 h-18 rounded-full flex items-center justify-center transition-transform",
+                  "relative w-36 h-36 rounded-full flex items-center justify-center transition-transform",
                   color.swatchClass,
                   isSelected
                     ? "ring-2 ring-offset-2 ring-gray-500 scale-110"
                     : "opacity-50 hover:opacity-80",
                 )}
               >
-                {isSelected && <CheckIcon height={10} width={10} color="white" />}
+                {isSelected && <CheckIcon height={18} width={18} color="white" />}
               </button>
             );
           })}
@@ -297,7 +301,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
         ref={canvasRef}
         width={640}
         height={320}
-        className="w-full h-[520px] tablet:h-[440px] mobile:h-[360px] touch-none select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_99px,#e2e2e2_99px,#e2e2e2_100px)]"
+        className="w-full h-[400px] mobile:h-[390px] touch-none select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_124px,#e2e2e2_124px,#e2e2e2_125px)]"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
