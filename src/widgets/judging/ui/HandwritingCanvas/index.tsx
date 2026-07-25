@@ -28,6 +28,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const currentStroke = useRef<Stroke | null>(null);
   const activePointerId = useRef<number | null>(null);
+  const activePointerType = useRef<string | null>(null);
   const loadedTeamId = useRef<number | null>(null);
   const strokesRef = useRef<Stroke[]>([]);
 
@@ -82,16 +83,33 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     return () => observer.disconnect();
   }, [drawStrokes]);
 
+  // iOS는 passive 리스너로는 preventDefault가 막히지 않아 필기 중 페이지가 스크롤되고, 그 과정에서 pointercancel이 떠 획이 끊긴다. 네이티브 non-passive 리스너로 터치 기본동작을 직접 막는다
   useEffect(() => {
-    if (loadedTeamId.current === teamId) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const prevent = (e: TouchEvent) => e.preventDefault();
+    canvas.addEventListener("touchstart", prevent, { passive: false });
+    canvas.addEventListener("touchmove", prevent, { passive: false });
+    return () => {
+      canvas.removeEventListener("touchstart", prevent);
+      canvas.removeEventListener("touchmove", prevent);
+    };
+  }, []);
 
-    if (value === undefined) {
-      setStrokes([]);
-      setRedoStack([]);
-      drawStrokes([]);
+  useEffect(() => {
+    loadedTeamId.current = null;
+    setStrokes([]);
+    setRedoStack([]);
+    drawStrokes([]);
+  }, [teamId, drawStrokes]);
+
+  useEffect(() => {
+    if (loadedTeamId.current === teamId || value === undefined) return;
+    // 서버 응답이 늦게 도착하는 사이 이미 손으로 쓰기 시작했다면, 로컬 획을 서버 값으로 덮어써 지우지 않는다
+    if (strokesRef.current.length > 0) {
+      loadedTeamId.current = teamId;
       return;
     }
-
     setStrokes(value);
     setRedoStack([]);
     drawStrokes(value);
@@ -110,14 +128,23 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLCanvasElement>) => {
     e.preventDefault();
-    // 이미 그리는 중인 포인터가 있으면 손바닥/보조 손가락 등 추가 터치는 무시한다(두 손가락 동시 입력 시 선이 섞이는 문제 방지)
-    if (activePointerId.current !== null) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
+    if (activePointerId.current !== null) {
+      // 손가락으로 쓰던 중 펜이 닿으면 손바닥으로 판단해 진행 중이던 터치 획을 버리고 펜에 우선권을 준다. 그 외 추가 포인터(손바닥/보조 손가락)는 무시해 선 섞임을 막는다
+      const penTakesOver = e.pointerType === "pen" && activePointerType.current === "touch";
+      if (!penTakesOver) return;
+      if (canvas.hasPointerCapture(activePointerId.current))
+        canvas.releasePointerCapture(activePointerId.current);
+      currentStroke.current = null;
+      drawStrokes(strokesRef.current);
+    }
+
     activePointerId.current = e.pointerId;
+    activePointerType.current = e.pointerType;
     canvas.setPointerCapture(e.pointerId);
 
     const point = getPoint(e);
@@ -175,6 +202,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     const canvas = canvasRef.current;
     if (canvas?.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
     activePointerId.current = null;
+    activePointerType.current = null;
     commitCurrentStroke();
   };
 
@@ -210,37 +238,41 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   return (
-    <div className="w-full flex flex-col gap-12 bg-white border border-gray-100 rounded-xl p-22">
+    <div className="w-full flex flex-col gap-16 bg-white border border-gray-100 rounded-xl p-22 select-none">
       <div className="flex items-center justify-between gap-10">
-        <h2 className="text-body3b">메모</h2>
-        <button type="button" onClick={handleClear} className="text-caption1r text-gray-500 underline">
+        <h2 className="text-body1b">심사 의견</h2>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="text-body2b text-gray-600 px-24 py-12 rounded-lg border border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+        >
           지우기
         </button>
       </div>
 
       <div className="flex items-center justify-between gap-10 flex-wrap">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-10">
           <button
             type="button"
             onClick={handleUndo}
             disabled={strokes.length === 0}
             aria-label="뒤로가기"
-            className="w-22 h-22 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="w-48 h-48 rounded-full border border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
           >
-            <LeftArrow height={12} width={12} color="#4E4E4E" />
+            <LeftArrow height={22} width={22} color="#121212" />
           </button>
           <button
             type="button"
             onClick={handleRedo}
             disabled={redoStack.length === 0}
             aria-label="앞으로가기"
-            className="w-22 h-22 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="w-48 h-48 rounded-full border border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
           >
-            <RightArrow height={12} width={12} color="#4E4E4E" />
+            <RightArrow height={22} width={22} color="#121212" />
           </button>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-12">
           {PEN_COLORS.map(color => {
             const isSelected = penColor === color.hex;
             return (
@@ -251,14 +283,14 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
                 aria-label={`${color.key} 펜 선택`}
                 aria-pressed={isSelected}
                 className={cn(
-                  "relative w-18 h-18 rounded-full flex items-center justify-center transition-transform",
+                  "relative w-36 h-36 rounded-full flex items-center justify-center transition-transform",
                   color.swatchClass,
                   isSelected
                     ? "ring-2 ring-offset-2 ring-gray-500 scale-110"
                     : "opacity-50 hover:opacity-80",
                 )}
               >
-                {isSelected && <CheckIcon height={10} width={10} color="white" />}
+                {isSelected && <CheckIcon height={18} width={18} color="white" />}
               </button>
             );
           })}
@@ -269,12 +301,12 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
         ref={canvasRef}
         width={640}
         height={320}
-        className="w-full h-[520px] tablet:h-[440px] mobile:h-[360px] touch-none select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_31px,#e2e2e2_31px,#e2e2e2_32px)]"
+        className="w-full h-[400px] mobile:h-[390px] touch-none select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_124px,#e2e2e2_124px,#e2e2e2_125px)]"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
-        onPointerLeave={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
+        onLostPointerCapture={handlePointerEnd}
       />
     </div>
   );

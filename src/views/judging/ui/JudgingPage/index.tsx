@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DescriptionCard } from "@/entities/apply/ui/DescriptionCard";
 import BackHeader from "@/shared/ui/BackHeader";
-import { EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
+import { computeRanks, EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
 import TeamGrid from "@/widgets/judging/ui/TeamGrid";
 import ScoreForm from "@/widgets/judging/ui/ScoreForm";
 import HandwritingCanvas from "@/widgets/judging/ui/HandwritingCanvas";
@@ -39,6 +39,8 @@ const JudgingPage = () => {
 
   const selectedTeam = teams.find(team => team.teamId === selectedTeamId);
   const score = selectedTeamId !== null ? getScore(selectedTeamId) : null;
+  const ranks = useMemo(() => computeRanks(teams), [teams]);
+  const rank = selectedTeamId !== null ? ranks.get(selectedTeamId) ?? null : null;
 
   const handleSelectTeam = (teamId: number) => {
     if (selectedTeamId !== null && selectedTeamId !== teamId && hasUnsavedEdit(selectedTeamId)) {
@@ -70,10 +72,10 @@ const JudgingPage = () => {
         {selectedTeamId === null || !selectedTeam ? (
           <div className="h-24 w-160 rounded bg-gray-100 animate-pulse" />
         ) : (
-          <h2 className="text-body2b">{selectedTeam.teamName} 심사</h2>
+          <h2 className="text-body1b">{selectedTeam.teamName} 심사</h2>
         )}
 
-        <DescriptionCard title={`심사 기준 (총 ${TOTAL_MAX}점)`} items={CRITERIA_ITEMS} />
+        <DescriptionCard title={`심사 기준 (총 ${TOTAL_MAX}점)`} items={CRITERIA_ITEMS} large />
 
         {selectedTeamId === null || score === null ? (
           <div className="h-260 w-full rounded-xl bg-gray-100 animate-pulse" />
@@ -85,6 +87,8 @@ const JudgingPage = () => {
             onChange={(key, value) => updateScore(selectedTeamId, key, value)}
             onSave={() => submitScore(selectedTeamId)}
             isSaving={savingTeamId === selectedTeamId}
+            statScore={selectedTeam?.totalScore ?? 0}
+            rank={rank}
           />
         )}
 

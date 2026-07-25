@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   try {
-    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/judge/changes`;
+    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/judge/monitor/changes`;
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
 
