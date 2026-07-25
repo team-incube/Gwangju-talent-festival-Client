@@ -40,12 +40,12 @@ const ScoreForm = ({
       <h2 className="text-body3b">채점</h2>
 
       <div className="w-full border border-gray-100 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-3 text-center text-caption1b bg-gray-50 py-12 mobile:text-caption2b">
+        <div className="grid grid-cols-3 text-center text-body3b bg-gray-50 py-12 mobile:text-caption1b">
           {EVALUATION_CRITERIA.map(({ key, label }) => (
             <div key={key}>
               {label}
               <br />
-              <span className="text-caption2r text-gray-400">(최대 {SCORE_MAX[key]}점)</span>
+              <span className="text-body3r text-gray-400">(최대 {SCORE_MAX[key]}점)</span>
             </div>
           ))}
         </div>
@@ -63,7 +63,7 @@ const ScoreForm = ({
                       type="button"
                       onClick={() => onChange(key, Math.max(score[key] + step, 0))}
                       aria-label={`${label} ${-step}점 내리기`}
-                      className="w-44 h-44 mobile:w-28 mobile:h-28 rounded-full border border-gray-200 text-gray-600 text-body3b mobile:text-caption2b hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation select-none"
+                      className="w-52 h-52 mobile:w-32 mobile:h-32 rounded-md border border-gray-200 text-gray-600 text-body3b mobile:text-caption2b hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation select-none"
                     >
                       {step}
                     </button>
@@ -79,7 +79,7 @@ const ScoreForm = ({
                       type="button"
                       onClick={() => onChange(key, Math.min(score[key] + step, maxAllowed))}
                       aria-label={`${label} ${step}점 올리기`}
-                      className="w-44 h-44 mobile:w-28 mobile:h-28 rounded-full border border-orange-300 text-orange-500 text-body3b mobile:text-caption2b hover:bg-orange-50 active:bg-orange-100 transition-colors touch-manipulation select-none"
+                      className="w-52 h-52 mobile:w-32 mobile:h-32 rounded-md border border-orange-300 text-orange-500 text-body3b mobile:text-caption2b hover:bg-orange-50 active:bg-orange-100 transition-colors touch-manipulation select-none"
                     >
                       +{step}
                     </button>
