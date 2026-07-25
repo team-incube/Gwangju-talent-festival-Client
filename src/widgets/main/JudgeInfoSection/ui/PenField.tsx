@@ -2,20 +2,27 @@
 
 import { useEffect, useRef } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
+import { ProfilePoint, ProfileStroke } from "@/entities/judge/model/types";
 
-type Point = { x: number; y: number };
-type Stroke = Point[];
+type Point = ProfilePoint;
+type Stroke = ProfileStroke;
+
+type PenFieldProps = {
+  value?: Stroke[];
+  onChange?: (strokes: Stroke[]) => void;
+};
 
 const LINE_WIDTH = 2;
 const PEN_COLOR = "#121212";
 const MIN_POINT_DISTANCE = 0.003;
 
-const PenField = () => {
+const PenField = ({ value, onChange }: PenFieldProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const strokesRef = useRef<Stroke[]>([]);
   const currentStroke = useRef<Stroke | null>(null);
   const activePointerId = useRef<number | null>(null);
   const activePointerType = useRef<string | null>(null);
+  const hydratedRef = useRef(false);
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -70,6 +77,14 @@ const PenField = () => {
       canvas.removeEventListener("touchmove", prevent);
     };
   }, []);
+
+  // 저장된 필기를 최초 1회만 캔버스에 복원한다. 이후 사용자가 그리며 발생시킨 onChange가 value로 되돌아와도 무시해 그림이 초기화되지 않게 한다
+  useEffect(() => {
+    if (hydratedRef.current || value === undefined) return;
+    hydratedRef.current = true;
+    strokesRef.current = value;
+    draw();
+  }, [value]);
 
   const getPoint = (e: ReactPointerEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current;
@@ -139,13 +154,17 @@ const PenField = () => {
 
     const stroke = currentStroke.current;
     currentStroke.current = null;
-    if (stroke && stroke.length > 0) strokesRef.current = [...strokesRef.current, stroke];
+    if (stroke && stroke.length > 0) {
+      strokesRef.current = [...strokesRef.current, stroke];
+      onChange?.(strokesRef.current);
+    }
   };
 
   const handleClear = () => {
     currentStroke.current = null;
     strokesRef.current = [];
     draw();
+    onChange?.(strokesRef.current);
   };
 
   return (
