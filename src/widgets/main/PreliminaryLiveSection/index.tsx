@@ -8,11 +8,11 @@ import YouTubeLazyEmbed from "@/shared/ui/YouTubeLazyEmbed";
 
 const LIVE_STREAMS = [
   { date: "7월 24일 (금)", label: "1일차", videoId: "nL0pdTRB6Hc" },
-  { date: "7월 25일 (토)", label: "2일차", videoId: "eR3Tx134-dU" },
+  { date: "7월 25일 (토)", label: "2일차", videoId: "518wlDEojOs" },
 ] as const;
 
 const PreliminaryLiveSection = () => {
-  const [activeDay, setActiveDay] = useState(0);
+  const [activeDay, setActiveDay] = useState(1);
   const activeStream = LIVE_STREAMS[activeDay];
 
   return (
@@ -71,6 +71,7 @@ const PreliminaryLiveSection = () => {
             key={activeStream.videoId}
             videoId={activeStream.videoId}
             title={`2026 광탈페 예선 ${activeStream.label} 실시간 중계`}
+            autoPlay
           />
         </div>
 
