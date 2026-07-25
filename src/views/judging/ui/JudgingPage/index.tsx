@@ -72,10 +72,10 @@ const JudgingPage = () => {
         {selectedTeamId === null || !selectedTeam ? (
           <div className="h-24 w-160 rounded bg-gray-100 animate-pulse" />
         ) : (
-          <h2 className="text-body2b">{selectedTeam.teamName} 심사</h2>
+          <h2 className="text-body1b">{selectedTeam.teamName} 심사</h2>
         )}
 
-        <DescriptionCard title={`심사 기준 (총 ${TOTAL_MAX}점)`} items={CRITERIA_ITEMS} />
+        <DescriptionCard title={`심사 기준 (총 ${TOTAL_MAX}점)`} items={CRITERIA_ITEMS} large />
 
         {selectedTeamId === null || score === null ? (
           <div className="h-260 w-full rounded-xl bg-gray-100 animate-pulse" />
