@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/shared/ui/Button";
 import { RightArrow } from "@/shared/asset/svg/RightArrow";
-import { cn } from "@/shared/utils/cn";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import PenField from "./ui/PenField";
 
@@ -29,16 +28,16 @@ const JudgeInfoSection = () => {
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-32">
         <h2 className="text-title2b text-gray-900 mobile:text-h4b">심사위원 정보</h2>
 
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          {INFO_FIELDS.map((field, index) => (
+        <div className="flex flex-col gap-16">
+          {INFO_FIELDS.map(field => (
             <div
               key={field}
-              className={cn("flex items-stretch", index > 0 && "border-t border-gray-300")}
+              className="flex overflow-hidden rounded-2xl border border-solid border-gray-200 bg-white shadow-sm"
             >
-              <div className="flex w-[180px] shrink-0 items-center justify-center border-r border-gray-200 bg-gray-50 text-body2b text-gray-900 mobile:w-[88px] mobile:text-body3b">
+              <div className="flex w-[180px] shrink-0 items-center justify-center border-r border-solid border-gray-200 bg-gray-50 text-body1b text-gray-900 mobile:w-[88px] mobile:text-body2b">
                 {field}
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="flex-1">
                 <PenField />
               </div>
             </div>

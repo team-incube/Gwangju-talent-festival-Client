@@ -153,7 +153,7 @@ const PenField = () => {
       <button
         type="button"
         onClick={handleClear}
-        className="absolute right-12 top-12 z-10 rounded-md border border-gray-300 bg-white px-16 py-8 text-body3b text-gray-600"
+        className="absolute right-12 top-12 z-10 rounded-lg border border-solid border-gray-200 bg-white px-16 py-8 text-body3b text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"
       >
         지우기
       </button>
