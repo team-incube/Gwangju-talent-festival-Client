@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/shared/utils/cn";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -19,9 +19,10 @@ interface YouTubeLazyEmbedProps {
   videoId: string;
   title: string;
   className?: string;
+  autoPlay?: boolean;
 }
 
-const YouTubeLazyEmbed = ({ videoId, title, className }: YouTubeLazyEmbedProps) => {
+const YouTubeLazyEmbed = ({ videoId, title, className, autoPlay = false }: YouTubeLazyEmbedProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const { ref, inView } = useInView({
@@ -29,6 +30,11 @@ const YouTubeLazyEmbed = ({ videoId, title, className }: YouTubeLazyEmbedProps) 
     rootMargin: "100px",
     triggerOnce: true,
   });
+
+  // autoPlay는 사용자 클릭 없이 재생되므로 브라우저 자동재생 정책상 음소거 필수
+  useEffect(() => {
+    if (autoPlay && inView) setIsLoaded(true);
+  }, [autoPlay, inView]);
 
   const thumbnailUrl = useMemo(
     () => `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
@@ -87,7 +93,7 @@ const YouTubeLazyEmbed = ({ videoId, title, className }: YouTubeLazyEmbedProps) 
         </div>
       ) : (
         <iframe
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`}
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1${autoPlay ? "&mute=1" : ""}`}
           title={title}
           className="w-full h-full"
           allow="autoplay; encrypted-media"
