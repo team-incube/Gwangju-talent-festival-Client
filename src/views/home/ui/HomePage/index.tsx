@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import JudgingCtaSection from "@/widgets/main/JudgingCtaSection";
+import JudgeInfoSection from "@/widgets/main/JudgeInfoSection";
 
 import LazySection from "@/shared/ui/LazySection";
 import SloganPosterPopup from "@/widgets/main/SloganPosterPopup";
@@ -46,6 +47,7 @@ const HomePage = () => {
     <>
       <SloganPosterPopup />
       <IntroFirstSection />
+      <JudgeInfoSection />
       <SloganSecondSection />
 
       <LazySection
