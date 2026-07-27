@@ -6,6 +6,7 @@ import TanstackProviders from "@/shared/lib/TanstackProvider";
 import ChannelTalk from "@/shared/ui/ChannelTalk";
 import GA from "@/shared/lib/ga";
 import pretendard from "@/shared/lib/font";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "광주학생탈렌트페스티벌",
@@ -165,6 +166,7 @@ export default function RootLayout({
           <GA />
         </TanstackProviders>
         <ChannelTalk />
+        <Analytics />
         {/* <Footer /> */}
       </body>
     </html>
