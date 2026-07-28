@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import JudgingCtaSection from "@/widgets/main/JudgingCtaSection";
@@ -8,6 +9,7 @@ import JudgeInfoSection from "@/widgets/main/JudgeInfoSection";
 
 import LazySection from "@/shared/ui/LazySection";
 import SloganPosterPopup from "@/widgets/main/SloganPosterPopup";
+import { getTokenFromCookie } from "@/shared/utils/auth";
 
 const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryLiveSection"), {
   loading: () => <SectionPlaceholder />,
@@ -43,6 +45,16 @@ const SectionPlaceholder = ({ height = "400px" }: { height?: string }) => (
 );
 
 const HomePage = () => {
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserRole(getTokenFromCookie("role"));
+  }, []);
+
+  if (userRole === "JUDGE") {
+    return <JudgeInfoSection />;
+  }
+
   return (
     <>
       <SloganPosterPopup />
