@@ -127,6 +127,8 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLCanvasElement>) => {
+    // 애플펜슬(펜)로만 필기 가능. 손가락/손바닥 터치는 무시한다
+    if (e.pointerType !== "pen") return;
     e.preventDefault();
 
     const canvas = canvasRef.current;
