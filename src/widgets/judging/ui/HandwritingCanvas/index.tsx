@@ -8,6 +8,8 @@ import { LeftArrow } from "@/shared/asset/svg/LeftArrow";
 import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { Stroke, StrokePoint } from "@/entities/judging/model/handwriting";
 
+type StylusTouch = Touch & { touchType?: "direct" | "stylus" };
+
 type HandwritingCanvasProps = {
   teamId: number;
   value?: Stroke[];
@@ -83,11 +85,15 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     return () => observer.disconnect();
   }, [drawStrokes]);
 
-  // iOS는 passive 리스너로는 preventDefault가 막히지 않아 필기 중 페이지가 스크롤되고, 그 과정에서 pointercancel이 떠 획이 끊긴다. 네이티브 non-passive 리스너로 터치 기본동작을 직접 막는다
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const prevent = (e: TouchEvent) => e.preventDefault();
+    const prevent = (e: TouchEvent) => {
+      const hasStylus = Array.from(e.touches).some(
+        t => (t as StylusTouch).touchType === "stylus",
+      );
+      if (hasStylus) e.preventDefault();
+    };
     canvas.addEventListener("touchstart", prevent, { passive: false });
     canvas.addEventListener("touchmove", prevent, { passive: false });
     return () => {
@@ -127,7 +133,6 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLCanvasElement>) => {
-    // 애플펜슬(펜)로만 필기 가능. 손가락/손바닥 터치는 무시한다
     if (e.pointerType !== "pen") return;
     e.preventDefault();
 
@@ -303,7 +308,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
         ref={canvasRef}
         width={640}
         height={320}
-        className="w-full h-[400px] mobile:h-[390px] touch-none select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_124px,#e2e2e2_124px,#e2e2e2_125px)]"
+        className="w-full h-[400px] mobile:h-[390px] select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_124px,#e2e2e2_124px,#e2e2e2_125px)]"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
