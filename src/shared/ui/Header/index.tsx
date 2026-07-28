@@ -5,6 +5,7 @@ import { MobileMenuIcon } from "@/shared/asset/svg/MobileMenuIcon";
 import { CloseIcon } from "@/shared/asset/svg/CloseIcon";
 import { isHiddenPath, links } from "@/shared/const/headerValues";
 import { cn } from "@/shared/utils/cn";
+import { getTokenFromCookie } from "@/shared/utils/auth";
 import { scrollToElement } from "@/shared/utils/scroll";
 import { handleLogout } from "@/widgets/signin/lib/handleLogout";
 import Link from "next/link";
@@ -19,13 +20,17 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   const { isUserLoggedIn } = useAuthSync();
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
 
   useEffect(() => {
     setMounted(true);
+    setUserRole(getTokenFromCookie("role"));
   }, []);
+
+  const isJudge = userRole === "JUDGE";
 
   const handleClick = useCallback(() => {
     if (isUserLoggedIn) {
@@ -53,13 +58,15 @@ export default function Header() {
         <Link href="/">
           <Logo className="h-[42px] w-[67px] mobile:h-[32px] mobile:w-[52px]" color="#FF9644" />
         </Link>
-        <div className={cn("flex gap-[2.5rem] text-body3b mobile:hidden")}>
-          {links.map((link, index) => (
-            <button key={index} onClick={() => handleScrollToSection(link.section)}>
-              {link.label}
-            </button>
-          ))}
-        </div>
+        {!isJudge && (
+          <div className={cn("flex gap-[2.5rem] text-body3b mobile:hidden")}>
+            {links.map((link, index) => (
+              <button key={index} onClick={() => handleScrollToSection(link.section)}>
+                {link.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div
           className={cn(
@@ -86,7 +93,7 @@ export default function Header() {
               </div>
             </div>
 
-            {pathname.startsWith("/home") && (
+            {!isJudge && pathname.startsWith("/home") && (
               <div onClick={toggleMobileMenu} className={cn("place-self-center")}>
                 {isMobileMenuOpen ? <CloseIcon /> : <MobileMenuIcon />}
               </div>
@@ -94,7 +101,7 @@ export default function Header() {
           </div>
         </div>
       </header>
-      {isMobileMenuOpen && pathname.startsWith("/home") && (
+      {!isJudge && isMobileMenuOpen && pathname.startsWith("/home") && (
         <MobileSidebar onClose={closeMobileMenu} onLinkClick={handleScrollToSection} />
       )}
     </>
