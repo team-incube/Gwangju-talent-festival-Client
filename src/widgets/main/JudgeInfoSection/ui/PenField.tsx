@@ -6,6 +6,7 @@ import { ProfilePoint, ProfileStroke } from "@/entities/judge/model/types";
 
 type Point = ProfilePoint;
 type Stroke = ProfileStroke;
+type StylusTouch = Touch & { touchType?: "direct" | "stylus" };
 
 type PenFieldProps = {
   value?: Stroke[];
@@ -65,11 +66,15 @@ const PenField = ({ value, onChange }: PenFieldProps) => {
     return () => observer.disconnect();
   }, []);
 
-  // iOS는 passive 리스너로 preventDefault가 막히지 않아 필기 중 페이지가 스크롤되고 pointercancel로 획이 끊긴다. 네이티브 non-passive 리스너로 기본동작을 직접 막는다
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const prevent = (e: TouchEvent) => e.preventDefault();
+    const prevent = (e: TouchEvent) => {
+      const hasStylus = Array.from(e.touches).some(
+        t => (t as StylusTouch).touchType === "stylus",
+      );
+      if (hasStylus) e.preventDefault();
+    };
     canvas.addEventListener("touchstart", prevent, { passive: false });
     canvas.addEventListener("touchmove", prevent, { passive: false });
     return () => {
@@ -97,6 +102,7 @@ const PenField = ({ value, onChange }: PenFieldProps) => {
   };
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType !== "pen") return;
     e.preventDefault();
 
     const canvas = canvasRef.current;
@@ -178,7 +184,7 @@ const PenField = ({ value, onChange }: PenFieldProps) => {
       </button>
       <canvas
         ref={canvasRef}
-        className="h-full w-full touch-none select-none bg-white"
+        className="h-full w-full select-none bg-white"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
