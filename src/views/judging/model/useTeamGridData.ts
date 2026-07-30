@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Score } from "@/entities/judging/model/score";
+import { useGetTeamOrder } from "@/entities/team/model/useGetTeamOrder";
 import { useGetJudgeList } from "./useGetJudgeList";
-import { useGetTeamOrder } from "./useGetTeamOrder";
 
 export type OrderedTeam = Score & { performOrder: number };
 

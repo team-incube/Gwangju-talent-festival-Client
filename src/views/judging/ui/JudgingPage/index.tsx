@@ -9,7 +9,6 @@ import TeamGrid from "@/widgets/judging/ui/TeamGrid";
 import ScoreForm from "@/widgets/judging/ui/ScoreForm";
 import HandwritingCanvas from "@/widgets/judging/ui/HandwritingCanvas";
 import { useTeamGridData } from "../../model/useTeamGridData";
-import { useReorderTeams } from "../../model/useReorderTeams";
 import { useTeamScores } from "../../model/useTeamScores";
 import { useGetJudgeComment } from "../../model/useGetJudgeComment";
 import { getJudgeCommentDraft, useSaveJudgeComment } from "../../model/useSaveJudgeComment";
@@ -21,7 +20,6 @@ const TEAM_SKELETON_COUNT = 12;
 
 const JudgingPage = () => {
   const { teams, isLoading, isError } = useTeamGridData();
-  const { reorderTeams } = useReorderTeams();
   const isTeamGridUnavailable = isLoading || isError || teams.length === 0;
 
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
@@ -69,7 +67,6 @@ const JudgingPage = () => {
             teams={teams}
             selectedTeamId={selectedTeamId ?? teams[0].teamId}
             onSelect={handleSelectTeam}
-            onReorder={reorderTeams}
           />
         )}
 

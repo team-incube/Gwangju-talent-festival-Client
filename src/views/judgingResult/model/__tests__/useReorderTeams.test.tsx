@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { useReorderTeams } from "../useReorderTeams";
 import { updateTeamOrder } from "@/entities/team/api/updateTeamOrder";
-import { teamOrderQueryKey } from "../queryKeys";
+import { teamOrderQueryKey } from "@/entities/team/model/queryKeys";
 import { Team } from "@/entities/team/model/types";
 
 vi.mock("@/entities/team/api/updateTeamOrder", () => ({
@@ -19,6 +19,8 @@ const makeTeam = (teamId: number, performOrder: number): Team => ({
   teamId,
   teamName: `팀${teamId}`,
   school: "광주고",
+  teamGenre: "DANCE",
+  applicantName: `신청자${teamId}`,
   performOrder,
   status: "PENDING",
 });

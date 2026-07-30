@@ -6,12 +6,17 @@ import BackHeader from "@/shared/ui/BackHeader";
 import Button from "@/shared/ui/Button";
 import { downloadJudgeSheets } from "@/entities/judging/api/downloadJudgeSheets";
 import { downloadJudgingSummary } from "@/entities/judging/api/downloadJudgingSummary";
+import { useGetTeamOrder } from "@/entities/team/model/useGetTeamOrder";
 import ResultTable from "@/widgets/judgingResult/ui/ResultTable";
 import CommentTable from "@/widgets/judgingResult/ui/CommentTable";
+import TeamOrderList from "@/widgets/judgingResult/ui/TeamOrderList";
 import { useJudgeMonitoring } from "../../model/useJudgeMonitoring";
+import { useReorderTeams } from "../../model/useReorderTeams";
 
 const JudgingResultPage = () => {
   const { data, isConnected } = useJudgeMonitoring();
+  const { data: teamOrder = [], isLoading: isTeamOrderLoading } = useGetTeamOrder();
+  const { reorderTeams } = useReorderTeams();
   const [downloadingSummary, setDownloadingSummary] = useState(false);
   const [downloadingSheets, setDownloadingSheets] = useState(false);
 
@@ -57,6 +62,15 @@ const JudgingResultPage = () => {
             </Button>
           </div>
         </div>
+
+        <section className="flex flex-col gap-16">
+          <h2 className="text-body2b">팀 순서 변경</h2>
+          <TeamOrderList
+            teams={teamOrder}
+            onReorder={reorderTeams}
+            isLoading={isTeamOrderLoading}
+          />
+        </section>
 
         <section className="flex flex-col gap-16">
           <h2 className="text-body2b">심사집계표</h2>

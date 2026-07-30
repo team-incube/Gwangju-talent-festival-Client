@@ -1,16 +1,5 @@
 "use client";
 
-import {
-  DndContext,
-  DragEndEvent,
-  MouseSensor,
-  TouchSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/shared/utils/cn";
 import { getScoreTotal, Score } from "@/entities/judging/model/score";
 
@@ -18,42 +7,21 @@ type TeamGridProps = {
   teams: Score[];
   selectedTeamId: number;
   onSelect: (teamId: number) => void;
-  onReorder: (orderedTeamIds: number[]) => void;
 };
 
-const TeamGrid = ({ teams, selectedTeamId, onSelect, onReorder }: TeamGridProps) => {
-  const sensors = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = teams.findIndex(team => team.teamId === active.id);
-    const newIndex = teams.findIndex(team => team.teamId === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    onReorder(arrayMove(teams, oldIndex, newIndex).map(team => team.teamId));
-  };
-
+const TeamGrid = ({ teams, selectedTeamId, onSelect }: TeamGridProps) => {
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={teams.map(team => team.teamId)} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-6 tablet:grid-cols-4 mobile:grid-cols-3 gap-14 mobile:gap-8">
-          {teams.map((team, index) => (
-            <TeamCard
-              key={team.teamId}
-              team={team}
-              order={index + 1}
-              isSelected={team.teamId === selectedTeamId}
-              onSelect={onSelect}
-            />
-          ))}
-        </div>
-      </SortableContext>
-    </DndContext>
+    <div className="grid grid-cols-5 tablet:grid-cols-4 mobile:grid-cols-3 gap-14 mobile:gap-8">
+      {teams.map((team, index) => (
+        <TeamCard
+          key={team.teamId}
+          team={team}
+          order={index + 1}
+          isSelected={team.teamId === selectedTeamId}
+          onSelect={onSelect}
+        />
+      ))}
+    </div>
   );
 };
 
@@ -65,24 +33,16 @@ type TeamCardProps = {
 };
 
 const TeamCard = ({ team, order, isSelected, onSelect }: TeamCardProps) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: team.teamId,
-  });
   const paddedOrder = String(order).padStart(2, "0");
 
   return (
     <button
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
       type="button"
       onClick={() => onSelect(team.teamId)}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "relative overflow-hidden rounded-2xl p-16 mobile:p-12 text-left transition-colors touch-pan-y",
+        "relative overflow-hidden rounded-2xl p-16 mobile:p-12 text-left transition-colors",
         "bg-gradient-to-br from-orange-50 to-white border",
         isSelected ? "border-orange-500" : "border-orange-100 hover:border-orange-300",
-        isDragging && "z-10 shadow-lg",
       )}
     >
       <span

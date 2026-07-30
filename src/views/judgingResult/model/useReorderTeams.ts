@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Team } from "@/entities/team/model/types";
 import { updateTeamOrder } from "@/entities/team/api/updateTeamOrder";
-import { teamOrderQueryKey } from "./queryKeys";
+import { teamOrderQueryKey } from "@/entities/team/model/queryKeys";
 
 export const useReorderTeams = () => {
   const queryClient = useQueryClient();
