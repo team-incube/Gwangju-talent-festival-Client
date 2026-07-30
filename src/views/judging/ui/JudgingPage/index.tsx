@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { DescriptionCard } from "@/entities/apply/ui/DescriptionCard";
 import BackHeader from "@/shared/ui/BackHeader";
 import OfflineBadge from "@/shared/ui/OfflineBadge";
-import { computeRanks, EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
+import { EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
 import TeamGrid from "@/widgets/judging/ui/TeamGrid";
 import ScoreForm from "@/widgets/judging/ui/ScoreForm";
 import HandwritingCanvas from "@/widgets/judging/ui/HandwritingCanvas";
@@ -43,8 +43,6 @@ const JudgingPage = () => {
 
   const selectedTeam = teams.find(team => team.teamId === selectedTeamId);
   const score = selectedTeamId !== null ? getScore(selectedTeamId) : null;
-  const ranks = useMemo(() => computeRanks(teams), [teams]);
-  const rank = selectedTeamId !== null ? ranks.get(selectedTeamId) ?? null : null;
   const commentDraft = selectedTeamId !== null ? getJudgeCommentDraft(selectedTeamId) : null;
 
   const handleSelectTeam = (teamId: number) => {
@@ -87,14 +85,12 @@ const JudgingPage = () => {
           <div className="h-260 w-full rounded-xl bg-gray-100 animate-pulse" />
         ) : (
           <ScoreForm
-            teamId={selectedTeamId}
+            performOrder={selectedTeam?.performOrder ?? selectedTeamId}
             teamName={selectedTeam?.teamName ?? ""}
             score={score}
             onChange={(key, value) => updateScore(selectedTeamId, key, value)}
             onSave={() => submitScore(selectedTeamId)}
             isSaving={savingTeamId === selectedTeamId}
-            statScore={selectedTeam?.totalScore ?? 0}
-            rank={rank}
           />
         )}
 

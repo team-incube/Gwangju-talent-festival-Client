@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { JudgeMonitoringResponse } from "@/entities/judging/model/monitoring";
+import {
+  JudgeMonitoringResponse,
+  mergeMonitoringSnapshot,
+  sanitizeMonitoringResponse,
+} from "@/entities/judging/model/monitoring";
+import { parsePartialJson } from "@/shared/utils/partialJson";
 
 const MAX_RETRIES = 5;
 const BASE_DELAY = 1000;
@@ -28,11 +33,15 @@ export const useJudgeMonitoring = () => {
       eventSourceRef.current = eventSource;
 
       eventSource.addEventListener("judge-monitoring", event => {
-        try {
-          setData(JSON.parse(event.data));
-        } catch {
+        const parsed = parsePartialJson<unknown>(event.data);
+        const sanitized = parsed ? sanitizeMonitoringResponse(parsed.data) : null;
+
+        if (!parsed || !sanitized) {
           toast.error("심사 모니터링 데이터를 불러오는 중 오류가 발생했습니다.");
+          return;
         }
+
+        setData(prev => (parsed.recovered ? mergeMonitoringSnapshot(prev, sanitized) : sanitized));
       });
 
       eventSource.onopen = () => {

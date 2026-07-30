@@ -8,30 +8,27 @@ import {
   TOTAL_MAX,
 } from "@/entities/judging/model/score";
 import Button from "@/shared/ui/Button";
+import Triangle from "@/shared/asset/svg/Triangle";
 
 const NEGATIVE_STEPS = [-5, -1];
 const POSITIVE_STEPS = [1, 5];
 
 type ScoreFormProps = {
-  teamId: number;
+  performOrder: number;
   teamName: string;
   score: TeamScore;
   onChange: (key: (typeof EVALUATION_CRITERIA)[number]["key"], value: number) => void;
   onSave: () => void;
   isSaving: boolean;
-  statScore: number;
-  rank: number | null;
 };
 
 const ScoreForm = ({
-  teamId,
+  performOrder,
   teamName,
   score,
   onChange,
   onSave,
   isSaving,
-  statScore,
-  rank,
 }: ScoreFormProps) => {
   const total = getScoreTotal(score);
 
@@ -62,9 +59,10 @@ const ScoreForm = ({
                       type="button"
                       onClick={() => onChange(key, Math.max(score[key] + step, 0))}
                       aria-label={`${label} ${-step}점 내리기`}
-                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-gray-200 text-gray-600 text-body1b mobile:text-caption1b cursor-pointer hover:bg-gray-100 hover:border-gray-300 active:bg-gray-200 active:scale-95 transition touch-manipulation select-none"
+                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-gray-200 text-gray-600 flex items-center justify-center gap-4 mobile:gap-2 cursor-pointer hover:bg-gray-100 hover:border-gray-300 active:bg-gray-200 active:scale-95 transition touch-manipulation select-none"
                     >
-                      {step}
+                      <Triangle direction="down" color="#7A7A7A" />
+                      <span className="text-title4b mobile:text-body2b">{-step}</span>
                     </button>
                   ))}
 
@@ -78,9 +76,10 @@ const ScoreForm = ({
                       type="button"
                       onClick={() => onChange(key, Math.min(score[key] + step, maxAllowed))}
                       aria-label={`${label} ${step}점 올리기`}
-                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-orange-300 text-orange-500 text-body1b mobile:text-caption1b cursor-pointer hover:bg-orange-100 hover:border-orange-400 active:bg-orange-200 active:scale-95 transition touch-manipulation select-none"
+                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-orange-300 text-orange-500 flex items-center justify-center gap-4 mobile:gap-2 cursor-pointer hover:bg-orange-100 hover:border-orange-400 active:bg-orange-200 active:scale-95 transition touch-manipulation select-none"
                     >
-                      +{step}
+                      <Triangle direction="up" color="#FF9644" />
+                      <span className="text-title4b mobile:text-body2b">{step}</span>
                     </button>
                   ))}
                 </div>
@@ -90,11 +89,7 @@ const ScoreForm = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-8 mobile:grid-cols-1 mobile:gap-6">
-        <StatChip label={`${teamId}번 ${teamName} 내 점수`} value={`${total}점 / ${TOTAL_MAX}점`} />
-        <StatChip label="실시간 통계 점수" value={`${statScore}점`} />
-        <StatChip label="현재 순위" value={rank !== null ? `${rank}위` : "-"} />
-      </div>
+      <StatChip label={`${performOrder}번 ${teamName} 내 점수`} value={`${total}점 / ${TOTAL_MAX}점`} />
 
       <Button
         type="button"
