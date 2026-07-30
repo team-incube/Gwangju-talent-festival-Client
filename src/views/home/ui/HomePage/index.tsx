@@ -8,7 +8,6 @@ import JudgingCtaSection from "@/widgets/main/JudgingCtaSection";
 import JudgeInfoSection from "@/widgets/main/JudgeInfoSection";
 
 import LazySection from "@/shared/ui/LazySection";
-import SloganPosterPopup from "@/widgets/main/SloganPosterPopup";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 
 const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryLiveSection"), {
@@ -57,7 +56,7 @@ const HomePage = () => {
 
   return (
     <>
-      <SloganPosterPopup />
+      {/* <SloganPosterPopup /> */}
       <IntroFirstSection />
       <JudgeInfoSection />
       <SloganSecondSection />
