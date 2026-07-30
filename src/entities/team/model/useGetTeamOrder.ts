@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Team } from "@/entities/team/model/types";
-import { getAllTeams } from "@/entities/team/api/getAllTeams";
+import { Team } from "./types";
+import { getAllTeams } from "../api/getAllTeams";
 import { teamOrderQueryKey } from "./queryKeys";
 
 export const useGetTeamOrder = () => {

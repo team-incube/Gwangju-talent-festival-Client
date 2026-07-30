@@ -5,6 +5,7 @@ import Image from "next/image";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { isFinalsLineupReleased } from "@/shared/config/dateConfig";
+import { TEAM_GENRE_LABELS } from "@/entities/team/model/types";
 import { useGetTeams } from "../model/useGetTeams";
 
 const VENUE = {
@@ -129,24 +130,30 @@ const FinalsVenueSection = () => {
                             <td className="border border-l-0 border-solid border-gray-200 px-12 py-10">
                               {left.performOrder}
                             </td>
-                            {/* 분야: 백엔드에 필드 추가 전까지 공란 */}
-                            <td className="border border-solid border-gray-200 px-12 py-10" />
+                            <td className="border border-solid border-gray-200 px-12 py-10">
+                              {TEAM_GENRE_LABELS[left.teamGenre]}
+                            </td>
                             <td className="border border-solid border-gray-200 px-12 py-10 text-left">
                               {left.school ? `${left.teamName}(${left.school})` : left.teamName}
                             </td>
-                            {/* 신청자명: 백엔드에 필드 추가 전까지 공란 */}
-                            <td className="border border-solid border-gray-200 px-12 py-10" />
+                            <td className="border border-solid border-gray-200 px-12 py-10">
+                              {left.applicantName}
+                            </td>
                             <td className="border border-solid border-gray-200 px-12 py-10">
                               {right?.performOrder}
                             </td>
-                            <td className="border border-solid border-gray-200 px-12 py-10" />
+                            <td className="border border-solid border-gray-200 px-12 py-10">
+                              {right && TEAM_GENRE_LABELS[right.teamGenre]}
+                            </td>
                             <td className="border border-solid border-gray-200 px-12 py-10 text-left">
                               {right &&
                                 (right.school
                                   ? `${right.teamName}(${right.school})`
                                   : right.teamName)}
                             </td>
-                            <td className="border border-r-0 border-solid border-gray-200 px-12 py-10" />
+                            <td className="border border-r-0 border-solid border-gray-200 px-12 py-10">
+                              {right?.applicantName}
+                            </td>
                           </tr>
                         );
                       })
@@ -159,9 +166,11 @@ const FinalsVenueSection = () => {
                         <td
                           colSpan={6}
                           className="border border-b-0 border-solid border-gray-200 px-12 py-10"
-                        />
+                        >
+                          국악1, 밴드4, 댄스2, 보컬3
+                        </td>
                         <td className="border border-b-0 border-r-0 border-solid border-gray-200 px-12 py-10 bg-orange-50 text-orange-500">
-                          총 {teams.length}팀
+                          총 36명
                         </td>
                       </tr>
                     )}

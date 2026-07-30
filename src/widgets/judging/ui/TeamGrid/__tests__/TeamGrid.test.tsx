@@ -24,9 +24,7 @@ describe("TeamGrid - 렌더링", () => {
   it("전달된 순서대로 팀 카드를 렌더링한다", () => {
     const teams = [makeScore(1, "댄스팀"), makeScore(2, "밴드팀"), makeScore(3, "합창팀")];
 
-    render(
-      <TeamGrid teams={teams} selectedTeamId={1} onSelect={vi.fn()} onReorder={vi.fn()} />,
-    );
+    render(<TeamGrid teams={teams} selectedTeamId={1} onSelect={vi.fn()} />);
 
     const buttons = screen.getAllByRole("button");
     expect(buttons.map(button => button.textContent)).toEqual([
@@ -39,9 +37,7 @@ describe("TeamGrid - 렌더링", () => {
   it("선택된 팀 이름이 화면에 표시된다", () => {
     const teams = [makeScore(1, "댄스팀"), makeScore(2, "밴드팀")];
 
-    render(
-      <TeamGrid teams={teams} selectedTeamId={2} onSelect={vi.fn()} onReorder={vi.fn()} />,
-    );
+    render(<TeamGrid teams={teams} selectedTeamId={2} onSelect={vi.fn()} />);
 
     expect(screen.getByText("밴드팀")).toBeInTheDocument();
   });
@@ -53,26 +49,10 @@ describe("TeamGrid - 카드 클릭", () => {
     const onSelect = vi.fn();
     const teams = [makeScore(1, "댄스팀"), makeScore(2, "밴드팀")];
 
-    render(
-      <TeamGrid teams={teams} selectedTeamId={1} onSelect={onSelect} onReorder={vi.fn()} />,
-    );
+    render(<TeamGrid teams={teams} selectedTeamId={1} onSelect={onSelect} />);
 
     await user.click(screen.getByText("밴드팀"));
 
     expect(onSelect).toHaveBeenCalledWith(2);
-  });
-
-  it("카드 클릭 시 onReorder는 호출되지 않는다", async () => {
-    const user = userEvent.setup();
-    const onReorder = vi.fn();
-    const teams = [makeScore(1, "댄스팀"), makeScore(2, "밴드팀")];
-
-    render(
-      <TeamGrid teams={teams} selectedTeamId={1} onSelect={vi.fn()} onReorder={onReorder} />,
-    );
-
-    await user.click(screen.getByText("댄스팀"));
-
-    expect(onReorder).not.toHaveBeenCalled();
   });
 });

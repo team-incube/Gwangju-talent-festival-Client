@@ -8,7 +8,10 @@ import {
   TOTAL_MAX,
 } from "@/entities/judging/model/score";
 import Button from "@/shared/ui/Button";
-import Triangle from "@/shared/asset/svg/Triangle";
+import { cn } from "@/shared/utils/cn";
+
+const ARROW_UP_CLIP = "[clip-path:polygon(0_100%,0_30%,50%_0,100%_30%,100%_100%)]";
+const ARROW_DOWN_CLIP = "[clip-path:polygon(0_0,0_70%,50%_100%,100%_70%,100%_0)]";
 
 const NEGATIVE_STEPS = [-5, -1];
 const POSITIVE_STEPS = [1, 5];
@@ -59,9 +62,14 @@ const ScoreForm = ({
                       type="button"
                       onClick={() => onChange(key, Math.max(score[key] + step, 0))}
                       aria-label={`${label} ${-step}점 내리기`}
-                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-gray-200 text-gray-600 flex items-center justify-center gap-4 mobile:gap-2 cursor-pointer hover:bg-gray-100 hover:border-gray-300 active:bg-gray-200 active:scale-95 transition touch-manipulation select-none"
+                      className={cn(
+                        "w-64 h-72 mobile:w-48 mobile:h-60 flex items-center justify-center pb-10 mobile:pb-8",
+                        "border border-gray-300 bg-gray-50 text-gray-600",
+                        "hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95",
+                        "transition touch-manipulation select-none cursor-pointer",
+                        ARROW_DOWN_CLIP,
+                      )}
                     >
-                      <Triangle direction="down" color="#7A7A7A" />
                       <span className="text-title4b mobile:text-body2b">{-step}</span>
                     </button>
                   ))}
@@ -76,10 +84,15 @@ const ScoreForm = ({
                       type="button"
                       onClick={() => onChange(key, Math.min(score[key] + step, maxAllowed))}
                       aria-label={`${label} ${step}점 올리기`}
-                      className="w-64 h-64 mobile:w-48 mobile:h-48 rounded-lg border border-orange-300 text-orange-500 flex items-center justify-center gap-4 mobile:gap-2 cursor-pointer hover:bg-orange-100 hover:border-orange-400 active:bg-orange-200 active:scale-95 transition touch-manipulation select-none"
+                      className={cn(
+                        "w-64 h-72 mobile:w-48 mobile:h-60 flex items-center justify-center pt-10 mobile:pt-8",
+                        "border border-orange-400 bg-orange-400 text-white",
+                        "hover:bg-orange-500 hover:border-orange-500 active:bg-orange-600 active:scale-95",
+                        "transition touch-manipulation select-none cursor-pointer",
+                        ARROW_UP_CLIP,
+                      )}
                     >
-                      <Triangle direction="up" color="#FF9644" />
-                      <span className="text-title4b mobile:text-body2b">{step}</span>
+                      <span className="text-title4b mobile:text-body2b">+{step}</span>
                     </button>
                   ))}
                 </div>
