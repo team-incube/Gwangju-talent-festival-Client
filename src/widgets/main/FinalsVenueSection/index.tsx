@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
+import { isFinalsLineupReleased } from "@/shared/config/dateConfig";
 import { useGetTeams } from "../model/useGetTeams";
 
 const VENUE = {
@@ -36,6 +38,15 @@ const FinalsVenueSection = () => {
   const lineupLeft = teams.slice(0, half);
   const lineupRight = teams.slice(half);
 
+  const [isLineupReleased, setIsLineupReleased] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsLineupReleased(isFinalsLineupReleased());
+    check();
+    const timer = setInterval(check, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section className={cn("flex flex-col items-center")}>
       <div className={cn("w-[70%] mobile:w-full mobile:px-16")}>
@@ -52,102 +63,113 @@ const FinalsVenueSection = () => {
         {/* 본선 진출팀 */}
         <div className={cn("mb-24 flex flex-col gap-12")}>
           <h3 className="text-body2b mobile:text-body3b text-black">본선 진출팀</h3>
-          <div className="w-full overflow-x-auto">
-            <div className="min-w-[720px] overflow-hidden rounded-xl">
-              <table className="w-full border-collapse text-center text-caption1r">
-                <thead className="bg-gray-50 text-caption1b text-gray-700">
-                  <tr>
-                    <th className="border border-t-0 border-l-0 border-solid border-gray-200 px-12 py-10">
-                      번호
-                    </th>
-                    <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                      분야
-                    </th>
-                    <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                      팀명(소속)
-                    </th>
-                    <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                      신청자명
-                    </th>
-                    <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                      번호
-                    </th>
-                    <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                      분야
-                    </th>
-                    <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                      팀명(소속)
-                    </th>
-                    <th className="border border-t-0 border-r-0 border-solid border-gray-200 px-12 py-10">
-                      신청자명
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isLoading ? (
-                    <tr>
-                      <td colSpan={8} className="px-12 py-10">
-                        <div className="flex flex-col gap-8">
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <div
-                              key={index}
-                              className="h-32 w-full rounded-lg bg-gray-100 animate-pulse"
-                            />
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ) : teams.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="py-24 text-gray-400">
-                        본선 진출팀 정보가 없습니다.
-                      </td>
-                    </tr>
-                  ) : (
-                    lineupLeft.map((left, index) => {
-                      const right = lineupRight[index];
-                      return (
-                        <tr key={left.teamId}>
-                          <td className="border border-l-0 border-solid border-gray-200 px-12 py-10">
-                            {left.performOrder}
-                          </td>
-                          {/* 분야: 백엔드에 필드 추가 전까지 공란 */}
-                          <td className="border border-solid border-gray-200 px-12 py-10" />
-                          <td className="border border-solid border-gray-200 px-12 py-10 text-left">
-                            {left.school ? `${left.teamName}(${left.school})` : left.teamName}
-                          </td>
-                          {/* 신청자명: 백엔드에 필드 추가 전까지 공란 */}
-                          <td className="border border-solid border-gray-200 px-12 py-10" />
-                          <td className="border border-solid border-gray-200 px-12 py-10">
-                            {right?.performOrder}
-                          </td>
-                          <td className="border border-solid border-gray-200 px-12 py-10" />
-                          <td className="border border-solid border-gray-200 px-12 py-10 text-left">
-                            {right && (right.school ? `${right.teamName}(${right.school})` : right.teamName)}
-                          </td>
-                          <td className="border border-r-0 border-solid border-gray-200 px-12 py-10" />
-                        </tr>
-                      );
-                    })
-                  )}
-                  {!isLoading && teams.length > 0 && (
-                    <tr className="bg-gray-50 text-caption1b">
-                      <td className="border border-b-0 border-l-0 border-solid border-gray-200 px-12 py-10">
-                        계
-                      </td>
-                      <td
-                        colSpan={6}
-                        className="border border-b-0 border-solid border-gray-200 px-12 py-10"
-                      />
-                      <td className="border border-b-0 border-r-0 border-solid border-gray-200 px-12 py-10 bg-orange-50 text-orange-500">
-                        총 {teams.length}팀
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+          {!isLineupReleased ? (
+            <div className="flex flex-col items-center gap-4 rounded-xl bg-gray-50 py-40 text-center">
+              <p className="text-body3b mobile:text-caption1b text-gray-700">
+                본선 진출팀은 7월 31일(금) 오전 10시에 발표됩니다
+              </p>
             </div>
-          </div>
+          ) : (
+            <div className="w-full overflow-x-auto">
+              <div className="min-w-[720px] overflow-hidden rounded-xl">
+                <table className="w-full border-collapse text-center text-caption1r">
+                  <thead className="bg-gray-50 text-caption1b text-gray-700">
+                    <tr>
+                      <th className="border border-t-0 border-l-0 border-solid border-gray-200 px-12 py-10">
+                        번호
+                      </th>
+                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                        분야
+                      </th>
+                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                        팀명(소속)
+                      </th>
+                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                        신청자명
+                      </th>
+                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                        번호
+                      </th>
+                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                        분야
+                      </th>
+                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                        팀명(소속)
+                      </th>
+                      <th className="border border-t-0 border-r-0 border-solid border-gray-200 px-12 py-10">
+                        신청자명
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan={8} className="px-12 py-10">
+                          <div className="flex flex-col gap-8">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <div
+                                key={index}
+                                className="h-32 w-full rounded-lg bg-gray-100 animate-pulse"
+                              />
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    ) : teams.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="py-24 text-gray-400">
+                          본선 진출팀 정보가 없습니다.
+                        </td>
+                      </tr>
+                    ) : (
+                      lineupLeft.map((left, index) => {
+                        const right = lineupRight[index];
+                        return (
+                          <tr key={left.teamId}>
+                            <td className="border border-l-0 border-solid border-gray-200 px-12 py-10">
+                              {left.performOrder}
+                            </td>
+                            {/* 분야: 백엔드에 필드 추가 전까지 공란 */}
+                            <td className="border border-solid border-gray-200 px-12 py-10" />
+                            <td className="border border-solid border-gray-200 px-12 py-10 text-left">
+                              {left.school ? `${left.teamName}(${left.school})` : left.teamName}
+                            </td>
+                            {/* 신청자명: 백엔드에 필드 추가 전까지 공란 */}
+                            <td className="border border-solid border-gray-200 px-12 py-10" />
+                            <td className="border border-solid border-gray-200 px-12 py-10">
+                              {right?.performOrder}
+                            </td>
+                            <td className="border border-solid border-gray-200 px-12 py-10" />
+                            <td className="border border-solid border-gray-200 px-12 py-10 text-left">
+                              {right &&
+                                (right.school
+                                  ? `${right.teamName}(${right.school})`
+                                  : right.teamName)}
+                            </td>
+                            <td className="border border-r-0 border-solid border-gray-200 px-12 py-10" />
+                          </tr>
+                        );
+                      })
+                    )}
+                    {!isLoading && teams.length > 0 && (
+                      <tr className="bg-gray-50 text-caption1b">
+                        <td className="border border-b-0 border-l-0 border-solid border-gray-200 px-12 py-10">
+                          계
+                        </td>
+                        <td
+                          colSpan={6}
+                          className="border border-b-0 border-solid border-gray-200 px-12 py-10"
+                        />
+                        <td className="border border-b-0 border-r-0 border-solid border-gray-200 px-12 py-10 bg-orange-50 text-orange-500">
+                          총 {teams.length}팀
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={cn("flex gap-24 mb-90 mobile:mb-38 mobile:flex-col mobile:gap-20")}>
