@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { DescriptionCard } from "@/entities/apply/ui/DescriptionCard";
 import BackHeader from "@/shared/ui/BackHeader";
+import OfflineBadge from "@/shared/ui/OfflineBadge";
 import { computeRanks, EVALUATION_CRITERIA, TOTAL_MAX } from "@/entities/judging/model/score";
 import TeamGrid from "@/widgets/judging/ui/TeamGrid";
 import ScoreForm from "@/widgets/judging/ui/ScoreForm";
@@ -11,7 +12,7 @@ import { useTeamGridData } from "../../model/useTeamGridData";
 import { useReorderTeams } from "../../model/useReorderTeams";
 import { useTeamScores } from "../../model/useTeamScores";
 import { useGetJudgeComment } from "../../model/useGetJudgeComment";
-import { useSaveJudgeComment } from "../../model/useSaveJudgeComment";
+import { getJudgeCommentDraft, useSaveJudgeComment } from "../../model/useSaveJudgeComment";
 
 const CRITERIA_ITEMS: string[] = EVALUATION_CRITERIA.map(
   ({ label, max }) => `${label} (${max}점)`,
@@ -34,13 +35,17 @@ const JudgingPage = () => {
   const { getScore, updateScore, submitScore, savingTeamId, hasUnsavedEdit } =
     useTeamScores(teams);
   const { data: judgeComment } = useGetJudgeComment(selectedTeamId);
-  const { save: saveJudgeComment, saveImmediately: clearJudgeComment } =
-    useSaveJudgeComment(selectedTeamId);
+  const {
+    save: saveJudgeComment,
+    saveImmediately: clearJudgeComment,
+    isOnline,
+  } = useSaveJudgeComment(selectedTeamId);
 
   const selectedTeam = teams.find(team => team.teamId === selectedTeamId);
   const score = selectedTeamId !== null ? getScore(selectedTeamId) : null;
   const ranks = useMemo(() => computeRanks(teams), [teams]);
   const rank = selectedTeamId !== null ? ranks.get(selectedTeamId) ?? null : null;
+  const commentDraft = selectedTeamId !== null ? getJudgeCommentDraft(selectedTeamId) : null;
 
   const handleSelectTeam = (teamId: number) => {
     if (selectedTeamId !== null && selectedTeamId !== teamId && hasUnsavedEdit(selectedTeamId)) {
@@ -53,6 +58,7 @@ const JudgingPage = () => {
     <div className="w-full min-h-screen flex flex-col items-center py-40 px-40 mobile:px-16 tablet:px-24">
       <div className="max-w-[1280px] w-full flex flex-col gap-24">
         <BackHeader text="심사 안내" />
+        {!isOnline && <OfflineBadge className="self-start" />}
 
         {isTeamGridUnavailable ? (
           <div className="grid grid-cols-6 tablet:grid-cols-4 mobile:grid-cols-3 gap-14 mobile:gap-8">
@@ -97,7 +103,7 @@ const JudgingPage = () => {
         ) : (
           <HandwritingCanvas
             teamId={selectedTeamId}
-            value={judgeComment?.strokes}
+            value={commentDraft ?? judgeComment?.strokes}
             onChange={saveJudgeComment}
             onClear={() => clearJudgeComment([])}
           />
