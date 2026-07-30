@@ -35,3 +35,12 @@ export const preliminaryResultOpenDate = Number.isNaN(parsedPreliminaryResultOpe
   ? new Date(PRELIMINARY_RESULT_OPEN_DATE_FALLBACK)
   : parsedPreliminaryResultOpenDate;
 export const isPreliminaryResultOpen = () => new Date() >= preliminaryResultOpenDate;
+
+const FINALS_LINEUP_RELEASE_DATE_FALLBACK = "2026-07-31T10:00:00+09:00";
+const parsedFinalsLineupReleaseDate = new Date(
+  process.env.NEXT_PUBLIC_FINALS_LINEUP_RELEASE_DATE ?? FINALS_LINEUP_RELEASE_DATE_FALLBACK,
+);
+export const finalsLineupReleaseDate = Number.isNaN(parsedFinalsLineupReleaseDate.getTime())
+  ? new Date(FINALS_LINEUP_RELEASE_DATE_FALLBACK)
+  : parsedFinalsLineupReleaseDate;
+export const isFinalsLineupReleased = () => new Date() >= finalsLineupReleaseDate;

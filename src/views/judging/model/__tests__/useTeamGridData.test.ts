@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useTeamGridData } from "../useTeamGridData";
 import { useGetJudgeList } from "../useGetJudgeList";
-import { useGetTeamOrder } from "../useGetTeamOrder";
+import { useGetTeamOrder } from "@/entities/team/model/useGetTeamOrder";
 import { Score } from "@/entities/judging/model/score";
 import { Team } from "@/entities/team/model/types";
 
@@ -10,7 +10,7 @@ vi.mock("../useGetJudgeList", () => ({
   useGetJudgeList: vi.fn(),
 }));
 
-vi.mock("../useGetTeamOrder", () => ({
+vi.mock("@/entities/team/model/useGetTeamOrder", () => ({
   useGetTeamOrder: vi.fn(),
 }));
 
@@ -30,6 +30,8 @@ const makeTeam = (teamId: number, performOrder: number): Team => ({
   teamId,
   teamName: `팀${teamId}`,
   school: "광주고",
+  teamGenre: "DANCE",
+  applicantName: `신청자${teamId}`,
   performOrder,
   status: "PENDING",
 });

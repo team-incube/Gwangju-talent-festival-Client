@@ -62,6 +62,11 @@ class MockEventSource {
     const event = { data: "invalid{{{json" };
     this.listeners.get(type)?.forEach(l => l(event));
   }
+
+  dispatchRaw(type: string, raw: string) {
+    const event = { data: raw };
+    this.listeners.get(type)?.forEach(l => l(event));
+  }
 }
 
 const SNAPSHOT = {
@@ -131,6 +136,61 @@ describe("useJudgeMonitoring", () => {
     expect(toast.error).toHaveBeenCalledWith("심사 모니터링 데이터를 불러오는 중 오류가 발생했습니다.");
   });
 
+  it("스냅샷이 중간에 잘려도 읽을 수 있는 값은 반영하고 나머지는 이전 값을 유지한다", () => {
+    const { result } = renderHook(() => useJudgeMonitoring());
+
+    act(() => {
+      mockInstances[0].dispatch("judge-monitoring", {
+        judges: [{ judgeId: 1, label: "심사위원 A" }],
+        scoreRows: [
+          {
+            teamId: 1,
+            performOrder: 1,
+            teamName: "댄스팀",
+            scores: [{ judgeId: 1, score: 80 }],
+            calculatedScore: 80,
+            rank: 2,
+          },
+          {
+            teamId: 2,
+            performOrder: 2,
+            teamName: "밴드팀",
+            scores: [{ judgeId: 1, score: 90 }],
+            calculatedScore: 90,
+            rank: 1,
+          },
+        ],
+        commentRows: [],
+      });
+    });
+
+    act(() => {
+      mockInstances[0].dispatchRaw(
+        "judge-monitoring",
+        '{"judges":[{"judgeId":1,"label":"심사위원 A"}],"scoreRows":[{"teamId":1,"performOrder":1,"teamName":"댄스팀","scores":[{"judgeId":1,"score":95}],"calculatedScore":95,"rank":2},{"teamId":2,"performOrder":2,"teamName":"밴드팀"',
+      );
+    });
+
+    expect(result.current.data?.scoreRows).toEqual([
+      {
+        teamId: 1,
+        performOrder: 1,
+        teamName: "댄스팀",
+        scores: [{ judgeId: 1, score: 95 }],
+        calculatedScore: 95,
+        rank: 2,
+      },
+      {
+        teamId: 2,
+        performOrder: 2,
+        teamName: "밴드팀",
+        scores: [{ judgeId: 1, score: 90 }],
+        calculatedScore: 90,
+        rank: 1,
+      },
+    ]);
+  });
+
   it("연결에 성공하면 isConnected가 true가 된다", () => {
     const { result } = renderHook(() => useJudgeMonitoring());
 
@@ -161,5 +221,37 @@ describe("useJudgeMonitoring", () => {
     unmount();
 
     expect(mockInstances[0].closeCalled).toBe(true);
+  });
+
+  it("연결이 열리지도 실패하지도 않은 채 pending 상태로 타임아웃되면 재연결을 시도한다", () => {
+    const { result } = renderHook(() => useJudgeMonitoring());
+
+    act(() => {
+      vi.advanceTimersByTime(8000);
+    });
+
+    expect(mockInstances[0].closeCalled).toBe(true);
+    expect(result.current.isConnected).toBe(false);
+    expect(toast.error).toHaveBeenCalledWith(
+      "실시간 심사 모니터링 연결이 지연되고 있습니다. 다시 연결을 시도합니다.",
+      { id: "judge-monitoring-sse-error" },
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    expect(mockInstances).toHaveLength(2);
+  });
+
+  it("타임아웃 전에 연결이 열리면 재연결을 시도하지 않는다", () => {
+    renderHook(() => useJudgeMonitoring());
+
+    act(() => {
+      mockInstances[0].simulateOpen();
+      vi.advanceTimersByTime(8000);
+    });
+
+    expect(mockInstances[0].closeCalled).toBe(false);
+    expect(mockInstances).toHaveLength(1);
   });
 });

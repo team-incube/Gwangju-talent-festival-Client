@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { cn } from "@/shared/utils/cn";
-import { CheckIcon } from "@/shared/asset/svg/CheckIcon";
-import { LeftArrow } from "@/shared/asset/svg/LeftArrow";
-import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { Stroke, StrokePoint } from "@/entities/judging/model/handwriting";
+
+type StylusTouch = Touch & { touchType?: "direct" | "stylus" };
 
 type HandwritingCanvasProps = {
   teamId: number;
@@ -15,12 +13,7 @@ type HandwritingCanvasProps = {
   onClear: () => void;
 };
 
-const PEN_COLORS = [
-  { key: "black", hex: "#121212", swatchClass: "bg-black" },
-  { key: "red", hex: "#E13A3A", swatchClass: "bg-red-500" },
-  { key: "blue", hex: "#2563EB", swatchClass: "bg-blue-600" },
-] as const;
-
+const PEN_COLOR = "#121212";
 const LINE_WIDTH = 2;
 const MIN_POINT_DISTANCE = 0.003;
 
@@ -32,7 +25,6 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   const loadedTeamId = useRef<number | null>(null);
   const strokesRef = useRef<Stroke[]>([]);
 
-  const [penColor, setPenColor] = useState<string>(PEN_COLORS[0].hex);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   // 지우기(Clear)도 한 번에 되돌릴 수 있도록, 되돌리기 스택은 "한 번의 동작으로 사라진 스트로크 묶음" 단위로 쌓는다
   const [redoStack, setRedoStack] = useState<Stroke[][]>([]);
@@ -83,11 +75,15 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     return () => observer.disconnect();
   }, [drawStrokes]);
 
-  // iOS는 passive 리스너로는 preventDefault가 막히지 않아 필기 중 페이지가 스크롤되고, 그 과정에서 pointercancel이 떠 획이 끊긴다. 네이티브 non-passive 리스너로 터치 기본동작을 직접 막는다
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const prevent = (e: TouchEvent) => e.preventDefault();
+    const prevent = (e: TouchEvent) => {
+      const hasStylus = Array.from(e.touches).some(
+        t => (t as StylusTouch).touchType === "stylus",
+      );
+      if (hasStylus) e.preventDefault();
+    };
     canvas.addEventListener("touchstart", prevent, { passive: false });
     canvas.addEventListener("touchmove", prevent, { passive: false });
     return () => {
@@ -127,6 +123,7 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
   };
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType !== "pen") return;
     e.preventDefault();
 
     const canvas = canvasRef.current;
@@ -148,11 +145,11 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
     canvas.setPointerCapture(e.pointerId);
 
     const point = getPoint(e);
-    currentStroke.current = { color: penColor, points: [point] };
+    currentStroke.current = { color: PEN_COLOR, points: [point] };
 
     ctx.lineCap = "round";
     ctx.lineWidth = LINE_WIDTH * (window.devicePixelRatio || 1);
-    ctx.strokeStyle = penColor;
+    ctx.strokeStyle = PEN_COLOR;
     ctx.beginPath();
     ctx.moveTo(point.x * canvas.width, point.y * canvas.height);
   };
@@ -239,69 +236,41 @@ const HandwritingCanvas = ({ teamId, value, onChange, onClear }: HandwritingCanv
 
   return (
     <div className="w-full flex flex-col gap-16 bg-white border border-gray-100 rounded-xl p-22 select-none">
-      <div className="flex items-center justify-between gap-10">
-        <h2 className="text-body1b">심사 의견</h2>
+      <h2 className="text-body1b">심사 의견</h2>
+
+      <div className="flex items-center justify-end gap-10 flex-wrap">
+        <button
+          type="button"
+          onClick={handleUndo}
+          disabled={strokes.length === 0}
+          aria-label="한 획 지우기"
+          className="h-48 px-16 rounded-lg border border-gray-300 text-body3b text-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
+        >
+          한 획 지우기
+        </button>
+        <button
+          type="button"
+          onClick={handleRedo}
+          disabled={redoStack.length === 0}
+          aria-label="한 획 복원"
+          className="h-48 px-16 rounded-lg border border-gray-300 text-body3b text-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
+        >
+          한 획 복원
+        </button>
         <button
           type="button"
           onClick={handleClear}
-          className="text-body2b text-gray-600 px-24 py-12 rounded-lg border border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+          className="h-48 px-16 rounded-lg border border-gray-200 text-body3b text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors"
         >
-          지우기
+          전체 지우기
         </button>
-      </div>
-
-      <div className="flex items-center justify-between gap-10 flex-wrap">
-        <div className="flex items-center gap-10">
-          <button
-            type="button"
-            onClick={handleUndo}
-            disabled={strokes.length === 0}
-            aria-label="뒤로가기"
-            className="w-48 h-48 rounded-full border border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
-          >
-            <LeftArrow height={22} width={22} color="#121212" />
-          </button>
-          <button
-            type="button"
-            onClick={handleRedo}
-            disabled={redoStack.length === 0}
-            aria-label="앞으로가기"
-            className="w-48 h-48 rounded-full border border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-200 hover:border-gray-400 active:bg-gray-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-gray-300 disabled:active:scale-100 transition"
-          >
-            <RightArrow height={22} width={22} color="#121212" />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-12">
-          {PEN_COLORS.map(color => {
-            const isSelected = penColor === color.hex;
-            return (
-              <button
-                key={color.key}
-                type="button"
-                onClick={() => setPenColor(color.hex)}
-                aria-label={`${color.key} 펜 선택`}
-                aria-pressed={isSelected}
-                className={cn(
-                  "relative w-36 h-36 rounded-full flex items-center justify-center transition-transform",
-                  color.swatchClass,
-                  isSelected
-                    ? "ring-2 ring-offset-2 ring-gray-500 scale-110"
-                    : "opacity-50 hover:opacity-80",
-                )}
-              >
-                {isSelected && <CheckIcon height={18} width={18} color="white" />}
-              </button>
-            );
-          })}
-        </div>
       </div>
 
       <canvas
         ref={canvasRef}
         width={640}
         height={320}
-        className="w-full h-[400px] mobile:h-[390px] touch-none select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_124px,#e2e2e2_124px,#e2e2e2_125px)]"
+        className="w-full h-[400px] mobile:h-[390px] select-none border border-gray-200 rounded-lg bg-white bg-[repeating-linear-gradient(180deg,transparent_0px,transparent_124px,#e2e2e2_124px,#e2e2e2_125px)]"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
