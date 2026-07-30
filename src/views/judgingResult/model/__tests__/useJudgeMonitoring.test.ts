@@ -62,6 +62,11 @@ class MockEventSource {
     const event = { data: "invalid{{{json" };
     this.listeners.get(type)?.forEach(l => l(event));
   }
+
+  dispatchRaw(type: string, raw: string) {
+    const event = { data: raw };
+    this.listeners.get(type)?.forEach(l => l(event));
+  }
 }
 
 const SNAPSHOT = {
@@ -129,6 +134,61 @@ describe("useJudgeMonitoring", () => {
     });
 
     expect(toast.error).toHaveBeenCalledWith("심사 모니터링 데이터를 불러오는 중 오류가 발생했습니다.");
+  });
+
+  it("스냅샷이 중간에 잘려도 읽을 수 있는 값은 반영하고 나머지는 이전 값을 유지한다", () => {
+    const { result } = renderHook(() => useJudgeMonitoring());
+
+    act(() => {
+      mockInstances[0].dispatch("judge-monitoring", {
+        judges: [{ judgeId: 1, label: "심사위원 A" }],
+        scoreRows: [
+          {
+            teamId: 1,
+            performOrder: 1,
+            teamName: "댄스팀",
+            scores: [{ judgeId: 1, score: 80 }],
+            calculatedScore: 80,
+            rank: 2,
+          },
+          {
+            teamId: 2,
+            performOrder: 2,
+            teamName: "밴드팀",
+            scores: [{ judgeId: 1, score: 90 }],
+            calculatedScore: 90,
+            rank: 1,
+          },
+        ],
+        commentRows: [],
+      });
+    });
+
+    act(() => {
+      mockInstances[0].dispatchRaw(
+        "judge-monitoring",
+        '{"judges":[{"judgeId":1,"label":"심사위원 A"}],"scoreRows":[{"teamId":1,"performOrder":1,"teamName":"댄스팀","scores":[{"judgeId":1,"score":95}],"calculatedScore":95,"rank":2},{"teamId":2,"performOrder":2,"teamName":"밴드팀"',
+      );
+    });
+
+    expect(result.current.data?.scoreRows).toEqual([
+      {
+        teamId: 1,
+        performOrder: 1,
+        teamName: "댄스팀",
+        scores: [{ judgeId: 1, score: 95 }],
+        calculatedScore: 95,
+        rank: 2,
+      },
+      {
+        teamId: 2,
+        performOrder: 2,
+        teamName: "밴드팀",
+        scores: [{ judgeId: 1, score: 90 }],
+        calculatedScore: 90,
+        rank: 1,
+      },
+    ]);
   });
 
   it("연결에 성공하면 isConnected가 true가 된다", () => {
