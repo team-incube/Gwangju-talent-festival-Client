@@ -30,26 +30,11 @@ const PreliminaryLiveSection = () => {
       <div className="relative z-10 mx-auto flex w-[70%] mobile:w-full flex-col gap-40 mobile:gap-28 px-16">
         <SectionTitle
           title="2026 광탈페 예선(光트로)"
-          description={<>7월 24일(금)·25일(토), 광주학생교육문화회관에서 열립니다</>}
+          description={<>7월 24일(금)~25일(토), 광주학생교육문화회관</>}
         />
 
-        <div className="flex flex-col gap-12">
-          <h3 className="text-body2b mobile:text-body3b text-black">예선 소개 영상</h3>
-          <video
-            src="/video/preliminary-intro.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            className="w-full rounded-lg border border-gray-100 bg-black"
-          >
-            <track kind="captions" />
-          </video>
-        </div>
-
         <div className="flex flex-col gap-16">
-          <h3 className="text-body2b mobile:text-body3b text-black">실시간 중계</h3>
+          <h3 className="text-body2b mobile:text-body3b text-black">다시보기</h3>
           <div className="flex gap-8">
             {LIVE_STREAMS.map(({ date, label }, index) => (
               <button
