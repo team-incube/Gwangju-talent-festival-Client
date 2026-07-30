@@ -70,60 +70,50 @@ const FinalsVenueSection = () => {
                 본선 진출팀은 7월 31일(금) 오전 10시에 발표됩니다
               </p>
             </div>
+          ) : isLoading ? (
+            <div className="flex flex-col gap-8">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="h-32 w-full rounded-lg bg-gray-100 animate-pulse" />
+              ))}
+            </div>
+          ) : teams.length === 0 ? (
+            <div className="py-24 text-center text-gray-400">본선 진출팀 정보가 없습니다.</div>
           ) : (
-            <div className="w-full overflow-x-auto">
-              <div className="min-w-[720px] overflow-hidden rounded-xl">
-                <table className="w-full border-collapse text-center text-caption1r">
-                  <thead className="bg-gray-50 text-caption1b text-gray-700">
-                    <tr>
-                      <th className="border border-t-0 border-l-0 border-solid border-gray-200 px-12 py-10">
-                        번호
-                      </th>
-                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                        분야
-                      </th>
-                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                        팀명(소속)
-                      </th>
-                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                        신청자명
-                      </th>
-                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                        번호
-                      </th>
-                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                        분야
-                      </th>
-                      <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
-                        팀명(소속)
-                      </th>
-                      <th className="border border-t-0 border-r-0 border-solid border-gray-200 px-12 py-10">
-                        신청자명
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {isLoading ? (
+            <>
+              {/* 데스크톱: 2열 표 */}
+              <div className="w-full overflow-x-auto mobile:hidden">
+                <div className="min-w-[720px] overflow-hidden rounded-xl">
+                  <table className="w-full border-collapse text-center text-caption1r">
+                    <thead className="bg-gray-50 text-caption1b text-gray-700">
                       <tr>
-                        <td colSpan={8} className="px-12 py-10">
-                          <div className="flex flex-col gap-8">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                              <div
-                                key={index}
-                                className="h-32 w-full rounded-lg bg-gray-100 animate-pulse"
-                              />
-                            ))}
-                          </div>
-                        </td>
+                        <th className="border border-t-0 border-l-0 border-solid border-gray-200 px-12 py-10">
+                          번호
+                        </th>
+                        <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                          분야
+                        </th>
+                        <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                          팀명(소속)
+                        </th>
+                        <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                          신청자명
+                        </th>
+                        <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                          번호
+                        </th>
+                        <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                          분야
+                        </th>
+                        <th className="border border-t-0 border-solid border-gray-200 px-12 py-10">
+                          팀명(소속)
+                        </th>
+                        <th className="border border-t-0 border-r-0 border-solid border-gray-200 px-12 py-10">
+                          신청자명
+                        </th>
                       </tr>
-                    ) : teams.length === 0 ? (
-                      <tr>
-                        <td colSpan={8} className="py-24 text-gray-400">
-                          본선 진출팀 정보가 없습니다.
-                        </td>
-                      </tr>
-                    ) : (
-                      lineupLeft.map((left, index) => {
+                    </thead>
+                    <tbody>
+                      {lineupLeft.map((left, index) => {
                         const right = lineupRight[index];
                         return (
                           <tr key={left.teamId}>
@@ -156,9 +146,7 @@ const FinalsVenueSection = () => {
                             </td>
                           </tr>
                         );
-                      })
-                    )}
-                    {!isLoading && teams.length > 0 && (
+                      })}
                       <tr className="bg-gray-50 text-caption1b">
                         <td className="border border-b-0 border-l-0 border-solid border-gray-200 px-12 py-10">
                           계
@@ -173,11 +161,37 @@ const FinalsVenueSection = () => {
                           총 36명
                         </td>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+
+              {/* 모바일: 1열 나열 */}
+              <div className="hidden mobile:flex flex-col overflow-hidden rounded-xl border border-solid border-gray-200">
+                {teams.map((team) => (
+                  <div
+                    key={team.teamId}
+                    className="flex items-center gap-8 border-b border-solid border-gray-100 px-14 py-10 text-caption1r last:border-b-0"
+                  >
+                    <span className="w-20 shrink-0 text-center text-gray-500">
+                      {team.performOrder}
+                    </span>
+                    <span className="w-36 shrink-0 text-center text-caption2b text-orange-500">
+                      {TEAM_GENRE_LABELS[team.teamGenre]}
+                    </span>
+                    <span className="flex-1 truncate text-left text-black">
+                      {team.school ? `${team.teamName}(${team.school})` : team.teamName}
+                    </span>
+                    <span className="shrink-0 text-gray-600">{team.applicantName}</span>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between gap-8 bg-gray-50 px-14 py-10 text-caption1b">
+                  <span className="text-gray-700">계</span>
+                  <span className="text-gray-700">국악1, 밴드4, 댄스2, 보컬3</span>
+                  <span className="text-orange-500">총 36명</span>
+                </div>
+              </div>
+            </>
           )}
         </div>
 
