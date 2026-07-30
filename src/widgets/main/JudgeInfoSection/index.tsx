@@ -3,9 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/shared/ui/Button";
+import OfflineBadge from "@/shared/ui/OfflineBadge";
 import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { getTokenFromCookie } from "@/shared/utils/auth";
-import { useGetJudgeProfile, usePutJudgeProfile } from "@/entities/judge/model/useJudgeProfile";
+import { useOnlineStatus } from "@/shared/hooks/useOnlineStatus";
+import { writeLocalDraft } from "@/shared/utils/localDraft";
+import {
+  getJudgeProfileDraft,
+  JUDGE_PROFILE_DRAFT_KEY,
+  useGetJudgeProfile,
+  usePutJudgeProfile,
+} from "@/entities/judge/model/useJudgeProfile";
 import { JudgeProfile } from "@/entities/judge/model/types";
 import PenField from "./ui/PenField";
 
@@ -26,8 +34,9 @@ const JUDGING_HREF = "/admin/evaluation";
 
 const JudgeInfoSection = () => {
   const router = useRouter();
+  const isOnline = useOnlineStatus();
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [, setProfile] = useState<JudgeProfile>(EMPTY_PROFILE);
+  const [, setProfile] = useState<JudgeProfile>(() => getJudgeProfileDraft() ?? EMPTY_PROFILE);
 
   useEffect(() => {
     setUserRole(getTokenFromCookie("role"));
@@ -38,16 +47,30 @@ const JudgeInfoSection = () => {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (data) setProfile(data);
+    if (!data) return;
+    // 아직 서버로 동기화되지 않은 로컬 draft가 있으면 서버 값(더 오래된 값)으로 덮어쓰지 않는다
+    if (getJudgeProfileDraft()) return;
+    setProfile(data);
   }, [data]);
 
   useEffect(() => () => clearTimeout(saveTimer.current ?? undefined), []);
 
+  // 오프라인이라 저장 못 한 draft가 남아있으면, 연결이 복구됐을 때(또는 마운트 시점에 이미 온라인이면) 자동으로 재전송한다
+  useEffect(() => {
+    if (!isOnline) return;
+    const draft = getJudgeProfileDraft();
+    if (draft) saveProfile(draft);
+  }, [isOnline, saveProfile]);
+
   const handleStrokesChange = (key: keyof JudgeProfile, strokes: JudgeProfile[keyof JudgeProfile]) => {
     setProfile(prev => {
       const next = { ...prev, [key]: strokes };
+      writeLocalDraft(JUDGE_PROFILE_DRAFT_KEY, next);
       if (saveTimer.current) clearTimeout(saveTimer.current);
-      saveTimer.current = setTimeout(() => saveProfile(next), SAVE_DEBOUNCE_MS);
+      saveTimer.current = setTimeout(() => {
+        if (typeof navigator !== "undefined" && !navigator.onLine) return;
+        saveProfile(next);
+      }, SAVE_DEBOUNCE_MS);
       return next;
     });
   };
@@ -56,13 +79,18 @@ const JudgeInfoSection = () => {
 
   if (userRole !== "JUDGE") return null;
 
+  const profileDraft = getJudgeProfileDraft();
+
   return (
     <section
       id="JudgeInfoSection"
       className="w-full bg-white px-40 py-40 mobile:px-16 tablet:px-24"
     >
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-32">
-        <h2 className="text-title2b text-gray-900 mobile:text-h4b">심사위원 정보</h2>
+        <div className="flex items-center gap-12">
+          <h2 className="text-title2b text-gray-900 mobile:text-h4b">심사위원 정보</h2>
+          {!isOnline && <OfflineBadge />}
+        </div>
 
         <div className="flex flex-col gap-16">
           {INFO_FIELDS.map(({ key, label }) => (
@@ -75,7 +103,7 @@ const JudgeInfoSection = () => {
               </div>
               <div className="flex-1">
                 <PenField
-                  value={data ? data[key] : undefined}
+                  value={profileDraft ? profileDraft[key] : data ? data[key] : undefined}
                   onChange={strokes => handleStrokesChange(key, strokes)}
                 />
               </div>
