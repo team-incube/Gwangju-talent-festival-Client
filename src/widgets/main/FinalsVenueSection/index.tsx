@@ -6,7 +6,6 @@ import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { isFinalsLineupReleased } from "@/shared/config/dateConfig";
 import { TEAM_GENRE_LABELS, type Team } from "@/entities/team/model/types";
-import { useGetTeams } from "../model/useGetTeams";
 
 const TEAMS_WITH_EXTRA_SCHOOL = new Set([3, 7, 10]);
 
@@ -15,6 +14,19 @@ const formatTeamLabel = (team: Team) => {
   const school = TEAMS_WITH_EXTRA_SCHOOL.has(team.performOrder) ? `${team.school} 외` : team.school;
   return `${team.teamName}(${school})`;
 };
+
+const FINALS_TEAMS: Team[] = [
+  { teamId: 1, teamName: "", school: "살레시오초", teamGenre: "GUGAK", applicantName: "김현준", performOrder: 1, status: "PENDING" },
+  { teamId: 2, teamName: "Luna.X", school: "살레시오중", teamGenre: "DANCE", applicantName: "박시울", performOrder: 2, status: "PENDING" },
+  { teamId: 3, teamName: "Ate", school: "수완고", teamGenre: "DANCE", applicantName: "유현서", performOrder: 3, status: "PENDING" },
+  { teamId: 4, teamName: "", school: "영천초", teamGenre: "SING", applicantName: "김시원", performOrder: 4, status: "PENDING" },
+  { teamId: 5, teamName: "", school: "광주화정중", teamGenre: "SING", applicantName: "전람희", performOrder: 5, status: "PENDING" },
+  { teamId: 6, teamName: "쿠쿠다쓰", school: "하백초", teamGenre: "SING", applicantName: "장연진", performOrder: 6, status: "PENDING" },
+  { teamId: 7, teamName: "Made in stop", school: "광주예술고", teamGenre: "PLAY", applicantName: "양윤수", performOrder: 7, status: "PENDING" },
+  { teamId: 8, teamName: "밴드유아이어스", school: "숭덕고", teamGenre: "PLAY", applicantName: "박준성", performOrder: 8, status: "PENDING" },
+  { teamId: 9, teamName: "B.O.D", school: "서강중", teamGenre: "PLAY", applicantName: "임도율", performOrder: 9, status: "PENDING" },
+  { teamId: 10, teamName: "Be 정상", school: "문정여고", teamGenre: "PLAY", applicantName: "박지후", performOrder: 10, status: "PENDING" },
+];
 
 const VENUE = {
   name: "광주교육대학교 풍향문화관",
@@ -42,7 +54,7 @@ const BUS_ROUTES = [
 ] as const;
 
 const FinalsVenueSection = () => {
-  const { data: teams = [], isLoading } = useGetTeams();
+  const teams = FINALS_TEAMS;
   const half = Math.ceil(teams.length / 2);
   const lineupLeft = teams.slice(0, half);
   const lineupRight = teams.slice(half);
@@ -81,9 +93,9 @@ const FinalsVenueSection = () => {
           />
           <div className={cn("flex min-w-0 flex-1 flex-col gap-12")}>
             <h3 className="text-body2b mobile:text-body3b text-black">본선 진출팀</h3>
-            {isLineupReleased && !isLoading && teams.length > 0 && (
+            {isLineupReleased && (
               <p className="text-caption2r mobile:text-caption2r text-gray-500">
-                * 번호는 공연 순서가 아닙니다
+                * 번호는 공연 순서, 심사 점수 순위가 아닙니다
               </p>
             )}
             {!isLineupReleased ? (
@@ -92,14 +104,6 @@ const FinalsVenueSection = () => {
                   본선 진출팀은 7월 31일(금) 오전 10시에 발표됩니다
                 </p>
               </div>
-            ) : isLoading ? (
-              <div className="flex flex-col gap-8">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="h-32 w-full rounded-lg bg-gray-100 animate-pulse" />
-                ))}
-              </div>
-            ) : teams.length === 0 ? (
-              <div className="py-24 text-center text-gray-400">본선 진출팀 정보가 없습니다.</div>
             ) : (
               <>
                 {/* 데스크톱: 2열 표 */}
