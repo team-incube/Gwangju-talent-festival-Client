@@ -81,6 +81,26 @@ const FinalsVenueSection = () => {
           className={cn("mt-66 mobile:mt-[1.7rem] mb-40 mobile:mb-24")}
         />
 
+        {/* 본선 진출팀 소개 영상 */}
+        {isLineupReleased && (
+          <div className="mb-24 flex flex-col gap-8">
+            <h4 className="text-body3b mobile:text-caption1b text-black">
+              본선 진출팀 소개 영상
+            </h4>
+            <video
+              src="/video/광탈페_본선진출팀_소개영상.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="w-full rounded-lg border border-gray-100 bg-black"
+            >
+              <track kind="captions" />
+            </video>
+          </div>
+        )}
+
         {/* 본선 진출팀 */}
         <div className={cn("mb-24 flex gap-24 mobile:flex-col mobile:gap-16")}>
           <Image
