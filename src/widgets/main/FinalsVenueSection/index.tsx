@@ -81,6 +81,11 @@ const FinalsVenueSection = () => {
           />
           <div className={cn("flex min-w-0 flex-1 flex-col gap-12")}>
             <h3 className="text-body2b mobile:text-body3b text-black">본선 진출팀</h3>
+            {isLineupReleased && !isLoading && teams.length > 0 && (
+              <p className="text-caption2r mobile:text-caption2r text-gray-500">
+                * 번호는 공연 순서가 아닙니다
+              </p>
+            )}
             {!isLineupReleased ? (
               <div className="flex flex-col items-center gap-4 rounded-xl bg-gray-50 py-40 text-center">
                 <p className="text-body3b mobile:text-caption1b text-gray-700">
