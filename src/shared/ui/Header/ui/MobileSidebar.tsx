@@ -10,8 +10,6 @@ interface MobileSidebarProps {
   onLinkClick: (section: string) => void;
 }
 
-const HEADER_HEIGHT_VAR = "var(--header-height, 4.625rem)";
-
 export const MobileSidebar = ({ isOpen, onClose, onLinkClick }: MobileSidebarProps) => {
   useEffect(() => {
     if (!isOpen) return;
@@ -26,8 +24,10 @@ export const MobileSidebar = ({ isOpen, onClose, onLinkClick }: MobileSidebarPro
 
   return (
     <div
-      className={cn("fixed inset-x-0 bottom-0 z-20 hidden mobile:block")}
-      style={{ top: HEADER_HEIGHT_VAR }}
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-20 hidden mobile:block",
+        "top-[var(--header-height,4.625rem)]",
+      )}
       aria-hidden={!isOpen}
     >
       <div
