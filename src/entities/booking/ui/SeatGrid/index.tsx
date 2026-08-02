@@ -1,8 +1,9 @@
 "use client";
 
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
+import { useSeatMapZoom } from "@/entities/booking/lib/useSeatMapZoom";
 import { cn } from "@/shared/utils/cn";
 import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
 import { SeatItem } from "../SeatItem";
@@ -10,8 +11,8 @@ import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/
 
 const NOOP_SEAT_SELECT = () => {};
 
-// transform scale는 레이아웃 크기를 안 바꿔서 확대 시 스크롤이 안 생긴다. 셀 크기 자체를 키운다
-const ZOOM_LEVELS = ["w-3 h-3", "w-4 h-4", "w-5 h-5", "w-6 h-6", "w-8 h-8"] as const;
+const DEFAULT_ZOOM_SINGLE_SECTION = 5;
+const DEFAULT_ZOOM_ALL_SECTIONS = 4;
 
 export interface SeatGridProps {
   layout: SeatLayout | null;
@@ -43,8 +44,9 @@ export const SeatGrid = memo<SeatGridProps>(
     allowOccupiedSelect = false,
   }) => {
     const queryClient = useQueryClient();
-    const [zoomIndex, setZoomIndex] = useState(layout ? 2 : 3);
-    const cellSize = ZOOM_LEVELS[zoomIndex];
+    const { containerRef, cellSize } = useSeatMapZoom(
+      layout ? DEFAULT_ZOOM_SINGLE_SECTION : DEFAULT_ZOOM_ALL_SECTIONS,
+    );
 
     const handleSeatSelect = useCallback(
       (seat: Seat) => {
@@ -231,34 +233,11 @@ export const SeatGrid = memo<SeatGridProps>(
       </div>
     );
 
-    const renderZoomControls = () => (
-      <div className="absolute right-2 top-2 z-10 flex gap-1">
-        {[
-          { label: "−", delta: -1, aria: "좌석 지도 축소" },
-          { label: "+", delta: 1, aria: "좌석 지도 확대" },
-        ].map(({ label, delta, aria }) => (
-          <button
-            key={label}
-            type="button"
-            aria-label={aria}
-            disabled={!ZOOM_LEVELS[zoomIndex + delta]}
-            onClick={() => setZoomIndex(current => current + delta)}
-            className={cn(
-              "w-7 h-7 rounded-md bg-white/20 text-white text-body3b leading-none",
-              "hover:bg-white/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors",
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-    );
-
     return (
       <div className={cn("min-h-0", className)}>
         <div className="relative bg-gray-800 rounded-lg w-full p-3">
-          {renderZoomControls()}
-          <div className="overflow-auto">
+          {/* 한 손가락 스크롤은 살리고 두 손가락 핀치만 가로채 확대·축소로 쓴다 */}
+          <div ref={containerRef} className="overflow-auto touch-pan-x touch-pan-y">
             {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
           </div>
         </div>
