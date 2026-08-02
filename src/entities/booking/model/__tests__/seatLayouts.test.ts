@@ -31,8 +31,8 @@ describe("getSeatLayout - 레이아웃 생성", () => {
     })
   })
 
-  it("휠체어석을 제외한 각 섹션의 좌석은 두 개 이상의 열(row)에 걸쳐 분포한다", () => {
-    SECTIONS.filter(section => section !== "WHEELCHAIR").forEach(section => {
+  it("각 섹션의 좌석은 두 개 이상의 열(row)에 걸쳐 분포한다", () => {
+    SECTIONS.forEach(section => {
       const layout = getSeatLayout(section)
       const rows = new Set(layout.seats.map(seat => seat.row))
       expect(rows.size).toBeGreaterThan(1)
