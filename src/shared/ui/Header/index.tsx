@@ -94,9 +94,14 @@ export default function Header() {
             </div>
 
             {!isJudge && pathname.startsWith("/home") && (
-              <div onClick={toggleMobileMenu} className={cn("place-self-center")}>
+              <button
+                type="button"
+                onClick={toggleMobileMenu}
+                aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+                className={cn("place-self-center cursor-pointer")}
+              >
                 {isMobileMenuOpen ? <CloseIcon /> : <MobileMenuIcon />}
-              </div>
+              </button>
             )}
           </div>
         </div>
