@@ -5,7 +5,6 @@ export const SECTIONS = [
   "BLUE",
   "GREEN",
   "PURPLE",
-  "WHEELCHAIR",
 ] as const;
 
 export type Section = (typeof SECTIONS)[number];
@@ -18,20 +17,15 @@ export const SECTION_LABELS: Record<Section, string> = {
   BLUE: "D",
   GREEN: "E",
   PURPLE: "F",
-  WHEELCHAIR: "W",
 } as const;
 
 export const getSectionLabel = (section: Section): string => SECTION_LABELS[section];
 
-// 휠체어석은 행 라벨("W")이 섹션 라벨과 같아 그대로 이으면 "WW1"로 중복 표기됨
 export const formatSeatLabel = (seat: {
   section: Section;
   row: string;
   seatNumber: string;
-}): string =>
-  seat.section === "WHEELCHAIR"
-    ? `${SECTION_LABELS[seat.section]}${seat.seatNumber}`
-    : `${SECTION_LABELS[seat.section]}${seat.row}${seat.seatNumber}`;
+}): string => `${SECTION_LABELS[seat.section]}${seat.row}${seat.seatNumber}`;
 
 export const SEAT_STATUS = {
   OCCUPIED: "occupied",
@@ -77,7 +71,6 @@ export const SEAT_INFO: Record<Section, SeatInfo> = {
   BLUE: { occupied: 0, total: 89 },
   GREEN: { occupied: 0, total: 96 },
   PURPLE: { occupied: 0, total: 89 },
-  WHEELCHAIR: { occupied: 0, total: 6 },
 } as const;
 
 export interface AllSeatsApiResponse {

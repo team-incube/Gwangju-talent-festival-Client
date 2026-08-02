@@ -8,10 +8,14 @@ import {
   SeatChangeEvent,
 } from "@/entities/booking/model/types";
 import { getSeatLayout } from "@/entities/booking/model/seatLayouts";
+import { isReservedSeat } from "@/entities/booking/model/reservedSeats";
 
 export const seatQueryKeys = {
   seatState: (section: Section) => ["seatState", section] as const,
 } as const;
+
+const resolveSeatStatus = (seat: { section: Section; row: string }, isAvailable: boolean) =>
+  isAvailable && !isReservedSeat(seat) ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
 
 export function useSectionSeatState(section: Section) {
   return useQuery({
@@ -22,7 +26,7 @@ export function useSectionSeatState(section: Section) {
       const layout = getSeatLayout(section);
       const transformedSeats = layout.seats.map((seat, index) => ({
         ...seat,
-        status: response.seats[index] ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED,
+        status: resolveSeatStatus(seat, response.seats[index]),
       }));
       return transformedSeats;
     },
@@ -49,10 +53,7 @@ export function usePrefetchSeatCaches() {
           const layout = getSeatLayout(section);
           const transformedSeats: Seat[] = layout.seats.map((seat, index) => ({
             ...seat,
-            status:
-              index < sectionSeats.length && sectionSeats[index]
-                ? SEAT_STATUS.AVAILABLE
-                : SEAT_STATUS.OCCUPIED,
+            status: resolveSeatStatus(seat, index < sectionSeats.length && sectionSeats[index]),
           }));
 
           queryClient.setQueryData(seatQueryKeys.seatState(section), transformedSeats);
@@ -86,10 +87,7 @@ export function useAllSectionsSeatState() {
           const layout = getSeatLayout(section);
           const transformedSeats: Seat[] = layout.seats.map((seat, index) => ({
             ...seat,
-            status:
-              index < sectionSeats.length && sectionSeats[index]
-                ? SEAT_STATUS.AVAILABLE
-                : SEAT_STATUS.OCCUPIED,
+            status: resolveSeatStatus(seat, index < sectionSeats.length && sectionSeats[index]),
           }));
           allSeats.push(...transformedSeats);
         } else {
@@ -107,7 +105,10 @@ export function applySeatChange(
   queryClient: ReturnType<typeof useQueryClient>,
   event: SeatChangeEvent,
 ): void {
-  const status = event.is_available ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
+  const status = resolveSeatStatus(
+    { section: event.seat_section, row: event.seat_row },
+    event.is_available,
+  );
   const matches = (seat: Seat) =>
     seat.section === event.seat_section &&
     seat.row === event.seat_row &&

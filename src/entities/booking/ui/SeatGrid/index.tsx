@@ -10,6 +10,10 @@ import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/
 
 const NOOP_SEAT_SELECT = () => {};
 
+// 프로젝트 spacing 스케일이 px와 rem이 섞여 있어(w-6=6px, w-5=20px) 임의값으로 못 박는다
+const SINGLE_SECTION_CELL = "w-[24px] h-[24px] text-[13px]";
+const ALL_SECTIONS_CELL = "w-[10px] h-[10px] text-[6px]";
+
 export interface SeatGridProps {
   layout: SeatLayout | null;
   selectedSeat: Seat | null;
@@ -40,6 +44,7 @@ export const SeatGrid = memo<SeatGridProps>(
     allowOccupiedSelect = false,
   }) => {
     const queryClient = useQueryClient();
+    const cellSize = layout ? SINGLE_SECTION_CELL : ALL_SECTIONS_CELL;
 
     const handleSeatSelect = useCallback(
       (seat: Seat) => {
@@ -123,16 +128,17 @@ export const SeatGrid = memo<SeatGridProps>(
         {seatGrid.map((row, rowIndex) => (
           <div key={rowIndex} className="flex items-center gap-4 mb-4">
             {row.map(({ seat, key }) => (
-              <div key={key} className="w-5 h-5">
+              <div key={key} className={cellSize}>
                 {seat ? (
                   <SeatItem
                     seat={seat}
                     isSelected={getSeatSelectedState(seat)}
                     onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
                     allowOccupiedSelect={allowOccupiedSelect}
+                    className={cellSize}
                   />
                 ) : (
-                  <div className="w-5 h-5" />
+                  <div className={cellSize} />
                 )}
               </div>
             ))}
@@ -192,16 +198,16 @@ export const SeatGrid = memo<SeatGridProps>(
                     ? `${seat.section}-${seat.row}-${seat.seatNumber}`
                     : `${rowIndex}-${colIndex}`;
                   return (
-                    <div key={key} className="w-6 h-6">
+                    <div key={key} className={cellSize}>
                       {seat ? (
                         <SeatItem
                           seat={seat}
                           isSelected={getSeatSelectedState(seat)}
                           onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
-                          className="w-6 h-6 text-transparent"
+                          className={cn(cellSize, "text-transparent")}
                         />
                       ) : (
-                        <div className="w-6 h-6"></div>
+                        <div className={cellSize}></div>
                       )}
                     </div>
                   );
@@ -225,14 +231,19 @@ export const SeatGrid = memo<SeatGridProps>(
       </div>
     );
 
-    const getGridContainerStyles = () => {
-      return "relative bg-gray-800 rounded-lg w-full h-full p-3 overflow-auto";
-    };
-
     return (
-      <div className={cn("min-h-0", className)}>
-        <div className={getGridContainerStyles()}>
-          {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
+      <div className={cn("flex flex-col min-h-0", className)}>
+        {/* 높이는 좌석 내용만큼만. 화면을 넘기면 flex shrink로 잘리고 안쪽에서 스크롤된다 */}
+        <div className="relative flex flex-col bg-gray-800 rounded-lg w-full min-h-0 overflow-hidden p-3">
+          {/* 구역을 고르면 그 구역만 보여서 무대와의 위치 관계가 사라진다 */}
+          {!layout && (
+            <div className="shrink-0 mx-auto mb-6 w-1/2 rounded bg-gray-600 py-2 text-center text-caption2b tracking-widest text-white">
+              무대
+            </div>
+          )}
+          <div className="flex-1 min-h-0 w-full overflow-auto">
+            {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
+          </div>
         </div>
       </div>
     );
