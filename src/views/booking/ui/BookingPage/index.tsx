@@ -201,7 +201,7 @@ const BookingPage = () => {
             onSectionSelect={handleSectionSelect}
           />
         </div>
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 overflow-auto">
           <SeatSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             selectedSeat={isPerformer ? null : selectedSeat}

@@ -91,9 +91,9 @@ export const SeatSection = memo<SeatSectionProps>(
     const layout = getLayout();
 
     return (
-      <div className={cn("flex flex-col h-full min-h-0", className)}>
+      <div className={cn("flex flex-col min-h-0", className)}>
         <SeatGrid
-          className="flex-1 min-h-0"
+          className="min-h-0"
           layout={layout}
           selectedSeat={selectedSeat}
           onSeatSelect={isLoading || !!error ? NOOP_SEAT_SELECT : onSeatSelect}

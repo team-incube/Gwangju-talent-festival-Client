@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { cn } from "@/shared/utils/cn";
@@ -9,6 +9,9 @@ import { SeatItem } from "../SeatItem";
 import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/model/seatLayouts";
 
 const NOOP_SEAT_SELECT = () => {};
+
+// transform scale는 레이아웃 크기를 안 바꿔서 확대 시 스크롤이 안 생긴다. 셀 크기 자체를 키운다
+const ZOOM_LEVELS = ["w-3 h-3", "w-4 h-4", "w-5 h-5", "w-6 h-6", "w-8 h-8"] as const;
 
 export interface SeatGridProps {
   layout: SeatLayout | null;
@@ -40,6 +43,8 @@ export const SeatGrid = memo<SeatGridProps>(
     allowOccupiedSelect = false,
   }) => {
     const queryClient = useQueryClient();
+    const [zoomIndex, setZoomIndex] = useState(layout ? 2 : 3);
+    const cellSize = ZOOM_LEVELS[zoomIndex];
 
     const handleSeatSelect = useCallback(
       (seat: Seat) => {
@@ -123,16 +128,17 @@ export const SeatGrid = memo<SeatGridProps>(
         {seatGrid.map((row, rowIndex) => (
           <div key={rowIndex} className="flex items-center gap-4 mb-4">
             {row.map(({ seat, key }) => (
-              <div key={key} className="w-5 h-5">
+              <div key={key} className={cellSize}>
                 {seat ? (
                   <SeatItem
                     seat={seat}
                     isSelected={getSeatSelectedState(seat)}
                     onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
                     allowOccupiedSelect={allowOccupiedSelect}
+                    className={cellSize}
                   />
                 ) : (
-                  <div className="w-5 h-5" />
+                  <div className={cellSize} />
                 )}
               </div>
             ))}
@@ -192,16 +198,16 @@ export const SeatGrid = memo<SeatGridProps>(
                     ? `${seat.section}-${seat.row}-${seat.seatNumber}`
                     : `${rowIndex}-${colIndex}`;
                   return (
-                    <div key={key} className="w-6 h-6">
+                    <div key={key} className={cellSize}>
                       {seat ? (
                         <SeatItem
                           seat={seat}
                           isSelected={getSeatSelectedState(seat)}
                           onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
-                          className="w-6 h-6 text-transparent"
+                          className={cn(cellSize, "text-transparent")}
                         />
                       ) : (
-                        <div className="w-6 h-6"></div>
+                        <div className={cellSize}></div>
                       )}
                     </div>
                   );
@@ -225,14 +231,36 @@ export const SeatGrid = memo<SeatGridProps>(
       </div>
     );
 
-    const getGridContainerStyles = () => {
-      return "relative bg-gray-800 rounded-lg w-full h-full p-3 overflow-auto";
-    };
+    const renderZoomControls = () => (
+      <div className="absolute right-2 top-2 z-10 flex gap-1">
+        {[
+          { label: "−", delta: -1, aria: "좌석 지도 축소" },
+          { label: "+", delta: 1, aria: "좌석 지도 확대" },
+        ].map(({ label, delta, aria }) => (
+          <button
+            key={label}
+            type="button"
+            aria-label={aria}
+            disabled={!ZOOM_LEVELS[zoomIndex + delta]}
+            onClick={() => setZoomIndex(current => current + delta)}
+            className={cn(
+              "w-7 h-7 rounded-md bg-white/20 text-white text-body3b leading-none",
+              "hover:bg-white/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors",
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    );
 
     return (
       <div className={cn("min-h-0", className)}>
-        <div className={getGridContainerStyles()}>
-          {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
+        <div className="relative bg-gray-800 rounded-lg w-full p-3">
+          {renderZoomControls()}
+          <div className="overflow-auto">
+            {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
+          </div>
         </div>
       </div>
     );
