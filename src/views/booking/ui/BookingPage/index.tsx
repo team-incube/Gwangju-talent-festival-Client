@@ -189,7 +189,7 @@ const BookingPage = () => {
   };
 
   return (
-    <main className="w-full max-w-[480px] mx-auto h-screen bg-white flex flex-col overflow-hidden">
+    <main className="w-full max-w-[480px] mx-auto h-dvh bg-white flex flex-col overflow-hidden">
       <div className="px-4">
         <BackHeader goto="/home" text="예매하기" />
       </div>
@@ -201,7 +201,8 @@ const BookingPage = () => {
             onSectionSelect={handleSectionSelect}
           />
         </div>
-        <div className="flex-1 min-h-0 overflow-auto">
+        {/* flex-1로 늘리지 않는다 — 지도는 좌석 크기만큼만 차지하고 버튼이 바로 붙는다 */}
+        <div className="min-h-0">
           <SeatSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             selectedSeat={isPerformer ? null : selectedSeat}

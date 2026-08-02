@@ -3,7 +3,6 @@
 import { memo, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
-import { useSeatMapZoom } from "@/entities/booking/lib/useSeatMapZoom";
 import { cn } from "@/shared/utils/cn";
 import { Seat, SeatLayout, SECTIONS, getSectionLabel } from "@/entities/booking/model/types";
 import { SeatItem } from "../SeatItem";
@@ -11,8 +10,9 @@ import { getSeatPattern, getSeatLayout, getRowLabels } from "@/entities/booking/
 
 const NOOP_SEAT_SELECT = () => {};
 
-const DEFAULT_ZOOM_SINGLE_SECTION = 5;
-const DEFAULT_ZOOM_ALL_SECTIONS = 4;
+// 프로젝트 spacing 스케일이 px와 rem이 섞여 있어(w-6=6px, w-5=20px) 임의값으로 못 박는다
+const SINGLE_SECTION_CELL = "w-[24px] h-[24px] text-[13px]";
+const ALL_SECTIONS_CELL = "w-[10px] h-[10px] text-[6px]";
 
 export interface SeatGridProps {
   layout: SeatLayout | null;
@@ -44,9 +44,7 @@ export const SeatGrid = memo<SeatGridProps>(
     allowOccupiedSelect = false,
   }) => {
     const queryClient = useQueryClient();
-    const { containerRef, cellSize } = useSeatMapZoom(
-      layout ? DEFAULT_ZOOM_SINGLE_SECTION : DEFAULT_ZOOM_ALL_SECTIONS,
-    );
+    const cellSize = layout ? SINGLE_SECTION_CELL : ALL_SECTIONS_CELL;
 
     const handleSeatSelect = useCallback(
       (seat: Seat) => {
@@ -234,10 +232,10 @@ export const SeatGrid = memo<SeatGridProps>(
     );
 
     return (
-      <div className={cn("min-h-0", className)}>
-        <div className="relative bg-gray-800 rounded-lg w-full p-3">
-          {/* 한 손가락 스크롤은 살리고 두 손가락 핀치만 가로채 확대·축소로 쓴다 */}
-          <div ref={containerRef} className="overflow-auto touch-pan-x touch-pan-y">
+      <div className={cn("flex flex-col min-h-0", className)}>
+        {/* 높이는 좌석 내용만큼만. 화면을 넘기면 flex shrink로 잘리고 안쪽에서 스크롤된다 */}
+        <div className="relative bg-gray-800 rounded-lg w-full min-h-0 overflow-hidden p-3">
+          <div className="w-full h-full overflow-auto">
             {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
           </div>
         </div>

@@ -91,7 +91,7 @@ export const SeatSection = memo<SeatSectionProps>(
     const layout = getLayout();
 
     return (
-      <div className={cn("flex flex-col min-h-0", className)}>
+      <div className={cn("flex flex-col h-full min-h-0", className)}>
         <SeatGrid
           className="min-h-0"
           layout={layout}
