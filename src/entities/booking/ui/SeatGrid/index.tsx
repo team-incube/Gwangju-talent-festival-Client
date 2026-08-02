@@ -234,8 +234,14 @@ export const SeatGrid = memo<SeatGridProps>(
     return (
       <div className={cn("flex flex-col min-h-0", className)}>
         {/* 높이는 좌석 내용만큼만. 화면을 넘기면 flex shrink로 잘리고 안쪽에서 스크롤된다 */}
-        <div className="relative bg-gray-800 rounded-lg w-full min-h-0 overflow-hidden p-3">
-          <div className="w-full h-full overflow-auto">
+        <div className="relative flex flex-col bg-gray-800 rounded-lg w-full min-h-0 overflow-hidden p-3">
+          {/* 구역을 고르면 그 구역만 보여서 무대와의 위치 관계가 사라진다 */}
+          {!layout && (
+            <div className="shrink-0 mx-auto mb-6 w-1/2 rounded bg-gray-600 py-2 text-center text-caption2b tracking-widest text-white">
+              무대
+            </div>
+          )}
+          <div className="flex-1 min-h-0 w-full overflow-auto">
             {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
           </div>
         </div>
