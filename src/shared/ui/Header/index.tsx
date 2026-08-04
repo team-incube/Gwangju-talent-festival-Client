@@ -94,15 +94,26 @@ export default function Header() {
             </div>
 
             {!isJudge && pathname.startsWith("/home") && (
-              <div onClick={toggleMobileMenu} className={cn("place-self-center")}>
+              <button
+                type="button"
+                onClick={toggleMobileMenu}
+                aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-nav-panel"
+                className={cn("place-self-center cursor-pointer")}
+              >
                 {isMobileMenuOpen ? <CloseIcon /> : <MobileMenuIcon />}
-              </div>
+              </button>
             )}
           </div>
         </div>
       </header>
-      {!isJudge && isMobileMenuOpen && pathname.startsWith("/home") && (
-        <MobileSidebar onClose={closeMobileMenu} onLinkClick={handleScrollToSection} />
+      {!isJudge && pathname.startsWith("/home") && (
+        <MobileSidebar
+          isOpen={isMobileMenuOpen}
+          onClose={closeMobileMenu}
+          onLinkClick={handleScrollToSection}
+        />
       )}
     </>
   );

@@ -19,7 +19,7 @@ import PenField from "./ui/PenField";
 
 const INFO_FIELDS = [
   { key: "affiliationStrokes", label: "소속" },
-  { key: "positionStrokes", label: "지위" },
+  { key: "positionStrokes", label: "직급" },
   { key: "nameStrokes", label: "이름" },
 ] as const;
 
