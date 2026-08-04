@@ -1,5 +1,9 @@
-export const ticketOpenDate = new Date("2025-09-18T20:00:00");
-export const performerTicketOpenDate = new Date("2025-09-15T20:00:00");
+export const ticketOpenDate = new Date(
+  process.env.NEXT_PUBLIC_TICKET_OPEN_DATE ?? "2025-09-18T20:00:00+09:00",
+);
+export const performerTicketOpenDate = new Date(
+  process.env.NEXT_PUBLIC_PERFORMER_TICKET_OPEN_DATE ?? "2026-08-15T00:00:00+09:00",
+);
 export const festivalDate = new Date("2025-09-27T00:00:00");
 export const sloganStartDate = new Date(
   process.env.NEXT_PUBLIC_SLOGAN_START_DATE ?? "2026-05-18T00:00:00+09:00",
