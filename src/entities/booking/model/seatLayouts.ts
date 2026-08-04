@@ -68,8 +68,6 @@ const SECTION_SEAT_PATTERNS: Record<Section, (number | null)[][]> = {
     [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
     [23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
   ],
-
-  WHEELCHAIR: [[1, 2, 3, 4, 5, 6]],
 };
 
 const TOP_BLOCK_ROWS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
@@ -82,7 +80,6 @@ const SECTION_ROW_LABELS: Record<Section, string[]> = {
   BLUE: BOTTOM_BLOCK_ROWS,
   GREEN: BOTTOM_BLOCK_ROWS,
   PURPLE: BOTTOM_BLOCK_ROWS,
-  WHEELCHAIR: ["W"],
 };
 
 const generateSeatLayout = (section: Section): SeatLayout => {
@@ -124,7 +121,6 @@ export const SEAT_LAYOUTS: Record<Section, SeatLayout> = Object.freeze({
   BLUE: Object.freeze(generateSeatLayout("BLUE")),
   GREEN: Object.freeze(generateSeatLayout("GREEN")),
   PURPLE: Object.freeze(generateSeatLayout("PURPLE")),
-  WHEELCHAIR: Object.freeze(generateSeatLayout("WHEELCHAIR")),
 });
 
 export const getSeatLayout = (section: Section): SeatLayout => {
