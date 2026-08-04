@@ -18,13 +18,13 @@ const POSITIVE_STEPS = [1, 5];
 
 // 점수 변동 폭이 클수록 색을 더 진하게 표시한다 (마이너스: 파랑, 플러스: 주황)
 const NEGATIVE_STYLES: Record<number, string> = {
-  "-1": "border-blue-200 bg-blue-100 text-blue-600 hover:bg-blue-200 hover:border-blue-300 active:bg-blue-300",
-  "-5": "border-blue-500 bg-blue-500 text-white hover:brightness-110 active:brightness-90",
+  "-1": "bg-blue-100 text-blue-600 hover:bg-blue-200 active:bg-blue-300",
+  "-5": "bg-blue-500 text-white hover:brightness-110 active:brightness-90",
 };
 
 const POSITIVE_STYLES: Record<number, string> = {
-  "1": "border-orange-300 bg-orange-300 text-gray-900 hover:brightness-105 active:brightness-95",
-  "5": "border-orange-500 bg-orange-500 text-white hover:brightness-110 active:brightness-90",
+  "1": "bg-orange-300 text-gray-900 hover:brightness-105 active:brightness-95",
+  "5": "bg-orange-500 text-white hover:brightness-110 active:brightness-90",
 };
 
 type ScoreFormProps = {
@@ -75,7 +75,6 @@ const ScoreForm = ({
                       aria-label={`${label} ${-step}점 내리기`}
                       className={cn(
                         "w-64 h-72 mobile:w-48 mobile:h-60 flex items-center justify-center pb-10 mobile:pb-8",
-                        "border",
                         NEGATIVE_STYLES[step],
                         "active:scale-95 transition touch-manipulation select-none cursor-pointer",
                         ARROW_DOWN_CLIP,
@@ -97,7 +96,6 @@ const ScoreForm = ({
                       aria-label={`${label} ${step}점 올리기`}
                       className={cn(
                         "w-64 h-72 mobile:w-48 mobile:h-60 flex items-center justify-center pt-10 mobile:pt-8",
-                        "border",
                         POSITIVE_STYLES[step],
                         "active:scale-95 transition touch-manipulation select-none cursor-pointer",
                         ARROW_UP_CLIP,
