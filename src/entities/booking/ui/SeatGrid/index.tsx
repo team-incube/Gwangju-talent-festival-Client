@@ -27,6 +27,7 @@ export interface SeatGridProps {
   myAllSeats?: Seat[];
   selectedSeatsForCancel?: Set<string>;
   allowOccupiedSelect?: boolean;
+  onSectionSelect?: (section: (typeof SECTIONS)[number]) => void;
 }
 
 export const SeatGrid = memo<SeatGridProps>(
@@ -42,6 +43,7 @@ export const SeatGrid = memo<SeatGridProps>(
     myAllSeats,
     selectedSeatsForCancel,
     allowOccupiedSelect = false,
+    onSectionSelect,
   }) => {
     const queryClient = useQueryClient();
     const cellSize = layout ? SINGLE_SECTION_CELL : ALL_SECTIONS_CELL;
@@ -185,7 +187,7 @@ export const SeatGrid = memo<SeatGridProps>(
       const seatMap = sectionSeatMaps.get(section)!;
 
       return (
-        <div className="flex flex-col items-center border rounded-lg mb-6">
+        <div className="relative flex flex-col items-center border rounded-lg mb-6">
           <div className="text-white text-sm font-bold mb-1">{getSectionLabel(section)}</div>
           <div className="flex flex-col gap-1">
             {pattern.map((row, rowIndex) => (
@@ -215,6 +217,15 @@ export const SeatGrid = memo<SeatGridProps>(
               </div>
             ))}
           </div>
+          {/* 좌석 사이 빈 곳을 눌렀을 때만 구역 이동 — -z-10으로 좌석 버튼 아래에 깔린다 */}
+          {onSectionSelect && (
+            <button
+              type="button"
+              className="absolute inset-0 -z-10"
+              onClick={() => onSectionSelect(section)}
+              aria-label={`${getSectionLabel(section)} 구역 좌석 보기`}
+            />
+          )}
         </div>
       );
     };

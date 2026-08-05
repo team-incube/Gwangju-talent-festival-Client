@@ -24,6 +24,7 @@ interface SeatSectionProps {
   isPerformerMode?: boolean;
   myBookedSeats?: Seat[];
   allowOccupiedSelect?: boolean;
+  onSectionSelect?: (section: Section) => void;
 }
 
 export const SeatSection = memo<SeatSectionProps>(
@@ -38,6 +39,7 @@ export const SeatSection = memo<SeatSectionProps>(
     isPerformerMode = false,
     myBookedSeats,
     allowOccupiedSelect = false,
+    onSectionSelect,
   }) => {
     const { data: sectionSeats, isLoading, error } = useSectionSeatState(selectedSection!);
     const { data: allSeats, isLoading: isAllSeatsLoading } = useAllSectionsSeatState();
@@ -104,6 +106,7 @@ export const SeatSection = memo<SeatSectionProps>(
           mySeat={!isPerformerMode && !allowOccupiedSelect ? (myBookedSeats?.[0] ?? null) : null}
           myAllSeats={myBookedSeats}
           allowOccupiedSelect={allowOccupiedSelect}
+          onSectionSelect={onSectionSelect}
         />
 
         <div className="shrink-0 pt-4">

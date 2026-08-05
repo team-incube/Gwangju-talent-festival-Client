@@ -213,6 +213,7 @@ const BookingPage = () => {
             isPerformerMode={isPerformer}
             myBookedSeats={myBookedSeats}
             allowOccupiedSelect={isAdmin}
+            onSectionSelect={handleSectionSelect}
           />
         </div>
         <div className="shrink-0 pb-4">
