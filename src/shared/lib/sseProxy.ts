@@ -12,6 +12,27 @@ const SSE_HEADERS = {
   "X-Accel-Buffering": "no",
 };
 
+type RefreshedTokens = {
+  accessToken: string;
+  accessTokenExpiresAt: string;
+  refreshToken: string;
+  refreshTokenExpiresAt: string;
+};
+
+const openUpstream = (path: string, token: string, signal: AbortSignal) =>
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
+    headers: { Accept: "text/event-stream", Authorization: `Bearer ${token}` },
+    signal,
+  });
+
+const refreshTokens = async (refreshToken: string): Promise<RefreshedTokens | null> => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+    method: "PATCH",
+    headers: { "Refresh-Token": refreshToken },
+  });
+  return response.ok ? ((await response.json()) as RefreshedTokens) : null;
+};
+
 // 백엔드 JwtFilter는 Authorization 헤더만 읽고 쿠키는 인증에 쓰지 않는다 —
 // 브라우저 EventSource는 커스텀 헤더를 못 보내므로, 이 서버 라우트에서 쿠키의
 // accessToken을 꺼내 Authorization 헤더로 변환해 백엔드에 전달한다
@@ -20,13 +41,26 @@ export async function proxySSE(request: NextRequest, path: string) {
 
   let upstream: Response;
   try {
-    upstream = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
-      headers: { Accept: "text/event-stream", Authorization: `Bearer ${token}` },
-      signal: request.signal,
-    });
+    upstream = await openUpstream(path, token, request.signal);
   } catch {
     // 헤더 도착 전에 브라우저가 끊으면 request.signal이 fetch를 abort한다 — 재연결에서 흔한 정상 경로
     return new NextResponse("Backend unreachable", { status: 502 });
+  }
+
+  // EventSource는 401 상태 코드를 노출하지 않아 클라이언트가 만료를 알 수 없고,
+  // axios 인터셉터의 재발급 경로도 SSE에는 닿지 않으므로 여기서 직접 재발급한다
+  let refreshed: RefreshedTokens | null = null;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
+  if (upstream.status === 401 && refreshToken) {
+    refreshed = await refreshTokens(refreshToken).catch(() => null);
+    if (refreshed) {
+      await upstream.body?.cancel().catch(() => {});
+      try {
+        upstream = await openUpstream(path, refreshed.accessToken, request.signal);
+      } catch {
+        return new NextResponse("Backend unreachable", { status: 502 });
+      }
+    }
   }
 
   if (!upstream.ok) {
@@ -80,5 +114,22 @@ export async function proxySSE(request: NextRequest, path: string) {
     },
   });
 
-  return new NextResponse(stream, { headers: SSE_HEADERS });
+  const response = new NextResponse(stream, { headers: SSE_HEADERS });
+
+  // 재발급한 토큰을 클라이언트 쿠키에도 반영해야 axios 등 다른 요청도 갱신된 토큰을 쓴다.
+  // httpOnly를 켜면 getTokenFromCookie/isLoggedIn이 깨지므로 클라이언트 setCookie와 동일하게 맞춘다
+  if (refreshed) {
+    response.cookies.set("accessToken", refreshed.accessToken, {
+      path: "/",
+      expires: new Date(refreshed.accessTokenExpiresAt),
+      httpOnly: false,
+    });
+    response.cookies.set("refreshToken", refreshed.refreshToken, {
+      path: "/",
+      expires: new Date(refreshed.refreshTokenExpiresAt),
+      httpOnly: false,
+    });
+  }
+
+  return response;
 }
