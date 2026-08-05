@@ -31,6 +31,8 @@ export function useSeatChangeSSE(options: UseSeatChangeSSEOptions = {}) {
         retryTimerRef.current = null;
       }
 
+      eventSourceRef.current?.close();
+
       const eventSource = new EventSource("/api/seat/changes", {
         withCredentials: true,
       });
@@ -78,15 +80,17 @@ export function useSeatChangeSSE(options: UseSeatChangeSSEOptions = {}) {
       };
 
       eventSource.onerror = () => {
+        // 에러 후 CONNECTING이면 브라우저가 스스로 재연결하는 중이므로 건드리지 않는다.
+        // CLOSED는 네이티브 재연결이 없으므로 백오프로 직접 다시 붙는다
+        if (eventSource.readyState !== EventSource.CLOSED) {
+          return;
+        }
         toast.error("실시간 좌석 정보 연결에 실패했습니다.", { id: "sse-error" });
-        if (eventSource.readyState !== EventSource.OPEN) {
-          eventSource.close();
-          if (eventSourceRef.current === eventSource) {
-            eventSourceRef.current = null;
-          }
-          if (!retryTimerRef.current) {
-            scheduleReconnect();
-          }
+        if (eventSourceRef.current === eventSource) {
+          eventSourceRef.current = null;
+        }
+        if (!retryTimerRef.current) {
+          scheduleReconnect();
         }
       };
     };

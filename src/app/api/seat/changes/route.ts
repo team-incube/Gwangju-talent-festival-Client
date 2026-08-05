@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,6 +18,7 @@ export async function GET(request: NextRequest) {
     const response = await fetch(backendUrl, {
       headers: requestHeaders,
       credentials: "include",
+      signal: request.signal,
     });
 
     if (!response.ok) {
@@ -33,6 +35,9 @@ export async function GET(request: NextRequest) {
     responseHeaders.set("Cache-Control", "no-cache, no-transform");
     responseHeaders.set("Connection", "keep-alive");
     responseHeaders.set("Transfer-Encoding", "chunked");
+    // 프록시(nginx 등)가 스트림을 버퍼링하면 첫 바이트가 도달하지 않아
+    // EventSource가 CONNECTING에서 멈춘다
+    responseHeaders.set("X-Accel-Buffering", "no");
     responseHeaders.set("Access-Control-Allow-Origin", origin);
     responseHeaders.set("Access-Control-Allow-Methods", "GET");
     responseHeaders.set("Access-Control-Allow-Headers", "Cache-Control, Cookie");
@@ -49,6 +54,9 @@ export async function GET(request: NextRequest) {
         try {
           while (true) {
             const { done, value } = await reader.read();
+            // 클라이언트(브라우저) 쪽 연결이 이미 끊겼으면 컨트롤러도 닫혀있어
+            // enqueue/close를 호출하면 예외가 나므로 조용히 루프만 종료한다
+            if (request.signal.aborted) break;
             if (done) {
               controller.close();
               break;
@@ -56,8 +64,9 @@ export async function GET(request: NextRequest) {
             controller.enqueue(value);
           }
         } catch (error) {
-          console.error(error);
-          controller.error(error);
+          if (!request.signal.aborted) {
+            console.error(error);
+          }
         } finally {
           reader.releaseLock();
         }

@@ -11,7 +11,6 @@ import { parsePartialJson } from "@/shared/utils/partialJson";
 
 const MAX_RETRIES = 5;
 const BASE_DELAY = 1000;
-const CONNECT_TIMEOUT = 8000;
 const SSE_ERROR_TOAST_ID = "judge-monitoring-sse-error";
 
 export const useJudgeMonitoring = () => {
@@ -20,7 +19,6 @@ export const useJudgeMonitoring = () => {
   const eventSourceRef = useRef<EventSource | null>(null);
   const retryCountRef = useRef(0);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const connectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const connect = () => {
@@ -29,28 +27,12 @@ export const useJudgeMonitoring = () => {
         retryTimerRef.current = null;
       }
 
+      eventSourceRef.current?.close();
+
       const eventSource = new EventSource("/api/judge/monitor/changes", {
         withCredentials: true,
       });
       eventSourceRef.current = eventSource;
-
-      // 서버가 응답 헤더 자체를 보내지 않아 pending 상태로 멈추면 onopen/onerror 둘 다
-      // 발동하지 않으므로, 별도 타임아웃으로 그 상태를 감지해 재연결을 시도한다
-      connectTimeoutRef.current = setTimeout(() => {
-        if (eventSource.readyState !== EventSource.OPEN) {
-          eventSource.close();
-          if (eventSourceRef.current === eventSource) {
-            eventSourceRef.current = null;
-          }
-          setIsConnected(false);
-          toast.error("실시간 심사 모니터링 연결이 지연되고 있습니다. 다시 연결을 시도합니다.", {
-            id: SSE_ERROR_TOAST_ID,
-          });
-          if (!retryTimerRef.current) {
-            scheduleReconnect();
-          }
-        }
-      }, CONNECT_TIMEOUT);
 
       eventSource.addEventListener("judge-monitoring", event => {
         const parsed = parsePartialJson<unknown>(event.data);
@@ -65,30 +47,24 @@ export const useJudgeMonitoring = () => {
       });
 
       eventSource.onopen = () => {
-        if (connectTimeoutRef.current) {
-          clearTimeout(connectTimeoutRef.current);
-          connectTimeoutRef.current = null;
-        }
         retryCountRef.current = 0;
         setIsConnected(true);
         toast.dismiss(SSE_ERROR_TOAST_ID);
       };
 
       eventSource.onerror = () => {
-        if (connectTimeoutRef.current) {
-          clearTimeout(connectTimeoutRef.current);
-          connectTimeoutRef.current = null;
-        }
         setIsConnected(false);
+        // 에러 후 CONNECTING이면 브라우저가 스스로 재연결하는 중이므로 건드리지 않는다.
+        // CLOSED는 네이티브 재연결이 없으므로 백오프로 직접 다시 붙는다
+        if (eventSource.readyState !== EventSource.CLOSED) {
+          return;
+        }
         toast.error("실시간 심사 모니터링 연결에 실패했습니다.", { id: SSE_ERROR_TOAST_ID });
-        if (eventSource.readyState !== EventSource.OPEN) {
-          eventSource.close();
-          if (eventSourceRef.current === eventSource) {
-            eventSourceRef.current = null;
-          }
-          if (!retryTimerRef.current) {
-            scheduleReconnect();
-          }
+        if (eventSourceRef.current === eventSource) {
+          eventSourceRef.current = null;
+        }
+        if (!retryTimerRef.current) {
+          scheduleReconnect();
         }
       };
     };
@@ -134,10 +110,6 @@ export const useJudgeMonitoring = () => {
       if (retryTimerRef.current) {
         clearTimeout(retryTimerRef.current);
         retryTimerRef.current = null;
-      }
-      if (connectTimeoutRef.current) {
-        clearTimeout(connectTimeoutRef.current);
-        connectTimeoutRef.current = null;
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleOnline);

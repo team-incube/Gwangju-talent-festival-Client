@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,6 +36,9 @@ export async function GET(request: NextRequest) {
     responseHeaders.set("Cache-Control", "no-cache, no-transform");
     responseHeaders.set("Connection", "keep-alive");
     responseHeaders.set("Transfer-Encoding", "chunked");
+    // 프록시(nginx 등)가 스트림을 버퍼링하면 첫 바이트가 도달하지 않아
+    // EventSource가 CONNECTING에서 멈춘다
+    responseHeaders.set("X-Accel-Buffering", "no");
     responseHeaders.set("Access-Control-Allow-Origin", origin);
     responseHeaders.set("Access-Control-Allow-Methods", "GET");
     responseHeaders.set("Access-Control-Allow-Headers", "Cache-Control, Cookie");
