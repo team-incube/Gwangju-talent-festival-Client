@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import { links } from "@/shared/const/headerValues";
+import { HeaderLink } from "@/shared/const/headerValues";
 import { cn } from "@/shared/utils/cn";
 
 interface MobileSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onLinkClick: (section: string) => void;
+  links: HeaderLink[];
 }
 
-export const MobileSidebar = ({ isOpen, onClose, onLinkClick }: MobileSidebarProps) => {
+export const MobileSidebar = ({ isOpen, onClose, onLinkClick, links }: MobileSidebarProps) => {
   useEffect(() => {
     if (!isOpen) return;
 
