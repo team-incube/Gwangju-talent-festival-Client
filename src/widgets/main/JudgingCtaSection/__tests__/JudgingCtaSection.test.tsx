@@ -45,6 +45,19 @@ describe("JudgingCtaSection - 노출 및 이동 경로", () => {
     expect(push).toHaveBeenCalledWith("/admin/evaluation");
   });
 
+  it("PERFORMER role이면 예매하러 가기 버튼을 보여주고 예매 페이지로 이동한다", async () => {
+    const push = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<typeof useRouter>);
+    vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
+    const user = userEvent.setup();
+
+    render(<JudgingCtaSection />);
+    const button = await screen.findByText("예매하러 가기");
+    await user.click(button);
+
+    expect(push).toHaveBeenCalledWith("/booking");
+  });
+
   it("USER role이면 버튼을 보여주지 않는다", () => {
     vi.mocked(useRouter).mockReturnValue({ push: vi.fn() } as unknown as ReturnType<
       typeof useRouter

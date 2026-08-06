@@ -11,6 +11,7 @@ import { getTokenFromCookie } from "@/shared/utils/auth";
 const ROLE_CTA: Record<string, { label: string; href: string }> = {
   ADMIN: { label: "심사 모니터링", href: "/admin/judging-result" },
   JUDGE: { label: "심사하러 가기", href: "/admin/evaluation" },
+  PERFORMER: { label: "예매하러 가기", href: "/booking" },
 };
 
 const JudgingCtaSection = () => {

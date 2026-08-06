@@ -58,6 +58,7 @@ const HomePage = () => {
     <>
       {/* <SloganPosterPopup /> */}
       <IntroFirstSection />
+      <JudgingCtaSection />
       <JudgeInfoSection />
       <SloganSecondSection />
 
@@ -80,8 +81,6 @@ const HomePage = () => {
       <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="300px">
         <SeventhSection />
       </LazySection>
-
-      <JudgingCtaSection />
 
       <LazySection fallback={<SectionPlaceholder height="500px" />} rootMargin="500px">
         <Footer />
