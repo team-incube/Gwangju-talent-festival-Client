@@ -21,10 +21,22 @@ describe("isReservedSeat - 확보석 판별", () => {
     expect(isReservedSeat({ section: "PURPLE", row: "S" })).toBe(false)
   })
 
-  it("확보석은 좌석배치도 기준 48석이다", () => {
+  it("무대 최전열 A열은 출연팀 좌석이라 예매 불가다", () => {
+    ;(["RED", "YELLOW", "TEAL"] as const).forEach(section => {
+      expect(isReservedSeat({ section, row: "A" })).toBe(true)
+    })
+  })
+
+  it("A열 다음 B열부터는 예매 가능석이다", () => {
+    ;(["RED", "YELLOW", "TEAL"] as const).forEach(section => {
+      expect(isReservedSeat({ section, row: "B" })).toBe(false)
+    })
+  })
+
+  it("확보석은 좌석배치도 기준 74석이다", () => {
     const reserved = SECTIONS.flatMap(section =>
       SEAT_LAYOUTS[section].seats.filter(isReservedSeat),
     )
-    expect(reserved).toHaveLength(48)
+    expect(reserved).toHaveLength(74)
   })
 })
