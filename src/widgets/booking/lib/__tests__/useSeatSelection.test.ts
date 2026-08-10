@@ -6,7 +6,7 @@ import { Seat, Section, SeatStatus, SEAT_STATUS } from "@/entities/booking/model
 const makeSeat = (
   seatNumber: string,
   status: SeatStatus = SEAT_STATUS.AVAILABLE,
-  row: string = "A",
+  row: string = "B",
 ): Seat => ({
   seatNumber,
   row,
@@ -102,8 +102,8 @@ describe("useSeatSelection - canSelectSeat", () => {
 describe("useSeatSelection - 좌석 선택 엣지 케이스", () => {
   it("같은 번호지만 다른 섹션의 좌석은 토글되지 않고 교체된다", () => {
     const { result } = renderHook(() => useSeatSelection())
-    const seatA: Seat = { seatNumber: "1", row: "A", status: SEAT_STATUS.AVAILABLE, section: "RED" as Section }
-    const seatB: Seat = { seatNumber: "1", row: "A", status: SEAT_STATUS.AVAILABLE, section: "YELLOW" as Section }
+    const seatA: Seat = { seatNumber: "1", row: "B", status: SEAT_STATUS.AVAILABLE, section: "RED" as Section }
+    const seatB: Seat = { seatNumber: "1", row: "B", status: SEAT_STATUS.AVAILABLE, section: "YELLOW" as Section }
 
     act(() => { result.current.selectSeat(seatA) })
     act(() => { result.current.selectSeat(seatB) })
@@ -113,13 +113,21 @@ describe("useSeatSelection - 좌석 선택 엣지 케이스", () => {
 
   it("같은 번호·섹션이지만 다른 열의 좌석은 토글되지 않고 교체된다", () => {
     const { result } = renderHook(() => useSeatSelection())
-    const seatA = makeSeat("1", SEAT_STATUS.AVAILABLE, "A")
     const seatB = makeSeat("1", SEAT_STATUS.AVAILABLE, "B")
+    const seatC = makeSeat("1", SEAT_STATUS.AVAILABLE, "C")
 
-    act(() => { result.current.selectSeat(seatA) })
     act(() => { result.current.selectSeat(seatB) })
+    act(() => { result.current.selectSeat(seatC) })
 
-    expect(result.current.selectedSeat).toEqual(seatB)
+    expect(result.current.selectedSeat).toEqual(seatC)
+  })
+
+  it("출연팀 좌석인 A열은 선택되지 않는다", () => {
+    const { result } = renderHook(() => useSeatSelection())
+
+    act(() => { result.current.selectSeat(makeSeat("1", SEAT_STATUS.AVAILABLE, "A")) })
+
+    expect(result.current.selectedSeat).toBeNull()
   })
 
   it("섹션을 같은 값으로 다시 설정해도 선택 좌석이 초기화된다", () => {
