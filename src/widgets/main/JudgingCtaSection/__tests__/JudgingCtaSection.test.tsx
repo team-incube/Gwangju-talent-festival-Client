@@ -58,14 +58,18 @@ describe("JudgingCtaSection - 노출 및 이동 경로", () => {
     expect(push).toHaveBeenCalledWith("/booking");
   });
 
-  it("USER role이면 버튼을 보여주지 않는다", () => {
-    vi.mocked(useRouter).mockReturnValue({ push: vi.fn() } as unknown as ReturnType<
-      typeof useRouter
-    >);
+  it("USER role이면 출연진 인증 버튼을 보여주고 인증 페이지로 이동한다", async () => {
+    const push = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<typeof useRouter>);
     vi.mocked(getTokenFromCookie).mockReturnValue("USER");
+    const user = userEvent.setup();
 
     render(<JudgingCtaSection />);
+    const button = await screen.findByText("출연진 인증하기");
+    await user.click(button);
 
+    expect(push).toHaveBeenCalledWith("/performer");
+    expect(screen.getByText("만약 출연진이라면?")).toBeInTheDocument();
     expect(screen.queryByText("심사하러 가기")).not.toBeInTheDocument();
     expect(screen.queryByText("심사 모니터링")).not.toBeInTheDocument();
   });
@@ -80,5 +84,6 @@ describe("JudgingCtaSection - 노출 및 이동 경로", () => {
 
     expect(screen.queryByText("심사하러 가기")).not.toBeInTheDocument();
     expect(screen.queryByText("심사 모니터링")).not.toBeInTheDocument();
+    expect(screen.queryByText("출연진 인증하기")).not.toBeInTheDocument();
   });
 });
