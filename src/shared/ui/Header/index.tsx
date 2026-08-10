@@ -62,7 +62,7 @@ export default function Header() {
         <Link href="/">
           <Logo className="h-[42px] w-[67px] mobile:h-[32px] mobile:w-[52px]" color="#FF9644" />
         </Link>
-        {!isJudge && (
+        {!isJudge && pathname.startsWith("/home") && (
           <div className={cn("flex gap-[2.5rem] text-body3b mobile:hidden")}>
             {navLinks.map((link, index) => (
               <button key={index} onClick={() => handleScrollToSection(link.section)}>
