@@ -66,7 +66,7 @@ describe("handlePerformerVerifySubmit - 인증 성공", () => {
       MOCK_RESPONSE.refreshToken,
       MOCK_RESPONSE.refreshTokenExpiresAt,
     );
-    expect(mockSetRole).toHaveBeenCalledWith("PERFORMER");
+    expect(mockSetRole).toHaveBeenCalledWith("PERFORMER", MOCK_RESPONSE.refreshTokenExpiresAt);
   });
 
   it("인증 후 예매 페이지로 리다이렉트한다", async () => {
