@@ -105,6 +105,7 @@ export const SeatSection = memo<SeatSectionProps>(
           isPerformerMode={isPerformerMode}
           mySeat={!isPerformerMode && !allowOccupiedSelect ? (myBookedSeats?.[0] ?? null) : null}
           myAllSeats={myBookedSeats}
+          myBookedSeats={myBookedSeats}
           allowOccupiedSelect={allowOccupiedSelect}
           onSectionSelect={onSectionSelect}
         />
