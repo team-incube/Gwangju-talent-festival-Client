@@ -14,6 +14,7 @@ import { cancelPerformerSeats } from "@/entities/booking/api/cancelPerformerSeat
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Seat, formatSeatLabel } from "@/entities/booking/model/types";
+import { MAX_PERFORMER_SEATS } from "@/widgets/booking/lib/usePerformerSeatSelection";
 
 const MyBookingPage = () => {
   const { seats, isMultiple, isLoading, error } = useMyBookedSeats();
@@ -23,6 +24,8 @@ const MyBookingPage = () => {
   const layout = null;
 
   const canSelectIndividualSeats = isMultiple && seats.length >= 2;
+  // 참가자는 2석까지라 아직 여유가 있을 때만 추가 예매를 안내한다
+  const canBookMore = isMultiple && !isLoading && seats.length < MAX_PERFORMER_SEATS;
 
   useEffect(() => {
     if (error) toast.error(stringifyError(error));
@@ -127,6 +130,12 @@ const MyBookingPage = () => {
       </div>
 
       <div className="w-full space-y-2">
+        {canBookMore && (
+          <Button className="w-full h-[48px]" onClick={() => router.push("/booking")}>
+            좌석 추가로 예매하기
+          </Button>
+        )}
+
         {canSelectIndividualSeats ? (
           <>
             <div
