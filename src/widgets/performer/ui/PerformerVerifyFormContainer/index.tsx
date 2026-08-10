@@ -23,7 +23,7 @@ const PerformerVerifyFormContainer = () => {
       const firstError = Array.isArray(state.error) ? state.error[0] : state.error;
       if (firstError) toast.error(firstError);
     } else if (state.isValid) {
-      toast.success("출연진 인증이 완료되었습니다.");
+      toast.success("참가자 인증이 완료되었습니다.");
     }
   }, [state.submitted, state.error, state.isValid]);
 
@@ -34,15 +34,16 @@ const PerformerVerifyFormContainer = () => {
   }, [state.shouldRedirect, state.redirectTo, router]);
 
   return (
-    <form action={formAction} className="w-full flex flex-col gap-40">
-      <div className="space-y-16">
+    <form action={formAction} className="w-full flex flex-col gap-40 mobile:gap-20">
+      <div className="space-y-16 mobile:space-y-12">
         <Input
           type="text"
-          placeholder="출연진 이름을 입력해주세요."
+          placeholder="참가자 이름을 입력해주세요."
           label="이름"
           name="name"
           disabled={isPending}
           defaultValue={state.values.name}
+          hideErrorSpace
         />
 
         <Input
@@ -52,6 +53,7 @@ const PerformerVerifyFormContainer = () => {
           name="code"
           disabled={isPending}
           defaultValue={state.values.code}
+          hideErrorSpace
         />
       </div>
 

@@ -7,6 +7,6 @@ export const verifyPerformer = async (data: PerformerVerifyRequest): Promise<Sig
     return (await instance.post("/performer/verify", data)).data;
   } catch (error) {
     const message = (error as AxiosError<{ message?: string }>).response?.data?.message;
-    throw new Error(message || "출연진 인증에 실패했습니다.");
+    throw new Error(message || "참가자 인증에 실패했습니다.");
   }
 };
