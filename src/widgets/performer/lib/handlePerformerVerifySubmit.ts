@@ -1,5 +1,5 @@
 import { AuthFormState } from "@/entities/user/lib/AuthFormState";
-import { performerVerifySchema, PerformerVerifyRequest } from "@/entities/user/model/schema";
+import { performerVerifySchema } from "@/entities/user/model/schema";
 import { verifyPerformer } from "@/entities/user/api/verifyPerformer";
 import { setTokens, setRole } from "@/shared/utils/auth";
 
@@ -7,9 +7,9 @@ export const handlePerformerVerifySubmit = async (
   _previousState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> => {
-  const values: PerformerVerifyRequest = {
-    name: formData.get("name")?.toString().trim() || "",
-    code: formData.get("code")?.toString().trim() || "",
+  const values = {
+    name: formData.get("name")?.toString() || "",
+    code: formData.get("code")?.toString() || "",
   };
 
   const result = performerVerifySchema.safeParse(values);
