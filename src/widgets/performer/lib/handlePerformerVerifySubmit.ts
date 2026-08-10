@@ -32,7 +32,7 @@ export const handlePerformerVerifySubmit = async (
       response.refreshTokenExpiresAt,
     );
 
-    setRole(response.role);
+    setRole(response.role, response.refreshTokenExpiresAt);
 
     return {
       values,
@@ -42,7 +42,7 @@ export const handlePerformerVerifySubmit = async (
       redirectTo: "/booking",
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "출연진 인증에 실패했습니다.";
+    const errorMessage = error instanceof Error ? error.message : "참가자 인증에 실패했습니다.";
     return {
       values,
       isValid: false,
