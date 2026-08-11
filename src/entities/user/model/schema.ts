@@ -27,6 +27,11 @@ export const phoneVerificationRequestSchema = z.object({
   phoneNumber: phoneNumberSchema,
 });
 
+export const performerVerifySchema = z.object({
+  name: z.string().trim().min(1, "이름을 입력해주세요."),
+  code: z.string().trim().min(1, "인증코드를 입력해주세요."),
+});
+
 export interface SignInRequest {
   phoneNumber: string;
   password: string;
@@ -57,6 +62,8 @@ export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
 }
+
+export type PerformerVerifyRequest = z.infer<typeof performerVerifySchema>;
 
 export type SignInFormValues = z.infer<typeof signinSchema>;
 export type SignUpFormValues = z.infer<typeof signUpSchema>;

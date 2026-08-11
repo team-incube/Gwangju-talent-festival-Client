@@ -29,13 +29,24 @@ const JudgingCtaSection = () => {
     <section
       id="JudgingCtaSection"
       className={cn(
-        "w-full flex flex-col items-center text-center gap-24 py-[80px] mobile:py-[52px] px-16 bg-gray-50",
+        "w-full flex flex-col items-center text-center gap-16 py-[80px] mobile:py-[52px] px-16 bg-orange-100",
       )}
     >
+      {userRole === "PERFORMER" && (
+        <>
+          <span className="inline-flex items-center rounded-full bg-orange-500 px-14 py-4 text-caption1b text-white">
+            참가자 선예매 진행 중
+          </span>
+          <h2 className="text-title4b break-keep mobile:text-body2b">좌석 예매가 열렸습니다</h2>
+          <p className="text-body3r text-gray-700 break-keep mobile:text-caption1r">
+            일반 예매보다 먼저 좌석을 선택할 수 있어요.
+          </p>
+        </>
+      )}
       <Button
         type="button"
         onClick={() => router.push(cta.href)}
-        className="px-28 rounded-lg mobile:w-full"
+        className="px-28 rounded-lg mt-8 mobile:mt-4 mobile:w-full"
       >
         <span className="text-body3b flex items-center justify-center gap-10 px-[60px] mobile:px-0 mobile:w-full">
           {cta.label}

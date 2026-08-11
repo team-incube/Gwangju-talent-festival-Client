@@ -82,7 +82,7 @@ describe("handleSigninFormSubmit - 로그인 성공", () => {
       MOCK_RESPONSE.refreshToken,
       MOCK_RESPONSE.refreshTokenExpiresAt,
     );
-    expect(mockSetRole).toHaveBeenCalledWith(MOCK_RESPONSE.role);
+    expect(mockSetRole).toHaveBeenCalledWith(MOCK_RESPONSE.role, MOCK_RESPONSE.refreshTokenExpiresAt);
   });
 
   it("next 파라미터 없으면 /home으로 리다이렉트한다", async () => {

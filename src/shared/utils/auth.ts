@@ -17,8 +17,10 @@ export const clearTokens = () => {
   clearCookie("refreshToken");
 };
 
-export const setRole = (role: string) => {
-  setCookie("role", role);
+// 만료를 주지 않으면 세션 쿠키가 되어 브라우저를 닫으면 사라진다.
+// 토큰은 남고 role만 사라지면 권한 판정이 깨지므로 토큰과 수명을 맞춘다
+export const setRole = (role: string, expiresAt?: string) => {
+  setCookie("role", role, expiresAt ? new Date(expiresAt) : undefined);
 };
 
 export const clearRole = () => {
