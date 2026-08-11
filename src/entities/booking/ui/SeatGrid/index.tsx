@@ -25,6 +25,7 @@ export interface SeatGridProps {
   isSeatSelected?: (seat: Seat) => boolean;
   isPerformerMode?: boolean;
   myAllSeats?: Seat[];
+  myBookedSeats?: Seat[];
   selectedSeatsForCancel?: Set<string>;
   allowOccupiedSelect?: boolean;
   onSectionSelect?: (section: (typeof SECTIONS)[number]) => void;
@@ -41,6 +42,7 @@ export const SeatGrid = memo<SeatGridProps>(
     isSeatSelected,
     isPerformerMode = false,
     myAllSeats,
+    myBookedSeats,
     selectedSeatsForCancel,
     allowOccupiedSelect = false,
     onSectionSelect,
@@ -125,6 +127,18 @@ export const SeatGrid = memo<SeatGridProps>(
       [mySeat, myAllSeats, isPerformerMode, isSeatSelected, selectedSeat, selectedSeatsForCancel],
     );
 
+    // 예매 화면에서 내가 이미 잡아둔 좌석을 구분해 보여준다 (선택 가능 여부는 그대로 유지)
+    const isMyBookedSeat = useCallback(
+      (seat: Seat) =>
+        myBookedSeats?.some(
+          mine =>
+            mine.section === seat.section &&
+            mine.row === seat.row &&
+            mine.seatNumber === seat.seatNumber,
+        ) ?? false,
+      [myBookedSeats],
+    );
+
     const renderSingleSectionGrid = () => (
       <div className="w-max mx-auto flex flex-col justify-start">
         {seatGrid.map((row, rowIndex) => (
@@ -135,6 +149,7 @@ export const SeatGrid = memo<SeatGridProps>(
                   <SeatItem
                     seat={seat}
                     isSelected={getSeatSelectedState(seat)}
+                    isMine={isMyBookedSeat(seat)}
                     onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
                     allowOccupiedSelect={allowOccupiedSelect}
                     className={cellSize}
@@ -205,6 +220,7 @@ export const SeatGrid = memo<SeatGridProps>(
                         <SeatItem
                           seat={seat}
                           isSelected={getSeatSelectedState(seat)}
+                          isMine={isMyBookedSeat(seat)}
                           onSelect={mySeat ? NOOP_SEAT_SELECT : handleSeatSelect}
                           className={cn(cellSize, "text-transparent")}
                         />
