@@ -3,16 +3,13 @@ import { renderHook, waitFor, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { useSeatBooking, useMultipleSeatBooking } from "../useSeatBooking";
-import { bookSeatWithRetry } from "../bookSeatWithRetry";
+import { bookSeatWithRetry, bookSeatsBulkWithRetry } from "../bookSeatWithRetry";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { Seat, SEAT_STATUS } from "@/entities/booking/model/types";
 
 vi.mock("../bookSeatWithRetry", () => ({
   bookSeatWithRetry: vi.fn(),
-}));
-
-vi.mock("@/entities/booking/api/getMySeat", () => ({
-  getMySeats: vi.fn(),
+  bookSeatsBulkWithRetry: vi.fn(),
 }));
 
 vi.mock("sonner", () => ({
@@ -89,8 +86,30 @@ describe("useSeatBooking", () => {
 });
 
 describe("useMultipleSeatBooking", () => {
+  it("좌석이 여러 개여도 bulk 요청을 한 번만 보낸다", async () => {
+    vi.mocked(bookSeatsBulkWithRetry).mockResolvedValue(undefined as never);
+
+    const { result } = renderHook(() => useMultipleSeatBooking(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    const seats = [
+      { section: "RED" as const, row: "B", seatNumber: "1" },
+      { section: "GREEN" as const, row: "C", seatNumber: "5" },
+    ];
+
+    act(() => {
+      result.current.mutate(seats);
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(bookSeatsBulkWithRetry).toHaveBeenCalledTimes(1);
+    expect(bookSeatsBulkWithRetry).toHaveBeenCalledWith(seats);
+    expect(bookSeatWithRetry).not.toHaveBeenCalled();
+  });
+
   it("다중 예매에 성공하면 선택한 좌석 전부를 즉시 occupied로 반영한다", async () => {
-    vi.mocked(bookSeatWithRetry).mockResolvedValue(undefined as never);
+    vi.mocked(bookSeatsBulkWithRetry).mockResolvedValue(undefined as never);
     queryClient.setQueryData<Seat[]>(seatQueryKeys.seatState("RED"), [
       seat("RED", "B", "1"),
       seat("RED", "B", "2"),
@@ -123,12 +142,9 @@ describe("useMultipleSeatBooking", () => {
     expect(findSeat(greenSeats, "C", "5")?.status).toBe(SEAT_STATUS.OCCUPIED);
   });
 
-  it("일부 좌석 예매가 실패하면 캐시를 occupied로 바꾸지 않는다", async () => {
-    vi.mocked(bookSeatWithRetry)
-      .mockResolvedValueOnce(undefined as never)
-      .mockRejectedValueOnce(new Error("이미 예매된 좌석입니다."));
-    const { getMySeats } = await import("@/entities/booking/api/getMySeat");
-    vi.mocked(getMySeats).mockResolvedValueOnce([]);
+  it("bulk 예매가 실패하면 캐시를 occupied로 바꾸지 않고 좌석 현황을 다시 조회한다", async () => {
+    vi.mocked(bookSeatsBulkWithRetry).mockRejectedValueOnce(new Error("이미 예매된 좌석입니다."));
+    const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
     queryClient.setQueryData<Seat[]>(seatQueryKeys.seatState("RED"), [
       seat("RED", "B", "1"),
       seat("RED", "B", "2"),
@@ -148,5 +164,9 @@ describe("useMultipleSeatBooking", () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     const seats = queryClient.getQueryData<Seat[]>(seatQueryKeys.seatState("RED"));
     expect(findSeat(seats, "B", "1")?.status).toBe(SEAT_STATUS.AVAILABLE);
+    expect(findSeat(seats, "B", "2")?.status).toBe(SEAT_STATUS.AVAILABLE);
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: seatQueryKeys.seatState("RED"),
+    });
   });
 });
