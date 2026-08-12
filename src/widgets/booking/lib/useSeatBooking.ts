@@ -4,7 +4,22 @@ import { bookSeatWithRetry } from "@/widgets/booking/lib/bookSeatWithRetry";
 import { getMySeats } from "@/entities/booking/api/getMySeat";
 import { Seat, formatSeatLabel } from "@/entities/booking/model/types";
 import { useQueryClient } from "@tanstack/react-query";
-import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
+import { seatQueryKeys, applySeatChange } from "@/entities/booking/lib/useSeatState";
+
+// 재조회·SSE를 기다리지 않고 캐시를 먼저 갱신 — 예매 직후 좌석이 즉시 회색으로 전환된다
+const markSeatsOccupied = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  seats: Array<Omit<Seat, "status">>,
+) => {
+  seats.forEach(seat => {
+    applySeatChange(queryClient, {
+      seat_section: seat.section,
+      seat_row: seat.row,
+      seat_number: Number(seat.seatNumber),
+      is_available: false,
+    });
+  });
+};
 
 export function useSeatBooking() {
   const queryClient = useQueryClient();
@@ -12,6 +27,7 @@ export function useSeatBooking() {
   return useMutation({
     mutationFn: (data: Omit<Seat, "status">) => bookSeatWithRetry(data),
     onSuccess: (_result, vars) => {
+      markSeatsOccupied(queryClient, [vars]);
       queryClient.invalidateQueries({ queryKey: seatQueryKeys.seatState(vars.section) });
       queryClient.invalidateQueries({ queryKey: ["mySeat"] });
       queryClient.invalidateQueries({ queryKey: ["mySeats"] });
@@ -70,6 +86,8 @@ export function useMultipleSeatBooking() {
       };
     },
     onSuccess: (result, vars) => {
+      markSeatsOccupied(queryClient, vars);
+
       const sections = [...new Set(vars.map(seat => seat.section))];
       sections.forEach(section => {
         queryClient.invalidateQueries({ queryKey: seatQueryKeys.seatState(section) });
