@@ -68,7 +68,12 @@ const BookingPage = () => {
     [queryClient, isPerformer, removeOccupiedSeat],
   );
 
-  useSeatChangeSSE({ onSeatChange: handleSeatChange });
+  const handleReconnect = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["seatState"] });
+    queryClient.invalidateQueries({ queryKey: ["allSectionsSeatState"] });
+  }, [queryClient]);
+
+  useSeatChangeSSE({ onSeatChange: handleSeatChange, onReconnect: handleReconnect });
 
   const handleSectionSelect = useCallback(
     (section: SectionType) => {
