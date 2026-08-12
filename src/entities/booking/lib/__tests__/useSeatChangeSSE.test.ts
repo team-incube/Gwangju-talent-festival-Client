@@ -266,6 +266,39 @@ describe("useSeatChangeSSE", () => {
       act(() => { vi.advanceTimersByTime(1); });
       expect(mockInstances).toHaveLength(3);
     });
+
+    it("첫 연결에서는 onReconnect를 호출하지 않는다", () => {
+      const onReconnect = vi.fn();
+      renderHook(() => useSeatChangeSSE({ onReconnect }));
+
+      act(() => { mockInstances[0].simulateOpen(); });
+
+      expect(onReconnect).not.toHaveBeenCalled();
+    });
+
+    it("재연결에 성공하면 onReconnect를 호출한다", () => {
+      const onReconnect = vi.fn();
+      renderHook(() => useSeatChangeSSE({ onReconnect }));
+
+      act(() => { mockInstances[0].simulateOpen(); });
+      act(() => { mockInstances[0].simulateError(MockEventSource.CLOSED); });
+      act(() => { vi.advanceTimersByTime(1000); });
+      act(() => { mockInstances[1].simulateOpen(); });
+
+      expect(onReconnect).toHaveBeenCalledOnce();
+    });
+
+    it("브라우저 자동 재연결로 다시 열려도 onReconnect를 호출한다", () => {
+      const onReconnect = vi.fn();
+      renderHook(() => useSeatChangeSSE({ onReconnect }));
+
+      act(() => { mockInstances[0].simulateOpen(); });
+      act(() => { mockInstances[0].simulateError(MockEventSource.CONNECTING); });
+      act(() => { mockInstances[0].simulateOpen(); });
+
+      expect(onReconnect).toHaveBeenCalledOnce();
+      expect(mockInstances).toHaveLength(1);
+    });
   });
 
   describe("네트워크 복구 (online 이벤트) 연동", () => {
