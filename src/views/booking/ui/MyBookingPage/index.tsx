@@ -44,7 +44,8 @@ const MyBookingPage = () => {
 
       const originalSeats = seats;
       const updatedSeats = seats.filter(
-        s => !(s.section === seat.section && s.row === seat.row && s.seatNumber === seat.seatNumber),
+        s =>
+          !(s.section === seat.section && s.row === seat.row && s.seatNumber === seat.seatNumber),
       );
 
       queryClient.setQueryData(["mySeats"], updatedSeats);
@@ -108,7 +109,7 @@ const MyBookingPage = () => {
   }, [seats, isMultiple, router, queryClient]);
 
   return (
-    <div className={cn("w-full max-w-4xl mx-auto p-4 space-y-6")}>
+    <div className={cn("w-full max-w-4xl mx-auto p-16 pb-32 space-y-24")}>
       <BackHeader text="좌석 예매" goto="/home" />
       <div className="w-full">
         <SeatGrid
@@ -129,9 +130,17 @@ const MyBookingPage = () => {
         />
       </div>
 
-      <div className="w-full space-y-2">
+      <div className="w-full space-y-12">
+        <Button className="w-full h-[48px]" onClick={() => router.push("/home")}>
+          예매 확정하기
+        </Button>
+
         {canBookMore && (
-          <Button className="w-full h-[48px]" onClick={() => router.push("/booking")}>
+          <Button
+            variant="outline"
+            className="w-full h-[48px]"
+            onClick={() => router.push("/booking")}
+          >
             좌석 추가로 예매하기
           </Button>
         )}
@@ -140,7 +149,7 @@ const MyBookingPage = () => {
           <>
             <div
               className={cn(
-                "grid gap-2",
+                "grid gap-12",
                 seats.length === 2
                   ? "grid-cols-2"
                   : seats.length === 3
@@ -151,6 +160,7 @@ const MyBookingPage = () => {
               {seats.map(seat => (
                 <Button
                   key={`${seat.section}-${seat.row}-${seat.seatNumber}`}
+                  variant="outline"
                   className="h-[40px] text-sm"
                   onClick={() => handleIndividualSeatCancel(seat)}
                   disabled={seats.length === 0}
@@ -161,7 +171,8 @@ const MyBookingPage = () => {
             </div>
 
             <Button
-              className="w-full h-[48px] text-white"
+              variant="outline"
+              className="w-full h-[48px]"
               onClick={handleAllCancelClick}
               disabled={seats.length === 0}
             >
@@ -170,6 +181,7 @@ const MyBookingPage = () => {
           </>
         ) : (
           <Button
+            variant="outline"
             className="w-full h-[48px]"
             onClick={handleAllCancelClick}
             disabled={seats.length === 0}
