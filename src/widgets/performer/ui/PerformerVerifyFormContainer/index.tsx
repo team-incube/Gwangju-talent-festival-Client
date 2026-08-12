@@ -53,6 +53,9 @@ const PerformerVerifyFormContainer = () => {
           name="code"
           disabled={isPending}
           defaultValue={state.values.code}
+          className="uppercase placeholder:normal-case"
+          autoCapitalize="characters"
+          autoComplete="off"
           hideErrorSpace
         />
       </div>
