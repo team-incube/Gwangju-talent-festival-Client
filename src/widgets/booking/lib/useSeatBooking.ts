@@ -20,6 +20,14 @@ const markSeatsOccupied = (
   });
 };
 
+// 이 promise를 onSuccess에서 반환하면 mutate 콜백(= /booking/my 이동)이 재조회 이후에 실행된다.
+// 안 기다리면 예매 직전의 빈 캐시를 그대로 읽어 "예약된 좌석이 없습니다"로 튕긴다
+const revalidateMySeats = (queryClient: ReturnType<typeof useQueryClient>) =>
+  Promise.all([
+    queryClient.invalidateQueries({ queryKey: ["mySeat"] }),
+    queryClient.invalidateQueries({ queryKey: ["mySeats"] }),
+  ]);
+
 export function useSeatBooking() {
   const queryClient = useQueryClient();
 
@@ -28,8 +36,8 @@ export function useSeatBooking() {
     onSuccess: (_result, vars) => {
       markSeatsOccupied(queryClient, [vars]);
       queryClient.invalidateQueries({ queryKey: seatQueryKeys.seatState(vars.section) });
-      queryClient.invalidateQueries({ queryKey: ["mySeat"] });
-      queryClient.invalidateQueries({ queryKey: ["mySeats"] });
+
+      return revalidateMySeats(queryClient);
     },
     onError: error => {
       console.error(error);
@@ -46,8 +54,8 @@ export function useMultipleSeatBooking() {
       queryClient.invalidateQueries({ queryKey: seatQueryKeys.seatState(section) });
     });
     queryClient.invalidateQueries({ queryKey: ["allSectionsSeatState"] });
-    queryClient.invalidateQueries({ queryKey: ["mySeat"] });
-    queryClient.invalidateQueries({ queryKey: ["mySeats"] });
+
+    return revalidateMySeats(queryClient);
   };
 
   return useMutation({
@@ -55,9 +63,9 @@ export function useMultipleSeatBooking() {
     mutationFn: (seats: Array<Omit<Seat, "status">>) => bookSeatsBulkWithRetry(seats),
     onSuccess: (_result, seats) => {
       markSeatsOccupied(queryClient, seats);
-      revalidateSeats(seats);
-
       toast.success(`${seats.length}개 좌석이 성공적으로 예매되었습니다.`);
+
+      return revalidateSeats(seats);
     },
     // 전부 실패했더라도 다른 사용자가 좌석을 채웠을 수 있으니 서버 좌석 현황을 다시 불러온다
     onError: (error, seats) => {
