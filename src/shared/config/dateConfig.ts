@@ -1,8 +1,16 @@
-export const ticketOpenDate = new Date(
-  process.env.NEXT_PUBLIC_TICKET_OPEN_DATE ?? "2025-09-18T20:00:00+09:00",
+// 오픈 시각은 잘못된 env 값 하나로 예매 전체가 막힐 수 있어 파싱 실패 시 하드코딩 값으로 되돌린다
+const dateFromEnv = (value: string | undefined, fallback: string) => {
+  const parsed = new Date(value ?? fallback);
+  return Number.isNaN(parsed.getTime()) ? new Date(fallback) : parsed;
+};
+
+export const ticketOpenDate = dateFromEnv(
+  process.env.NEXT_PUBLIC_TICKET_OPEN_DATE,
+  "2026-08-20T19:00:00+09:00",
 );
-export const performerTicketOpenDate = new Date(
-  process.env.NEXT_PUBLIC_PERFORMER_TICKET_OPEN_DATE ?? "2026-08-15T00:00:00+09:00",
+export const performerTicketOpenDate = dateFromEnv(
+  process.env.NEXT_PUBLIC_PERFORMER_TICKET_OPEN_DATE,
+  "2026-08-14T14:00:00+09:00",
 );
 export const isTicketOpen = (role?: string | null) =>
   new Date() >= (role === "PERFORMER" ? performerTicketOpenDate : ticketOpenDate);
