@@ -57,6 +57,19 @@ describe("usePerformerSeatSelection - maxSelectableSeats", () => {
     expect(result.current.maxSelectableSeats).toBe(0)
   })
 
+  it("이미 2석을 예매했으면 선택된 구역의 좌석을 눌러도 선택되지 않는다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(2))
+
+    act(() => {
+      result.current.setSelectedSection("RED")
+    })
+    act(() => {
+      result.current.selectSeat(makeSeat("1"))
+    })
+
+    expect(result.current.selectedSeats).toHaveLength(0)
+  })
+
   it("existingSeatsCount가 2를 초과해도 maxSelectableSeats는 0이다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection(5))
     expect(result.current.maxSelectableSeats).toBe(0)
