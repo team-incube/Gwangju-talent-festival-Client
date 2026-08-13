@@ -42,6 +42,22 @@ beforeEach(() => {
 const findSeat = (seats: Seat[] | undefined, row: string, seatNumber: string) =>
   seats?.find(item => item.row === row && item.seatNumber === seatNumber);
 
+// ["mySeat"] 재조회만 수동으로 끝낼 수 있게 막아둔다
+const holdMySeatRevalidation = () => {
+  let finish!: () => void;
+  const pending = new Promise<void>(resolve => (finish = resolve));
+  const invalidateQueries = queryClient.invalidateQueries.bind(queryClient);
+
+  vi.spyOn(queryClient, "invalidateQueries").mockImplementation(((filters?: {
+    queryKey?: readonly unknown[];
+  }) =>
+    filters?.queryKey?.[0] === "mySeat"
+      ? pending
+      : invalidateQueries(filters)) as typeof queryClient.invalidateQueries);
+
+  return () => finish();
+};
+
 describe("useSeatBooking", () => {
   it("예매에 성공하면 재조회를 기다리지 않고 해당 좌석을 즉시 occupied로 반영한다", async () => {
     vi.mocked(bookSeatWithRetry).mockResolvedValueOnce(undefined as never);
@@ -82,6 +98,27 @@ describe("useSeatBooking", () => {
       const seats = queryClient.getQueryData<Seat[]>(["allSectionsSeatState"]);
       expect(findSeat(seats, "C", "3")?.status).toBe(SEAT_STATUS.OCCUPIED);
     });
+  });
+
+  it("내 좌석 재조회가 끝나기 전에는 예매 완료 콜백을 실행하지 않는다", async () => {
+    vi.mocked(bookSeatWithRetry).mockResolvedValueOnce(undefined as never);
+    const finishRevalidation = holdMySeatRevalidation();
+    const onSuccess = vi.fn();
+
+    const { result } = renderHook(() => useSeatBooking(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    act(() => {
+      result.current.mutate({ section: "RED", row: "B", seatNumber: "1" }, { onSuccess });
+    });
+
+    await waitFor(() => expect(bookSeatWithRetry).toHaveBeenCalled());
+    expect(onSuccess).not.toHaveBeenCalled();
+
+    finishRevalidation();
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
   });
 });
 

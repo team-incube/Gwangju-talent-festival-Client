@@ -17,7 +17,7 @@ import { Seat, formatSeatLabel } from "@/entities/booking/model/types";
 import { MAX_PERFORMER_SEATS } from "@/widgets/booking/lib/usePerformerSeatSelection";
 
 const MyBookingPage = () => {
-  const { seats, isMultiple, isLoading, error } = useMyBookedSeats();
+  const { seats, isMultiple, isLoading, isFetching, error } = useMyBookedSeats();
   const router = useRouter();
   const queryClient = useQueryClient();
   const isCancelingRef = useRef(false);
@@ -31,12 +31,13 @@ const MyBookingPage = () => {
     if (error) toast.error(stringifyError(error));
   }, [error]);
 
+  // 재조회 중에는 예매 직전의 빈 캐시가 보이므로 결과가 확정된 뒤에만 판단한다
   useEffect(() => {
-    if (!isLoading && seats.length === 0 && !isCancelingRef.current) {
+    if (!isLoading && !isFetching && seats.length === 0 && !isCancelingRef.current) {
       toast.error("예약된 좌석이 없습니다.");
       router.push("/booking");
     }
-  }, [isLoading, seats.length, router]);
+  }, [isLoading, isFetching, seats.length, router]);
 
   const handleIndividualSeatCancel = useCallback(
     async (seat: Seat) => {

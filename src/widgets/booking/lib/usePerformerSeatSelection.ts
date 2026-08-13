@@ -35,7 +35,10 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
             s => !(s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section),
           );
         } else {
-          if (prev.length >= maxSelectableSeats) {
+          // 2석을 다 예매했으면 선택 자체가 안 돼야 한다 — 아니면 예매 후에도 고를 수 있는 것처럼 보인다
+          if (maxSelectableSeats === 0) {
+            return prev;
+          } else if (prev.length >= maxSelectableSeats) {
             return [...prev.slice(1), seat];
           } else {
             return [...prev, seat];

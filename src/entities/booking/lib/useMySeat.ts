@@ -110,6 +110,7 @@ export const useMyBookedSeats = () => {
       seats: [],
       isMultiple: false,
       isLoading: true,
+      isFetching: true,
       error: null,
     };
   }
