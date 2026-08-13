@@ -1,11 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { bookSeatWithRetry, RATE_LIMIT_RETRY_DELAYS_MS } from "../bookSeatWithRetry";
+import {
+  bookSeatWithRetry,
+  bookSeatsBulkWithRetry,
+  RATE_LIMIT_RETRY_DELAYS_MS,
+} from "../bookSeatWithRetry";
 
-vi.mock("@/entities/booking/api/seatBooking", () => ({ seatBooking: vi.fn() }));
+vi.mock("@/entities/booking/api/seatBooking", () => ({
+  seatBooking: vi.fn(),
+  bulkSeatBooking: vi.fn(),
+}));
 
-import { seatBooking } from "@/entities/booking/api/seatBooking";
+import { seatBooking, bulkSeatBooking } from "@/entities/booking/api/seatBooking";
 
 const mockSeatBooking = vi.mocked(seatBooking);
+const mockBulkSeatBooking = vi.mocked(bulkSeatBooking);
 
 const SEAT = { section: "RED", row: "B", seatNumber: "16" } as Parameters<
   typeof bookSeatWithRetry
@@ -59,5 +67,29 @@ describe("bookSeatWithRetry", () => {
 
     await expect(bookSeatWithRetry(SEAT)).rejects.toThrow("이미 예매된 좌석입니다.");
     expect(mockSeatBooking).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("bookSeatsBulkWithRetry", () => {
+  const SEATS = [SEAT, { section: "GREEN", row: "C", seatNumber: "5" } as typeof SEAT];
+
+  it("좌석을 bulk API 한 번으로 보낸다", async () => {
+    mockBulkSeatBooking.mockResolvedValue({ data: {} });
+
+    await bookSeatsBulkWithRetry(SEATS);
+
+    expect(mockBulkSeatBooking).toHaveBeenCalledTimes(1);
+    expect(mockBulkSeatBooking).toHaveBeenCalledWith(SEATS);
+    expect(mockSeatBooking).not.toHaveBeenCalled();
+  });
+
+  it("429면 대기 후 같은 bulk 요청을 재시도한다", async () => {
+    mockBulkSeatBooking.mockRejectedValueOnce(rateLimitError()).mockResolvedValue({ data: {} });
+
+    const promise = bookSeatsBulkWithRetry(SEATS);
+    await vi.advanceTimersByTimeAsync(RATE_LIMIT_RETRY_DELAYS_MS[0]);
+    await promise;
+
+    expect(mockBulkSeatBooking).toHaveBeenCalledTimes(2);
   });
 });

@@ -118,6 +118,8 @@ const BookingPage = () => {
 
   const handleBookingClick = useCallback(() => {
     if (isPerformer) {
+      // bulk 요청이 진행 중인 동안의 재클릭은 같은 좌석을 다시 보내게 되므로 막는다
+      if (multipleSeatBookingMutation.isPending) return;
       if (canBook && selectedSeats.length > 0) {
         multipleSeatBookingMutation.mutate(selectedSeats, {
           onSuccess: () => router.push("/booking/my"),
@@ -228,8 +230,8 @@ const BookingPage = () => {
               onClick={handleBookingClick}
               disabled={
                 isPerformer
-                  ? !canBook || maxSelectableSeats === 0
-                  : !isComplete || isSelectedSeatOccupied
+                  ? !canBook || maxSelectableSeats === 0 || multipleSeatBookingMutation.isPending
+                  : !isComplete || isSelectedSeatOccupied || seatBookingMutation.isPending
               }
             >
               {getButtonText()}
