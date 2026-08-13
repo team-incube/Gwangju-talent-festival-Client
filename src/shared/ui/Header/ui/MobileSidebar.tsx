@@ -28,6 +28,8 @@ export const MobileSidebar = ({ isOpen, onClose, onLinkClick, links }: MobileSid
       className={cn(
         "fixed inset-x-0 bottom-0 z-20 hidden mobile:block",
         "top-[var(--header-height,4.625rem)]",
+        // 배경이 투명해도 이 래퍼가 화면 전체를 덮어 터치를 다 먹는다 — 닫혀 있으면 통과시킨다
+        isOpen ? "pointer-events-auto" : "pointer-events-none",
       )}
       aria-hidden={!isOpen}
     >
