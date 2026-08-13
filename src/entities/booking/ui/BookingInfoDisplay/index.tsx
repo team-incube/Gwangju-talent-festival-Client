@@ -39,8 +39,8 @@ export const BookingInfoDisplay = memo<BookingInfoDisplayProps>(
                 ? formatSeatLabel(mySeat)
                 : "좌석이 없습니다"}
           </InfoRow>
-          <InfoRow label="관람일자">2025.9.27.(토)</InfoRow>
-          <InfoRow label="장소">광주광역시 동구 조선대길 146 조선대학교 해오름관</InfoRow>
+          <InfoRow label="관람일자">2026.9.5.(토)</InfoRow>
+          <InfoRow label="장소">광주광역시 북구 필문대로 55 광주교육대학교 풍향문화관</InfoRow>
         </div>
       </div>
     );

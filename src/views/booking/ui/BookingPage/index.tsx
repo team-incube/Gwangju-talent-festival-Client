@@ -180,7 +180,7 @@ const BookingPage = () => {
         }
         return `좌석을 선택해주세요 (최대 ${remainingSlots}개 추가 가능)`;
       }
-      return `${selectedSeats.length}개 좌석 예매하기`;
+      return "완료";
     } else {
       if (seatBookingMutation.isPending) {
         return "예매 중...";

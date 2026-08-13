@@ -9,7 +9,8 @@ export const handlePerformerVerifySubmit = async (
 ): Promise<AuthFormState> => {
   const values = {
     name: formData.get("name")?.toString() || "",
-    code: formData.get("code")?.toString() || "",
+    // 인증코드는 대문자로 발급되므로 소문자로 입력해도 통과시킨다
+    code: formData.get("code")?.toString().toUpperCase() || "",
   };
 
   const result = performerVerifySchema.safeParse(values);

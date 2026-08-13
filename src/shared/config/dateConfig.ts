@@ -6,7 +6,7 @@ export const performerTicketOpenDate = new Date(
 );
 export const isTicketOpen = (role?: string | null) =>
   new Date() >= (role === "PERFORMER" ? performerTicketOpenDate : ticketOpenDate);
-export const festivalDate = new Date("2025-09-27T00:00:00");
+export const festivalDate = new Date("2026-09-05T00:00:00+09:00");
 export const sloganStartDate = new Date(
   process.env.NEXT_PUBLIC_SLOGAN_START_DATE ?? "2026-05-18T00:00:00+09:00",
 );

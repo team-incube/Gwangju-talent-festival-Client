@@ -42,6 +42,15 @@ describe("handlePerformerVerifySubmit - 유효성 검사", () => {
     expect(mockVerifyPerformer).not.toHaveBeenCalled();
   });
 
+  it("소문자로 입력한 인증코드를 대문자로 변환해 요청한다", async () => {
+    mockVerifyPerformer.mockResolvedValue(MOCK_RESPONSE);
+    await handlePerformerVerifySubmit(
+      INITIAL_STATE,
+      makeFormData({ name: "홍길동", code: "abc123" }),
+    );
+    expect(mockVerifyPerformer).toHaveBeenCalledWith({ name: "홍길동", code: "ABC123" });
+  });
+
   it("인증코드가 공백뿐이면 API를 호출하지 않는다", async () => {
     const result = await handlePerformerVerifySubmit(
       INITIAL_STATE,

@@ -6,6 +6,7 @@ import Button from "@/shared/ui/Button";
 import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { cn } from "@/shared/utils/cn";
 import { getTokenFromCookie } from "@/shared/utils/auth";
+import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
 
 // ADMIN은 채점 API(JUDGE 전용) 접근 권한이 없어 모니터링 페이지로, JUDGE는 채점 페이지로 안내한다
 const ROLE_CTA: Record<string, { label: string; href: string }> = {
@@ -21,6 +22,9 @@ const JudgingCtaSection = () => {
   useEffect(() => {
     setUserRole(getTokenFromCookie("role"));
   }, []);
+
+  const { seats } = useMyBookedSeats();
+  const hasBookedSeats = userRole === "PERFORMER" && seats.length > 0;
 
   const cta = userRole ? ROLE_CTA[userRole] : undefined;
   if (!cta) return null;
@@ -43,16 +47,29 @@ const JudgingCtaSection = () => {
           </p>
         </>
       )}
-      <Button
-        type="button"
-        onClick={() => router.push(cta.href)}
-        className="px-28 rounded-lg mt-8 mobile:mt-4 mobile:w-full"
-      >
-        <span className="text-body3b flex items-center justify-center gap-10 px-[60px] mobile:px-0 mobile:w-full">
-          {cta.label}
-          <RightArrow color="white" />
-        </span>
-      </Button>
+      <div className="flex flex-col items-stretch gap-8 mt-8 mobile:mt-4 mobile:w-full">
+        <Button
+          type="button"
+          onClick={() => router.push(cta.href)}
+          className="w-full px-[88px] rounded-lg mobile:px-28"
+        >
+          <span className="text-body3b flex items-center justify-center gap-10">
+            {cta.label}
+            <RightArrow color="white" />
+          </span>
+        </Button>
+
+        {hasBookedSeats && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/booking/my")}
+            className="w-full px-[88px] rounded-lg bg-white mobile:px-28"
+          >
+            <span className="text-body3b">내 좌석 확인하기</span>
+          </Button>
+        )}
+      </div>
     </section>
   );
 };
