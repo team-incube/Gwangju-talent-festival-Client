@@ -1,6 +1,7 @@
 "use client";
 
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { seatQueryKeys } from "@/entities/booking/lib/useSeatState";
 import { cn } from "@/shared/utils/cn";
@@ -49,6 +50,31 @@ export const SeatGrid = memo<SeatGridProps>(
   }) => {
     const queryClient = useQueryClient();
     const cellSize = layout ? SINGLE_SECTION_CELL : ALL_SECTIONS_CELL;
+
+    // 전체 구역 지도는 고정 픽셀이라 모바일 폭을 넘긴다. 스크롤은 알아채기 어려워 축소해 맞춘다
+    const fitBoxRef = useRef<HTMLDivElement>(null);
+    const fitContentRef = useRef<HTMLDivElement>(null);
+    const [fitScale, setFitScale] = useState(1);
+
+    useEffect(() => {
+      const box = fitBoxRef.current;
+      const content = fitContentRef.current;
+      if (!box || !content) return;
+
+      const update = () => {
+        const { scrollWidth, scrollHeight } = content;
+        if (!scrollWidth || !scrollHeight) return;
+        setFitScale(
+          Math.min(1, box.clientWidth / scrollWidth, box.clientHeight / scrollHeight),
+        );
+      };
+
+      update();
+      const observer = new ResizeObserver(update);
+      observer.observe(box);
+      observer.observe(content);
+      return () => observer.disconnect();
+    }, [layout]);
 
     const handleSeatSelect = useCallback(
       (seat: Seat) => {
@@ -260,7 +286,7 @@ export const SeatGrid = memo<SeatGridProps>(
 
     return (
       <div className={cn("flex flex-col min-h-0", className)}>
-        {/* 높이는 좌석 내용만큼만. 화면을 넘기면 flex shrink로 잘리고 안쪽에서 스크롤된다 */}
+        {/* 높이는 좌석 내용만큼만. 넘치면 구역 선택 화면은 안쪽 스크롤, 전체 지도는 축소해 맞춘다 */}
         <div className="relative flex flex-col bg-gray-800 rounded-lg w-full min-h-0 overflow-hidden p-3">
           {/* 구역을 고르면 그 구역만 보여서 무대와의 위치 관계가 사라진다 */}
           {!layout && (
@@ -268,9 +294,22 @@ export const SeatGrid = memo<SeatGridProps>(
               무대
             </div>
           )}
-          <div className="flex-1 min-h-0 w-full overflow-auto">
-            {layout ? renderSingleSectionGrid() : renderAllSectionsGrid()}
-          </div>
+          {layout ? (
+            <div className="flex-1 min-h-0 w-full overflow-auto">{renderSingleSectionGrid()}</div>
+          ) : (
+            <div
+              ref={fitBoxRef}
+              className="flex flex-1 min-h-0 w-full justify-center overflow-hidden"
+            >
+              <div
+                ref={fitContentRef}
+                className="w-max shrink-0 origin-top scale-[var(--seat-fit)]"
+                style={{ "--seat-fit": fitScale } as CSSProperties}
+              >
+                {renderAllSectionsGrid()}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
