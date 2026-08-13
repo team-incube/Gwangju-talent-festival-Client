@@ -14,12 +14,35 @@ const mockUpstream = (body: BodyInit | null, init?: ResponseInit) => {
   return fetchMock;
 };
 
+// 테스트가 원하는 시점에 이벤트를 흘려보내는 백엔드 스트림
+const mockControllableUpstream = () => {
+  const encoder = new TextEncoder();
+  let controller!: ReadableStreamDefaultController<Uint8Array>;
+  const body = new ReadableStream<Uint8Array>({
+    start(c) {
+      controller = c;
+    },
+  });
+  mockUpstream(body);
+  return { push: (frame: string) => controller.enqueue(encoder.encode(frame)) };
+};
+
+const readUntil = async (reader: ReadableStreamDefaultReader<Uint8Array>, needle: string) => {
+  for (let i = 0; i < 40; i++) {
+    const { done, value } = await reader.read();
+    if (done) return false;
+    if (decoder.decode(value).includes(needle)) return true;
+  }
+  return false;
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv("NEXT_PUBLIC_API_URL", API_URL);
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
@@ -108,6 +131,51 @@ describe("proxySSE", () => {
     const response = await proxySSE(makeRequest(), "/judge/monitor/changes");
 
     expect(response.status).toBe(401);
+  });
+
+  it("자체 ping이 나간 뒤 늦게 도착한 이벤트도 전달한다", async () => {
+    vi.useFakeTimers();
+    const upstream = mockControllableUpstream();
+
+    const response = await proxySSE(makeRequest(), "/seat/changes");
+    const reader = response.body!.getReader();
+    await reader.read();
+
+    await vi.advanceTimersByTimeAsync(15_000);
+    upstream.push('event: SEAT_CHANGE\ndata: {"seatSection":"A1"}\n\n');
+
+    expect(await readUntil(reader, "SEAT_CHANGE")).toBe(true);
+  });
+
+  it("업스트림이 오래 조용하면 스트림을 닫아 재연결을 유도한다", async () => {
+    vi.useFakeTimers();
+    mockControllableUpstream();
+
+    const response = await proxySSE(makeRequest(), "/seat/changes");
+    const reader = response.body!.getReader();
+    await reader.read();
+
+    await vi.advanceTimersByTimeAsync(15_000 * 4);
+
+    // ping 3개를 소진한 뒤 종료 — 자체 ping이 업스트림 단절을 숨기지 않는다
+    expect(await readUntil(reader, "SEAT_CHANGE")).toBe(false);
+  });
+
+  it("업스트림 heartbeat가 계속 오면 연결을 유지한다", async () => {
+    vi.useFakeTimers();
+    const upstream = mockControllableUpstream();
+
+    const response = await proxySSE(makeRequest(), "/seat/changes");
+    const reader = response.body!.getReader();
+    await reader.read();
+
+    for (let i = 0; i < 6; i++) {
+      await vi.advanceTimersByTimeAsync(15_000);
+      upstream.push("event: heartbeat\ndata: alive\n\n");
+    }
+    upstream.push("event: SEAT_CHANGE\ndata: {}\n\n");
+
+    expect(await readUntil(reader, "SEAT_CHANGE")).toBe(true);
   });
 
   it("백엔드에 연결하지 못하면 502를 반환한다", async () => {
