@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const HEARTBEAT_MS = 15_000;
+const MAX_SILENT_HEARTBEATS = 3;
 const ENCODER = new TextEncoder();
 const CONNECTED = ENCODER.encode(": connected\n\n");
 const PING = ENCODER.encode(": ping\n\n");
@@ -75,6 +76,7 @@ export async function proxySSE(request: NextRequest, path: string) {
 
   const reader = upstream.body.getReader();
   let heartbeat: ReturnType<typeof setInterval>;
+  let finish: () => Promise<void> = async () => {};
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -82,35 +84,62 @@ export async function proxySSE(request: NextRequest, path: string) {
       // 이벤트가 없는 동안 서버리스 함수가 그대로 타임아웃된다
       controller.enqueue(CONNECTED);
 
+      let finished = false;
+      let silentHeartbeats = 0;
+
+      finish = async () => {
+        if (finished) return;
+        finished = true;
+        clearInterval(heartbeat);
+        try {
+          controller.close();
+        } catch {
+          // 이미 닫히거나 취소된 컨트롤러
+        }
+        // releaseLock과 달리 업스트림 연결을 실제로 닫는다
+        await reader.cancel().catch(() => {});
+      };
+
       heartbeat = setInterval(() => {
+        // 자체 ping만 계속 내보내면 업스트림이 조용히 죽어도 브라우저는 정상 연결로 본다 —
+        // 업스트림 침묵이 길어지면 스트림을 닫아 EventSource 재연결을 유도한다
+        if (silentHeartbeats >= MAX_SILENT_HEARTBEATS) {
+          void finish();
+          return;
+        }
+        silentHeartbeats++;
         try {
           controller.enqueue(PING);
         } catch {
-          clearInterval(heartbeat);
+          void finish();
         }
       }, HEARTBEAT_MS);
-    },
 
-    // pull 기반이라 소비자가 읽을 때만 업스트림을 당긴다 (백프레셔)
-    async pull(controller) {
-      try {
-        const { done, value } = await reader.read();
-        if (done) {
+      // pull 기반으로 읽으면 소비자가 당겨줄 때까지 업스트림 이벤트가 그대로 대기한다.
+      // 자체 ping이 큐를 채우고 있으면 pull이 다시 불리지 않아 이벤트가 전달되지 않으므로
+      // 업스트림을 계속 읽어 도착하는 대로 밀어낸다
+      void (async () => {
+        try {
+          while (!finished) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            silentHeartbeats = 0;
+            controller.enqueue(value);
+          }
+        } catch (error) {
+          if (finished) return;
+          finished = true;
           clearInterval(heartbeat);
-          controller.close();
+          controller.error(error);
           return;
         }
-        controller.enqueue(value);
-      } catch (error) {
-        clearInterval(heartbeat);
-        controller.error(error);
-      }
+        await finish();
+      })();
     },
 
-    // 브라우저가 끊으면 즉시 호출된다. releaseLock과 달리 업스트림 연결을 실제로 닫는다
+    // 브라우저가 끊으면 즉시 호출된다
     async cancel() {
-      clearInterval(heartbeat);
-      await reader.cancel().catch(() => {});
+      await finish();
     },
   });
 
