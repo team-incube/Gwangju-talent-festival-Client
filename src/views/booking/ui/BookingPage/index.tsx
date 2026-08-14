@@ -61,7 +61,7 @@ const BookingPage = () => {
   const [isOpen, setIsOpen] = useState(true);
   useEffect(() => {
     const sync = () => {
-      setIsClosed(isTicketClosed());
+      setIsClosed(isTicketClosed(userRole));
       setIsOpen(isTicketOpen(userRole));
     };
     sync();

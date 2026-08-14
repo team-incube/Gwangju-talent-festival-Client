@@ -39,7 +39,7 @@ const JudgingCtaSection = () => {
   useEffect(() => {
     const sync = () => {
       setIsOpen(isTicketOpen(userRole));
-      setIsClosed(isTicketClosed());
+      setIsClosed(isTicketClosed(userRole));
       setDaysLeft(daysUntil(ticketWindow(userRole).open));
     };
     sync();

@@ -164,17 +164,16 @@ describe("JudgingCtaSection - 좌석 예매 카드", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  it("PERFORMER는 선예매 마감 후 일반 예매 일정을 보여준다", async () => {
+  it("PERFORMER는 선예매 마감 후 선예매 마감 시각과 함께 마감 상태를 보여준다", async () => {
     mockRouter();
     vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
     vi.mocked(isTicketOpen).mockReturnValue(false);
-    vi.mocked(daysUntil).mockReturnValue(1);
-    vi.mocked(ticketWindow).mockReturnValue(GENERAL_WINDOW);
+    vi.mocked(isTicketClosed).mockReturnValue(true);
 
     render(<JudgingCtaSection />);
 
-    expect(await screen.findByText("D-1")).toBeInTheDocument();
-    expect(screen.getByText("2026.08.20 19:00")).toBeInTheDocument();
+    expect(await screen.findByText("예매마감")).toBeInTheDocument();
+    expect(screen.getByText("2026.08.19 23:59")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "예매 하러가기" })).toBeDisabled();
   });
 

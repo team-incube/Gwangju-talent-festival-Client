@@ -73,13 +73,22 @@ describe("BookingPage - 예매 기간 가드", () => {
     expect(await screen.findByRole("button", { name: "예매가 마감되었습니다" })).toBeDisabled();
   });
 
-  it("공연자는 선예매 마감 후 일반 오픈 전까지 예매 버튼이 잠긴다", async () => {
+  it("공연자는 선예매 마감 후 예매 버튼이 잠긴다", async () => {
     vi.setSystemTime(new Date(performerTicketCloseDate.getTime() + 1000));
     vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
 
     render(<BookingPage />);
 
-    expect(await screen.findByRole("button", { name: "예매 기간이 아닙니다" })).toBeDisabled();
+    expect(await screen.findByRole("button", { name: "예매가 마감되었습니다" })).toBeDisabled();
+  });
+
+  it("공연자는 일반 예매 기간에도 예매 버튼이 잠긴다", async () => {
+    vi.setSystemTime(new Date("2026-08-25T12:00:00+09:00"));
+    vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
+
+    render(<BookingPage />);
+
+    expect(await screen.findByRole("button", { name: "예매가 마감되었습니다" })).toBeDisabled();
   });
 
   it("어드민은 마감 후에도 예매 버튼을 쓸 수 있다", async () => {

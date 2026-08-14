@@ -162,14 +162,15 @@ describe("middleware - /booking 티켓 오픈 제한", () => {
     expect(middleware(makeRequest("/booking", loggedIn("USER"))).status).toBe(200);
   });
 
-  it("공연자는 선예매 마감 후 일반 오픈 전까지 /booking 접근이 차단된다", () => {
+  it("공연자는 선예매 마감 후 /booking 접근이 차단된다", () => {
     vi.setSystemTime(new Date("2026-08-20T00:00:00+09:00"));
     expect(middleware(makeRequest("/booking", loggedIn("PERFORMER"))).status).toBe(307);
   });
 
-  it("공연자는 일반 예매가 열린 뒤 다시 /booking 접근이 허용된다", () => {
+  it("공연자는 일반 예매 기간에도 /booking 접근이 차단된다", () => {
     vi.setSystemTime(new Date("2026-08-25T12:00:00+09:00"));
-    expect(middleware(makeRequest("/booking", loggedIn("PERFORMER"))).status).toBe(200);
+    expect(middleware(makeRequest("/booking", loggedIn("PERFORMER"))).status).toBe(307);
+    expect(middleware(makeRequest("/booking", loggedIn("USER"))).status).toBe(200);
   });
 
   it("티켓 마감 후에는 /booking 접근 시 /home으로 리다이렉트한다", () => {

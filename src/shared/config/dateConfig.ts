@@ -21,9 +21,9 @@ export const performerTicketCloseDate = dateFromEnv(
   process.env.NEXT_PUBLIC_PERFORMER_TICKET_CLOSE_DATE,
   "2026-08-19T23:59:00+09:00",
 );
-// 공연자는 선예매 마감까지 선예매 일정을 따르고, 마감 뒤에는 일반 예매 일정으로 넘어간다
+// 공연자는 선예매 기간에만 예매하고, 일반 예매 기간에는 참여하지 않는다
 export const ticketWindow = (role?: string | null) =>
-  role === "PERFORMER" && new Date() <= performerTicketCloseDate
+  role === "PERFORMER"
     ? { open: performerTicketOpenDate, close: performerTicketCloseDate }
     : { open: ticketOpenDate, close: ticketCloseDate };
 
@@ -32,7 +32,7 @@ export const isTicketOpen = (role?: string | null) => {
   const { open, close } = ticketWindow(role);
   return now >= open && now <= close;
 };
-export const isTicketClosed = () => new Date() > ticketCloseDate;
+export const isTicketClosed = (role?: string | null) => new Date() > ticketWindow(role).close;
 
 // D-Day는 시각이 아니라 날짜 단위로 세므로 자정 기준으로 자른 뒤 비교한다
 const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());

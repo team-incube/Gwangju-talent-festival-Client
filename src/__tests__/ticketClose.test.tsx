@@ -64,7 +64,7 @@ describe("마감 시각 이후 (실제 dateConfig)", () => {
     expect(screen.getByRole("button", { name: "예매 하러가기" })).toBeDisabled();
   });
 
-  it("공연자 선예매 마감 직후에는 일반 오픈까지 막히고 일반 오픈 뒤 다시 열린다", () => {
+  it("공연자는 선예매 마감 후 일반 예매 기간에도 막힌다", () => {
     vi.setSystemTime(new Date("2026-08-19T23:59:00+09:00"));
     expect(isTicketOpen("PERFORMER")).toBe(true);
     expect(middleware(req("/booking", "PERFORMER")).status).toBe(200);
@@ -73,9 +73,10 @@ describe("마감 시각 이후 (실제 dateConfig)", () => {
     expect(isTicketOpen("PERFORMER")).toBe(false);
     expect(middleware(req("/booking", "PERFORMER")).status).toBe(307);
 
-    vi.setSystemTime(new Date("2026-08-20T19:00:00+09:00"));
-    expect(isTicketOpen("PERFORMER")).toBe(true);
-    expect(middleware(req("/booking", "PERFORMER")).status).toBe(200);
+    vi.setSystemTime(new Date("2026-08-25T12:00:00+09:00"));
+    expect(isTicketOpen("PERFORMER")).toBe(false);
+    expect(middleware(req("/booking", "PERFORMER")).status).toBe(307);
+    expect(middleware(req("/booking", "USER")).status).toBe(200);
   });
 
   it("축제 당일(2026-09-05)에도 예매는 막혀 있다", () => {
