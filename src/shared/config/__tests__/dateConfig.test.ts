@@ -1,5 +1,14 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { ticketOpenDate, performerTicketOpenDate, isTicketOpen, daysUntil } from "../dateConfig";
+import {
+  ticketOpenDate,
+  performerTicketOpenDate,
+  isTicketOpen,
+  isTicketClosed,
+  daysUntil,
+  ticketWindow,
+  performerTicketCloseDate,
+  ticketCloseDate,
+} from "../dateConfig";
 
 describe("티켓 오픈 시각", () => {
   afterEach(() => {
@@ -37,6 +46,52 @@ describe("티켓 오픈 시각", () => {
     vi.setSystemTime(new Date("2026-08-19T23:59:00+09:00"));
     expect(isTicketOpen(null)).toBe(false);
     expect(isTicketOpen(undefined)).toBe(false);
+  });
+});
+
+describe("티켓 마감 시각", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("마감 시각까지는 열려 있고 그 뒤에는 닫힌다", () => {
+    vi.setSystemTime(new Date("2026-09-04T18:00:00+09:00"));
+    expect(isTicketOpen("USER")).toBe(true);
+    expect(isTicketClosed()).toBe(false);
+
+    vi.setSystemTime(new Date("2026-09-04T18:01:00+09:00"));
+    expect(isTicketOpen("USER")).toBe(false);
+    expect(isTicketClosed()).toBe(true);
+  });
+
+  it("공연자도 일반 마감 시각 뒤에는 닫힌다", () => {
+    vi.setSystemTime(new Date("2026-09-04T18:01:00+09:00"));
+    expect(isTicketOpen("PERFORMER")).toBe(false);
+  });
+
+  it("공연자는 선예매 마감 시각까지 열려 있고 1분 뒤에는 닫힌다", () => {
+    vi.setSystemTime(new Date("2026-08-19T23:59:00+09:00"));
+    expect(isTicketOpen("PERFORMER")).toBe(true);
+
+    vi.setSystemTime(new Date("2026-08-20T00:00:00+09:00"));
+    expect(isTicketOpen("PERFORMER")).toBe(false);
+  });
+
+  it("공연자도 일반 예매가 열리면 다시 열린다", () => {
+    vi.setSystemTime(new Date("2026-08-20T18:59:00+09:00"));
+    expect(isTicketOpen("PERFORMER")).toBe(false);
+
+    vi.setSystemTime(new Date("2026-08-25T12:00:00+09:00"));
+    expect(isTicketOpen("PERFORMER")).toBe(true);
+  });
+
+  it("공연자 안내 일정은 선예매 마감 전후로 바뀐다", () => {
+    vi.setSystemTime(new Date("2026-08-15T12:00:00+09:00"));
+    expect(ticketWindow("PERFORMER").close).toEqual(performerTicketCloseDate);
+
+    vi.setSystemTime(new Date("2026-08-20T00:00:00+09:00"));
+    expect(ticketWindow("PERFORMER").open).toEqual(ticketOpenDate);
+    expect(ticketWindow("PERFORMER").close).toEqual(ticketCloseDate);
   });
 });
 

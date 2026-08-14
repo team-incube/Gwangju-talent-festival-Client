@@ -17,17 +17,24 @@ vi.mock("@/entities/booking/lib/useMySeat", () => ({
 
 vi.mock("@/shared/config/dateConfig", () => ({
   isTicketOpen: vi.fn(),
+  isTicketClosed: vi.fn(),
   daysUntil: vi.fn(),
-  performerTicketOpenDate: new Date("2026-08-14T14:00:00+09:00"),
-  ticketOpenDate: new Date("2026-08-20T19:00:00+09:00"),
-  ticketCloseDate: new Date("2026-09-04T18:00:00+09:00"),
-  performerTicketCloseDate: new Date("2026-08-19T23:59:00+09:00"),
+  ticketWindow: vi.fn(),
 }));
+
+const PERFORMER_WINDOW = {
+  open: new Date("2026-08-14T14:00:00+09:00"),
+  close: new Date("2026-08-19T23:59:00+09:00"),
+};
+const GENERAL_WINDOW = {
+  open: new Date("2026-08-20T19:00:00+09:00"),
+  close: new Date("2026-09-04T18:00:00+09:00"),
+};
 
 import { useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
-import { isTicketOpen, daysUntil } from "@/shared/config/dateConfig";
+import { isTicketOpen, isTicketClosed, daysUntil, ticketWindow } from "@/shared/config/dateConfig";
 
 const mockBookedSeats = (seats: unknown[]) =>
   vi
@@ -44,7 +51,11 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockBookedSeats([]);
   vi.mocked(isTicketOpen).mockReturnValue(true);
+  vi.mocked(isTicketClosed).mockReturnValue(false);
   vi.mocked(daysUntil).mockReturnValue(0);
+  vi.mocked(ticketWindow).mockImplementation((role) =>
+    role === "PERFORMER" ? PERFORMER_WINDOW : GENERAL_WINDOW,
+  );
 });
 
 describe("JudgingCtaSection - 심사 role", () => {
@@ -134,6 +145,37 @@ describe("JudgingCtaSection - 좌석 예매 카드", () => {
     expect(button).toBeDisabled();
     await user.click(button);
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it("마감 후에는 예매마감과 마감 시각을 보여주고 버튼을 비활성화한다", async () => {
+    const push = mockRouter();
+    vi.mocked(getTokenFromCookie).mockReturnValue("USER");
+    vi.mocked(isTicketOpen).mockReturnValue(false);
+    vi.mocked(isTicketClosed).mockReturnValue(true);
+    const user = userEvent.setup();
+
+    render(<JudgingCtaSection />);
+    const button = await screen.findByRole("button", { name: "예매 하러가기" });
+
+    expect(screen.getByText("예매마감")).toBeInTheDocument();
+    expect(screen.getByText("티켓마감")).toBeInTheDocument();
+    expect(button).toBeDisabled();
+    await user.click(button);
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("PERFORMER는 선예매 마감 후 일반 예매 일정을 보여준다", async () => {
+    mockRouter();
+    vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
+    vi.mocked(isTicketOpen).mockReturnValue(false);
+    vi.mocked(daysUntil).mockReturnValue(1);
+    vi.mocked(ticketWindow).mockReturnValue(GENERAL_WINDOW);
+
+    render(<JudgingCtaSection />);
+
+    expect(await screen.findByText("D-1")).toBeInTheDocument();
+    expect(screen.getByText("2026.08.20 19:00")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "예매 하러가기" })).toBeDisabled();
   });
 
   it("role이 없어도 좌석 예매 카드를 보여준다", async () => {
