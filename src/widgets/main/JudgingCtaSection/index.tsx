@@ -8,14 +8,15 @@ import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { cn } from "@/shared/utils/cn";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
-import { isTicketOpen, performerTicketOpenDate } from "@/shared/config/dateConfig";
+import { isTicketOpen, performerTicketOpenDate, ticketOpenDate } from "@/shared/config/dateConfig";
 
-const performerOpenLabel = performerTicketOpenDate.toLocaleString("ko-KR", {
-  month: "long",
-  day: "numeric",
-  hour: "numeric",
-  minute: "2-digit",
-});
+const openLabel = (date: Date) =>
+  date.toLocaleString("ko-KR", {
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 
 // ADMIN은 채점 API(JUDGE 전용) 접근 권한이 없어 모니터링 페이지로, JUDGE는 채점 페이지로 안내한다
 const ROLE_CTA: Record<string, { label: string; href: string }> = {
@@ -23,6 +24,9 @@ const ROLE_CTA: Record<string, { label: string; href: string }> = {
   JUDGE: { label: "심사하러 가기", href: "/admin/evaluation" },
   PERFORMER: { label: "예매하러 가기", href: "/booking" },
 };
+
+// 로그인 전 방문자도 일반 예매 일정을 봐야 하므로 role이 없으면 일반 예매 안내로 취급한다
+const GENERAL_CTA = { label: "예매하러 가기", href: "/booking" };
 
 const JudgingCtaSection = () => {
   const router = useRouter();
@@ -44,14 +48,19 @@ const JudgingCtaSection = () => {
   const { seats } = useMyBookedSeats();
   const hasBookedSeats = userRole === "PERFORMER" && seats.length > 0;
 
-  const cta = userRole ? ROLE_CTA[userRole] : undefined;
+  const isPerformer = userRole === "PERFORMER";
+  const isGeneral = !userRole || userRole === "USER";
+  const cta = isGeneral ? GENERAL_CTA : ROLE_CTA[userRole];
   if (!cta) return null;
 
-  const isBeforePerformerOpen = userRole === "PERFORMER" && !isOpen;
+  const isBookingCta = isPerformer || isGeneral;
+  const isBeforeOpen = isBookingCta && !isOpen;
+  const bookingOpenDate = isPerformer ? performerTicketOpenDate : ticketOpenDate;
+  const bookingLabel = isPerformer ? "참가자 선예매" : "일반 예매";
 
   const handleCtaClick = () => {
-    if (isBeforePerformerOpen) {
-      toast.error("신청 기간이 아닙니다.");
+    if (isBeforeOpen) {
+      toast.error(`${bookingLabel}는 ${openLabel(bookingOpenDate)}부터 시작됩니다.`);
       return;
     }
     router.push(cta.href);
@@ -64,20 +73,20 @@ const JudgingCtaSection = () => {
         "w-full flex flex-col items-center text-center gap-16 py-[80px] mobile:py-[52px] px-16 bg-orange-100",
       )}
     >
-      {userRole === "PERFORMER" && (
+      {isBookingCta && (
         <>
           <span className="inline-flex items-center rounded-full bg-orange-500 px-14 py-4 text-caption1b text-white">
-            {isBeforePerformerOpen ? "참가자 선예매 오픈 예정" : "참가자 선예매 진행 중"}
+            {`${bookingLabel} ${isBeforeOpen ? "오픈 예정" : "진행 중"}`}
           </span>
           <h2 className="text-title4b break-keep mobile:text-body2b">
-            {isBeforePerformerOpen
-              ? `${performerOpenLabel}부터 예매 가능`
-              : "좌석 예매가 열렸습니다"}
+            {isBeforeOpen ? `${openLabel(bookingOpenDate)}부터 예매 가능` : "좌석 예매가 열렸습니다"}
           </h2>
           <p className="text-body3r text-gray-700 break-keep mobile:text-caption1r">
-            {isBeforePerformerOpen
+            {isBeforeOpen
               ? "오픈 시각이 되면 바로 예매하실 수 있어요."
-              : "일반 예매보다 먼저 좌석을 선택할 수 있어요."}
+              : isPerformer
+                ? "일반 예매보다 먼저 좌석을 선택할 수 있어요."
+                : "원하는 좌석을 지금 선택하실 수 있어요."}
           </p>
         </>
       )}
