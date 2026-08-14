@@ -18,6 +18,7 @@ vi.mock("@/entities/booking/lib/useMySeat", () => ({
 vi.mock("@/shared/config/dateConfig", () => ({
   isTicketOpen: vi.fn(),
   performerTicketOpenDate: new Date("2026-08-14T14:00:00+09:00"),
+  ticketOpenDate: new Date("2026-08-20T19:00:00+09:00"),
 }));
 
 vi.mock("sonner", () => ({
@@ -132,7 +133,9 @@ describe("JudgingCtaSection - 노출 및 이동 경로", () => {
     await user.click(await screen.findByText("예매하러 가기"));
 
     expect(push).not.toHaveBeenCalled();
-    expect(vi.mocked(toast.error)).toHaveBeenCalledWith("신청 기간이 아닙니다.");
+    expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+      expect.stringContaining("참가자 선예매는 8월 14일"),
+    );
   });
 
   it("오픈 전이어도 JUDGE는 토스트 없이 채점 페이지로 이동한다", async () => {
@@ -149,27 +152,46 @@ describe("JudgingCtaSection - 노출 및 이동 경로", () => {
     expect(vi.mocked(toast.error)).not.toHaveBeenCalled();
   });
 
-  it("USER role이면 버튼을 보여주지 않는다", () => {
-    vi.mocked(useRouter).mockReturnValue({ push: vi.fn() } as unknown as ReturnType<
-      typeof useRouter
-    >);
+  it("USER role이면 일반 예매 안내와 예매 버튼을 보여준다", async () => {
+    const push = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<typeof useRouter>);
     vi.mocked(getTokenFromCookie).mockReturnValue("USER");
+    const user = userEvent.setup();
 
     render(<JudgingCtaSection />);
+    expect(await screen.findByText("일반 예매 진행 중")).toBeInTheDocument();
+    await user.click(screen.getByText("예매하러 가기"));
 
+    expect(push).toHaveBeenCalledWith("/booking");
     expect(screen.queryByText("심사하러 가기")).not.toBeInTheDocument();
-    expect(screen.queryByText("심사 모니터링")).not.toBeInTheDocument();
   });
 
-  it("role이 없으면 버튼을 보여주지 않는다", () => {
+  it("role이 없어도 일반 예매 안내를 보여준다", async () => {
     vi.mocked(useRouter).mockReturnValue({ push: vi.fn() } as unknown as ReturnType<
       typeof useRouter
     >);
     vi.mocked(getTokenFromCookie).mockReturnValue(null);
+    vi.mocked(isTicketOpen).mockReturnValue(false);
 
     render(<JudgingCtaSection />);
 
-    expect(screen.queryByText("심사하러 가기")).not.toBeInTheDocument();
-    expect(screen.queryByText("심사 모니터링")).not.toBeInTheDocument();
+    expect(await screen.findByText("일반 예매 오픈 예정")).toBeInTheDocument();
+    expect(screen.getByText(/부터 예매 가능/)).toBeInTheDocument();
+  });
+
+  it("일반 예매 오픈 전에 버튼을 누르면 오픈 시각 토스트만 띄운다", async () => {
+    const push = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<typeof useRouter>);
+    vi.mocked(getTokenFromCookie).mockReturnValue("USER");
+    vi.mocked(isTicketOpen).mockReturnValue(false);
+    const user = userEvent.setup();
+
+    render(<JudgingCtaSection />);
+    await user.click(await screen.findByText("예매하러 가기"));
+
+    expect(push).not.toHaveBeenCalled();
+    expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+      expect.stringContaining("일반 예매는 8월 20일"),
+    );
   });
 });
