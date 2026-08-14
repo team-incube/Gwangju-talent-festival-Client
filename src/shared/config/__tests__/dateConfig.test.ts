@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { ticketOpenDate, performerTicketOpenDate, isTicketOpen } from "../dateConfig";
+import { ticketOpenDate, performerTicketOpenDate, isTicketOpen, daysUntil } from "../dateConfig";
 
 describe("티켓 오픈 시각", () => {
   afterEach(() => {
@@ -37,5 +37,21 @@ describe("티켓 오픈 시각", () => {
     vi.setSystemTime(new Date("2026-08-19T23:59:00+09:00"));
     expect(isTicketOpen(null)).toBe(false);
     expect(isTicketOpen(undefined)).toBe(false);
+  });
+});
+
+describe("daysUntil", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("남은 날짜를 날짜 단위로 센다", () => {
+    vi.setSystemTime(new Date("2026-08-14T14:00:00+09:00"));
+    expect(daysUntil(ticketOpenDate)).toBe(6);
+  });
+
+  it("오픈 당일 오픈 시각 전이면 0을 반환한다", () => {
+    vi.setSystemTime(new Date("2026-08-20T09:00:00+09:00"));
+    expect(daysUntil(ticketOpenDate)).toBe(0);
   });
 });

@@ -12,8 +12,22 @@ export const performerTicketOpenDate = dateFromEnv(
   process.env.NEXT_PUBLIC_PERFORMER_TICKET_OPEN_DATE,
   "2026-08-14T14:00:00+09:00",
 );
+export const ticketCloseDate = dateFromEnv(
+  process.env.NEXT_PUBLIC_TICKET_CLOSE_DATE,
+  "2026-09-04T18:00:00+09:00",
+);
+// 참가자 선예매는 일반 예매가 열리기 전날까지만 진행한다
+export const performerTicketCloseDate = dateFromEnv(
+  process.env.NEXT_PUBLIC_PERFORMER_TICKET_CLOSE_DATE,
+  "2026-08-19T23:59:00+09:00",
+);
 export const isTicketOpen = (role?: string | null) =>
   new Date() >= (role === "PERFORMER" ? performerTicketOpenDate : ticketOpenDate);
+
+// D-Day는 시각이 아니라 날짜 단위로 세므로 자정 기준으로 자른 뒤 비교한다
+const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+export const daysUntil = (date: Date) =>
+  Math.round((startOfDay(date).getTime() - startOfDay(new Date()).getTime()) / 86_400_000);
 export const festivalDate = new Date("2026-09-05T00:00:00+09:00");
 export const sloganStartDate = new Date(
   process.env.NEXT_PUBLIC_SLOGAN_START_DATE ?? "2026-05-18T00:00:00+09:00",
