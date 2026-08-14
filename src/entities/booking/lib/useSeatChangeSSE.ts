@@ -8,19 +8,23 @@ const BASE_DELAY = 1000;
 
 interface UseSeatChangeSSEOptions {
   onSeatChange?: (event: SeatChangeEvent) => void;
+  onReconnect?: () => void;
   enabled?: boolean;
 }
 
 export function useSeatChangeSSE(options: UseSeatChangeSSEOptions = {}) {
-  const { onSeatChange, enabled = true } = options;
+  const { onSeatChange, onReconnect, enabled = true } = options;
   const eventSourceRef = useRef<EventSource | null>(null);
   const onSeatChangeRef = useRef(onSeatChange);
+  const onReconnectRef = useRef(onReconnect);
+  const hasConnectedRef = useRef(false);
   const retryCountRef = useRef(0);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     onSeatChangeRef.current = onSeatChange;
-  }, [onSeatChange]);
+    onReconnectRef.current = onReconnect;
+  }, [onSeatChange, onReconnect]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -30,6 +34,8 @@ export function useSeatChangeSSE(options: UseSeatChangeSSEOptions = {}) {
         clearTimeout(retryTimerRef.current);
         retryTimerRef.current = null;
       }
+
+      eventSourceRef.current?.close();
 
       const eventSource = new EventSource("/api/seat/changes", {
         withCredentials: true,
@@ -75,18 +81,25 @@ export function useSeatChangeSSE(options: UseSeatChangeSSEOptions = {}) {
       eventSource.onopen = () => {
         retryCountRef.current = 0;
         toast.dismiss("sse-error");
+        // 끊긴 동안 놓친 SEAT_CHANGE는 다시 오지 않으므로 재연결 때 좌석 상태를 다시 받아온다
+        if (hasConnectedRef.current) {
+          onReconnectRef.current?.();
+        }
+        hasConnectedRef.current = true;
       };
 
       eventSource.onerror = () => {
+        // 에러 후 CONNECTING이면 브라우저가 스스로 재연결하는 중이므로 건드리지 않는다.
+        // CLOSED는 네이티브 재연결이 없으므로 백오프로 직접 다시 붙는다
+        if (eventSource.readyState !== EventSource.CLOSED) {
+          return;
+        }
         toast.error("실시간 좌석 정보 연결에 실패했습니다.", { id: "sse-error" });
-        if (eventSource.readyState !== EventSource.OPEN) {
-          eventSource.close();
-          if (eventSourceRef.current === eventSource) {
-            eventSourceRef.current = null;
-          }
-          if (!retryTimerRef.current) {
-            scheduleReconnect();
-          }
+        if (eventSourceRef.current === eventSource) {
+          eventSourceRef.current = null;
+        }
+        if (!retryTimerRef.current) {
+          scheduleReconnect();
         }
       };
     };

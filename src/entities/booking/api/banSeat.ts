@@ -1,6 +1,5 @@
 import { Seat } from "../model/types";
 import { toApiSeat } from "../model/seatLayouts";
-import { getTokenFromCookie } from "@/shared/utils/auth";
 import axios from "@/shared/lib/axios";
 import { AxiosError } from "axios";
 
@@ -19,8 +18,7 @@ const toSeatBanError = (error: unknown, fallback: string): SeatBanError => {
 
 export const banSeat = async (seat: Pick<Seat, "section" | "row" | "seatNumber">) => {
   try {
-    const role = getTokenFromCookie("role") || "USER";
-    const response = await axios.post("/seat/ban", { ...toApiSeat(seat), role });
+    const response = await axios.post("/seat/ban", toApiSeat(seat));
     return { data: response.data };
   } catch (error: unknown) {
     throw toSeatBanError(error, "좌석 임시 저장에 실패했습니다.");

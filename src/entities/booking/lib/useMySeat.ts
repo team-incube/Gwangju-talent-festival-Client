@@ -102,12 +102,15 @@ export const useMyBookedSeats = () => {
     enabled: isClient && !!role && isPerformer,
   });
 
-  if (!isClient) {
+  // role을 못 읽으면 두 쿼리 모두 비활성인데 isLoading은 false라,
+  // 호출부가 "예약된 좌석 없음"으로 오판한다 (미들웨어가 막지만 이중 안전장치)
+  if (!isClient || !role) {
     return {
       data: [],
       seats: [],
       isMultiple: false,
       isLoading: true,
+      isFetching: true,
       error: null,
     };
   }

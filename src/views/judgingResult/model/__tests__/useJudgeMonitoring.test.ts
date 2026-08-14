@@ -223,35 +223,31 @@ describe("useJudgeMonitoring", () => {
     expect(mockInstances[0].closeCalled).toBe(true);
   });
 
-  it("연결이 열리지도 실패하지도 않은 채 pending 상태로 타임아웃되면 재연결을 시도한다", () => {
-    const { result } = renderHook(() => useJudgeMonitoring());
-
-    act(() => {
-      vi.advanceTimersByTime(8000);
-    });
-
-    expect(mockInstances[0].closeCalled).toBe(true);
-    expect(result.current.isConnected).toBe(false);
-    expect(toast.error).toHaveBeenCalledWith(
-      "실시간 심사 모니터링 연결이 지연되고 있습니다. 다시 연결을 시도합니다.",
-      { id: "judge-monitoring-sse-error" },
-    );
-
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
-    expect(mockInstances).toHaveLength(2);
-  });
-
-  it("타임아웃 전에 연결이 열리면 재연결을 시도하지 않는다", () => {
+  it("CONNECTING 상태 에러는 브라우저 자동 재연결에 맡기고 연결을 닫지 않는다", () => {
     renderHook(() => useJudgeMonitoring());
 
     act(() => {
-      mockInstances[0].simulateOpen();
-      vi.advanceTimersByTime(8000);
+      mockInstances[0].simulateError(MockEventSource.CONNECTING);
+    });
+
+    expect(mockInstances[0].closeCalled).toBe(false);
+    expect(toast.error).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(30000);
+    });
+    expect(mockInstances).toHaveLength(1);
+  });
+
+  it("연결이 열리지 않은 채 시간이 흘러도 강제로 연결을 끊지 않는다", () => {
+    renderHook(() => useJudgeMonitoring());
+
+    act(() => {
+      vi.advanceTimersByTime(30000);
     });
 
     expect(mockInstances[0].closeCalled).toBe(false);
     expect(mockInstances).toHaveLength(1);
+    expect(toast.error).not.toHaveBeenCalled();
   });
 });

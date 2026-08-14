@@ -24,20 +24,22 @@ export const SelectedSeatDisplay = memo<SelectedSeatDisplayProps>(
   ({ selectedSeat, selectedSection, selectedSeats, className }) => {
     const { data: allSeats } = useAllSectionsSeatState();
 
+    // 전역 리셋의 div { border: 0 }이 border-style까지 none으로 만든다. border-solid가 없으면
+    // 테두리 폭이 0으로 계산돼 안 보이고, 세 개 중 하나만 넣으면 크기가 달라 보인다
+    const LEGEND_ITEMS = [
+      { label: "가능", color: "bg-white border-gray-500" },
+      { label: "불가능", color: "bg-gray-400 border-gray-400" },
+      { label: "선택", color: "bg-orange-500 border-orange-500" },
+    ];
+
     const Legend = () => (
       <div className="flex gap-4 text-xs">
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-white border border-gray-300"></div>
-          <span className="text-gray-600 text-caption1r">가능</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-gray-400 border border-gray-400"></div>
-          <span className="text-gray-600 text-caption1r">불가능</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-orange-500 border border-orange-500"></div>
-          <span className="text-gray-600 text-caption1r">선택</span>
-        </div>
+        {LEGEND_ITEMS.map(({ label, color }) => (
+          <div key={label} className="flex items-center gap-1">
+            <div className={cn("w-3 h-3 border border-solid", color)} />
+            <span className="text-gray-600 text-caption1r">{label}</span>
+          </div>
+        ))}
       </div>
     );
 

@@ -3,7 +3,8 @@
 import { Logo } from "@/shared/asset/svg/Logo";
 import { MobileMenuIcon } from "@/shared/asset/svg/MobileMenuIcon";
 import { CloseIcon } from "@/shared/asset/svg/CloseIcon";
-import { isHiddenPath, links } from "@/shared/const/headerValues";
+import { bookingLink, isHiddenPath, links } from "@/shared/const/headerValues";
+import { isTicketOpen } from "@/shared/config/dateConfig";
 import { cn } from "@/shared/utils/cn";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { scrollToElement } from "@/shared/utils/scroll";
@@ -31,6 +32,9 @@ export default function Header() {
   }, []);
 
   const isJudge = userRole === "JUDGE";
+  // 스크롤 대상인 홈 CTA가 PERFORMER에게만 예매 버튼을 띄우므로 헤더도 동일 조건으로 맞춘다
+  const showBooking = mounted && userRole === "PERFORMER" && isTicketOpen(userRole);
+  const navLinks = showBooking ? [...links, bookingLink] : links;
 
   const handleClick = useCallback(() => {
     if (isUserLoggedIn) {
@@ -58,9 +62,9 @@ export default function Header() {
         <Link href="/">
           <Logo className="h-[42px] w-[67px] mobile:h-[32px] mobile:w-[52px]" color="#FF9644" />
         </Link>
-        {!isJudge && (
+        {!isJudge && pathname.startsWith("/home") && (
           <div className={cn("flex gap-[2.5rem] text-body3b mobile:hidden")}>
-            {links.map((link, index) => (
+            {navLinks.map((link, index) => (
               <button key={index} onClick={() => handleScrollToSection(link.section)}>
                 {link.label}
               </button>
@@ -94,15 +98,27 @@ export default function Header() {
             </div>
 
             {!isJudge && pathname.startsWith("/home") && (
-              <div onClick={toggleMobileMenu} className={cn("place-self-center")}>
+              <button
+                type="button"
+                onClick={toggleMobileMenu}
+                aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-nav-panel"
+                className={cn("place-self-center cursor-pointer")}
+              >
                 {isMobileMenuOpen ? <CloseIcon /> : <MobileMenuIcon />}
-              </div>
+              </button>
             )}
           </div>
         </div>
       </header>
-      {!isJudge && isMobileMenuOpen && pathname.startsWith("/home") && (
-        <MobileSidebar onClose={closeMobileMenu} onLinkClick={handleScrollToSection} />
+      {!isJudge && pathname.startsWith("/home") && (
+        <MobileSidebar
+          isOpen={isMobileMenuOpen}
+          onClose={closeMobileMenu}
+          onLinkClick={handleScrollToSection}
+          links={navLinks}
+        />
       )}
     </>
   );

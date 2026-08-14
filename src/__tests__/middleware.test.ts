@@ -4,13 +4,18 @@ import { middleware } from "../middleware";
 
 vi.mock("@/shared/config/authConfig", () => ({
   publicPages: ["/home", "/signin", "/signup", "/admin", "/vote", "/slogan"],
-  publicIn18: ["/booking"],
   publicIn27: ["/vote"],
+}));
+
+vi.mock("@/shared/config/dateConfig", () => ({
   ticketOpenDate: new Date("2025-09-18T20:00:00"),
   performerTicketOpenDate: new Date("2025-09-15T20:00:00"),
   festivalDate: new Date("2025-09-27T00:00:00"),
   sloganStartDate: new Date("2026-05-18T00:00:00+09:00"),
   sloganEndDate: new Date("2026-05-28T23:59:59+09:00"),
+  applyStartDate: new Date("2026-06-15T08:00:00+09:00"),
+  applyEndDate: new Date("2026-06-22T18:00:00+09:00"),
+  preliminaryResultOpenDate: new Date("2026-07-03T10:00:00+09:00"),
 }));
 
 function makeRequest(path: string, cookies: Record<string, string> = {}) {
@@ -135,6 +140,47 @@ describe("middleware - publicIn27 (축제 날짜 접근 제한)", () => {
     vi.setSystemTime(new Date("2025-09-20T00:00:00"));
     const res = middleware(makeRequest("/vote", { accessToken: "abc", refreshToken: "xyz", role: "ADMIN" }));
     expect(res.status).toBe(200);
+  });
+});
+
+describe("middleware - /booking 티켓 오픈 제한", () => {
+  const loggedIn = (role: string) => ({ accessToken: "abc", refreshToken: "xyz", role });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("공연자는 일반 티켓 오픈 전에도 /booking 접근이 허용된다", () => {
+    vi.setSystemTime(new Date("2025-09-16T00:00:00"));
+    expect(middleware(makeRequest("/booking", loggedIn("PERFORMER"))).status).toBe(200);
+  });
+
+  it("일반 유저는 일반 티켓 오픈 전에 /booking 접근 시 /home으로 리다이렉트한다", () => {
+    vi.setSystemTime(new Date("2025-09-16T00:00:00"));
+    const res = middleware(makeRequest("/booking", loggedIn("USER")));
+    expect(res.status).toBe(307);
+    expect(getLocation(res)).toContain("/home");
+  });
+
+  it("공연자도 공연자 티켓 오픈 전에는 /booking 접근이 차단된다", () => {
+    vi.setSystemTime(new Date("2025-09-14T00:00:00"));
+    const res = middleware(makeRequest("/booking", loggedIn("PERFORMER")));
+    expect(res.status).toBe(307);
+  });
+
+  it("일반 티켓 오픈 후에는 일반 유저도 /booking 접근이 허용된다", () => {
+    vi.setSystemTime(new Date("2025-09-19T00:00:00"));
+    expect(middleware(makeRequest("/booking", loggedIn("USER"))).status).toBe(200);
+  });
+
+  it("어드민은 티켓 오픈 전에도 /booking 접근이 허용된다", () => {
+    vi.setSystemTime(new Date("2025-09-01T00:00:00"));
+    expect(middleware(makeRequest("/booking", loggedIn("ADMIN"))).status).toBe(200);
+  });
+
+  it("/booking/my도 동일하게 제한된다", () => {
+    vi.setSystemTime(new Date("2025-09-16T00:00:00"));
+    expect(middleware(makeRequest("/booking/my", loggedIn("USER"))).status).toBe(307);
   });
 });
 

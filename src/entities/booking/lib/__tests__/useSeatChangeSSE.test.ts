@@ -158,7 +158,7 @@ describe("useSeatChangeSSE", () => {
   });
 
   describe("연결 오류 처리", () => {
-    it("onerror에서 readyState가 CONNECTING이면 연결을 닫고 재연결을 스케줄한다", () => {
+    it("onerror에서 readyState가 CONNECTING이면 브라우저 자동 재연결에 맡긴다", () => {
       renderHook(() => useSeatChangeSSE());
       const instance = mockInstances[0];
 
@@ -166,14 +166,14 @@ describe("useSeatChangeSSE", () => {
         instance.simulateError(MockEventSource.CONNECTING);
       });
 
-      expect(toast.error).toHaveBeenCalledWith("실시간 좌석 정보 연결에 실패했습니다.", { id: "sse-error" });
-      expect(instance.closeCalled).toBe(true);
+      expect(toast.error).not.toHaveBeenCalled();
+      expect(instance.closeCalled).toBe(false);
 
       act(() => {
-        vi.advanceTimersByTime(1000);
+        vi.advanceTimersByTime(30000);
       });
 
-      expect(mockInstances).toHaveLength(2);
+      expect(mockInstances).toHaveLength(1);
     });
 
     it("onerror에서 readyState가 CLOSED이면 에러 토스트를 표시한다", () => {
@@ -265,6 +265,39 @@ describe("useSeatChangeSSE", () => {
       expect(mockInstances).toHaveLength(2);
       act(() => { vi.advanceTimersByTime(1); });
       expect(mockInstances).toHaveLength(3);
+    });
+
+    it("첫 연결에서는 onReconnect를 호출하지 않는다", () => {
+      const onReconnect = vi.fn();
+      renderHook(() => useSeatChangeSSE({ onReconnect }));
+
+      act(() => { mockInstances[0].simulateOpen(); });
+
+      expect(onReconnect).not.toHaveBeenCalled();
+    });
+
+    it("재연결에 성공하면 onReconnect를 호출한다", () => {
+      const onReconnect = vi.fn();
+      renderHook(() => useSeatChangeSSE({ onReconnect }));
+
+      act(() => { mockInstances[0].simulateOpen(); });
+      act(() => { mockInstances[0].simulateError(MockEventSource.CLOSED); });
+      act(() => { vi.advanceTimersByTime(1000); });
+      act(() => { mockInstances[1].simulateOpen(); });
+
+      expect(onReconnect).toHaveBeenCalledOnce();
+    });
+
+    it("브라우저 자동 재연결로 다시 열려도 onReconnect를 호출한다", () => {
+      const onReconnect = vi.fn();
+      renderHook(() => useSeatChangeSSE({ onReconnect }));
+
+      act(() => { mockInstances[0].simulateOpen(); });
+      act(() => { mockInstances[0].simulateError(MockEventSource.CONNECTING); });
+      act(() => { mockInstances[0].simulateOpen(); });
+
+      expect(onReconnect).toHaveBeenCalledOnce();
+      expect(mockInstances).toHaveLength(1);
     });
   });
 

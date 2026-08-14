@@ -10,10 +10,11 @@ export interface SeatItemProps {
   onSelect: (seat: Seat) => void;
   className?: string;
   allowOccupiedSelect?: boolean;
+  isMine?: boolean;
 }
 
 export const SeatItem = memo<SeatItemProps>(
-  ({ seat, isSelected, onSelect, className, allowOccupiedSelect = false }) => {
+  ({ seat, isSelected, onSelect, className, allowOccupiedSelect = false, isMine = false }) => {
     const isOccupied = seat.status === SEAT_STATUS.OCCUPIED;
     const isDisabled = isOccupied && !allowOccupiedSelect;
 
@@ -28,6 +29,11 @@ export const SeatItem = memo<SeatItemProps>(
 
       if (isSelected) {
         return cn(baseStyles, "bg-orange-500 text-white shadow-lg scale-110 cursor-pointer");
+      }
+
+      // 내가 이미 예매한 좌석은 서버가 occupied로 내려주므로 회색보다 먼저 판정해야 한다
+      if (isMine) {
+        return cn(baseStyles, "bg-orange-500 text-white cursor-not-allowed");
       }
 
       if (isOccupied) {
@@ -50,7 +56,7 @@ export const SeatItem = memo<SeatItemProps>(
         className={cn(getSeatStyles(), className)}
         onClick={handleClick}
         disabled={isDisabled}
-        title={`좌석 ${seat.seatNumber} - ${isDisabled ? "선택불가" : "선택가능"}`}
+        title={`좌석 ${seat.seatNumber} - ${isMine ? "내 좌석" : isDisabled ? "선택불가" : "선택가능"}`}
         aria-label={`좌석 ${seat.seatNumber}`}
       >
         {getSeatNumber()}

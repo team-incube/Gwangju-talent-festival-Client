@@ -24,6 +24,7 @@ interface SeatSectionProps {
   isPerformerMode?: boolean;
   myBookedSeats?: Seat[];
   allowOccupiedSelect?: boolean;
+  onSectionSelect?: (section: Section) => void;
 }
 
 export const SeatSection = memo<SeatSectionProps>(
@@ -38,6 +39,7 @@ export const SeatSection = memo<SeatSectionProps>(
     isPerformerMode = false,
     myBookedSeats,
     allowOccupiedSelect = false,
+    onSectionSelect,
   }) => {
     const { data: sectionSeats, isLoading, error } = useSectionSeatState(selectedSection!);
     const { data: allSeats, isLoading: isAllSeatsLoading } = useAllSectionsSeatState();
@@ -93,7 +95,7 @@ export const SeatSection = memo<SeatSectionProps>(
     return (
       <div className={cn("flex flex-col h-full min-h-0", className)}>
         <SeatGrid
-          className="flex-1 min-h-0"
+          className="min-h-0"
           layout={layout}
           selectedSeat={selectedSeat}
           onSeatSelect={isLoading || !!error ? NOOP_SEAT_SELECT : onSeatSelect}
@@ -103,7 +105,9 @@ export const SeatSection = memo<SeatSectionProps>(
           isPerformerMode={isPerformerMode}
           mySeat={!isPerformerMode && !allowOccupiedSelect ? (myBookedSeats?.[0] ?? null) : null}
           myAllSeats={myBookedSeats}
+          myBookedSeats={myBookedSeats}
           allowOccupiedSelect={allowOccupiedSelect}
+          onSectionSelect={onSectionSelect}
         />
 
         <div className="shrink-0 pt-4">

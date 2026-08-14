@@ -32,7 +32,7 @@ export const handleSigninFormSubmit = async (
       response.refreshTokenExpiresAt,
     );
 
-    setRole(response.role);
+    setRole(response.role, response.refreshTokenExpiresAt);
 
     const urlParams = new URLSearchParams(window.location.search);
     const nextParam = urlParams.get("next");

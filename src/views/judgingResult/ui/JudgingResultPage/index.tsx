@@ -15,6 +15,9 @@ import { useReorderTeams } from "../../model/useReorderTeams";
 
 const JudgingResultPage = () => {
   const { data, isConnected } = useJudgeMonitoring();
+  // 연결되기 전까지만 로딩이다. 연결됐는데 데이터가 없으면 아직 심사 전이라는 뜻이므로
+  // 표 자체의 빈 상태를 보여준다. data가 한 번 채워지면 재연결 중에도 표를 유지한다
+  const isMonitoringLoading = data === null && !isConnected;
   const { data: teamOrder = [], isLoading: isTeamOrderLoading } = useGetTeamOrder();
   const { reorderTeams } = useReorderTeams();
   const [downloadingSummary, setDownloadingSummary] = useState(false);
@@ -77,7 +80,7 @@ const JudgingResultPage = () => {
           <ResultTable
             judges={data?.judges ?? []}
             rows={data?.scoreRows ?? []}
-            isLoading={data === null}
+            isLoading={isMonitoringLoading}
           />
         </section>
 
@@ -86,7 +89,7 @@ const JudgingResultPage = () => {
           <CommentTable
             judges={data?.judges ?? []}
             rows={data?.commentRows ?? []}
-            isLoading={data === null}
+            isLoading={isMonitoringLoading}
           />
         </section>
       </div>

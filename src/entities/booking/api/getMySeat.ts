@@ -20,7 +20,14 @@ export const getMySeats = async (): Promise<Seat[]> => {
   try {
     const response = await axios.get<PerformerSeatsApiResponse>("/seat/myself/performer");
 
-    return response.data.map(toSeat).filter((seat): seat is Seat => seat !== null);
+    const seats = response.data.map(toSeat).filter((seat): seat is Seat => seat !== null);
+
+    // 좌석 좌표 변환에 실패하면 조용히 사라져 "예약된 좌석 없음"으로 보이므로 남긴다
+    if (seats.length !== response.data.length) {
+      console.warn("좌석 좌표로 변환하지 못한 응답이 있습니다", response.data);
+    }
+
+    return seats;
   } catch (error: unknown) {
     const axiosError = error as AxiosError;
     const errorMessage =

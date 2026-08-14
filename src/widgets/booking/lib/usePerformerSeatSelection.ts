@@ -1,11 +1,13 @@
 import { useState, useCallback, useMemo } from "react";
 import { Section, Seat, SEAT_STATUS } from "@/entities/booking/model/types";
 
+export const MAX_PERFORMER_SEATS = 2;
+
 export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
-  const maxSelectableSeats = Math.max(0, 3 - existingSeatsCount);
+  const maxSelectableSeats = Math.max(0, MAX_PERFORMER_SEATS - existingSeatsCount);
 
   const handleSectionChange = useCallback((section: Section | null) => {
     setSelectedSection(section);
@@ -15,6 +17,13 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
   const selectSeat = useCallback(
     (seat: Seat) => {
       if (seat.status === SEAT_STATUS.OCCUPIED) return;
+
+      // 전체 지도에서 좌석을 바로 누른 경우 — 구역까지 같이 옮기고 선택은 그 좌석만 남긴다
+      if (seat.section !== selectedSection) {
+        setSelectedSection(seat.section);
+        setSelectedSeats(maxSelectableSeats > 0 ? [seat] : []);
+        return;
+      }
 
       setSelectedSeats(prev => {
         const isAlreadySelected = prev.some(
@@ -26,7 +35,10 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
             s => !(s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section),
           );
         } else {
-          if (prev.length >= maxSelectableSeats) {
+          // 2석을 다 예매했으면 선택 자체가 안 돼야 한다 — 아니면 예매 후에도 고를 수 있는 것처럼 보인다
+          if (maxSelectableSeats === 0) {
+            return prev;
+          } else if (prev.length >= maxSelectableSeats) {
             return [...prev.slice(1), seat];
           } else {
             return [...prev, seat];
@@ -34,7 +46,7 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
         }
       });
     },
-    [maxSelectableSeats],
+    [maxSelectableSeats, selectedSection],
   );
 
   const canSelectSeat = useCallback((seat: Seat) => {
@@ -51,7 +63,7 @@ export const usePerformerSeatSelection = (existingSeatsCount: number = 0) => {
   );
 
   const isComplete = useMemo(() => {
-    return !!(selectedSection && selectedSeats.length === 3);
+    return !!(selectedSection && selectedSeats.length === MAX_PERFORMER_SEATS);
   }, [selectedSection, selectedSeats.length]);
 
   const canBook = useMemo(() => {

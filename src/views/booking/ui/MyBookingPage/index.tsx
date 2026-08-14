@@ -14,26 +14,30 @@ import { cancelPerformerSeats } from "@/entities/booking/api/cancelPerformerSeat
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Seat, formatSeatLabel } from "@/entities/booking/model/types";
+import { MAX_PERFORMER_SEATS } from "@/widgets/booking/lib/usePerformerSeatSelection";
 
 const MyBookingPage = () => {
-  const { seats, isMultiple, isLoading, error } = useMyBookedSeats();
+  const { seats, isMultiple, isLoading, isFetching, error } = useMyBookedSeats();
   const router = useRouter();
   const queryClient = useQueryClient();
   const isCancelingRef = useRef(false);
   const layout = null;
 
   const canSelectIndividualSeats = isMultiple && seats.length >= 2;
+  // 참가자는 2석까지라 아직 여유가 있을 때만 추가 예매를 안내한다
+  const canBookMore = isMultiple && !isLoading && seats.length < MAX_PERFORMER_SEATS;
 
   useEffect(() => {
     if (error) toast.error(stringifyError(error));
   }, [error]);
 
+  // 재조회 중에는 예매 직전의 빈 캐시가 보이므로 결과가 확정된 뒤에만 판단한다
   useEffect(() => {
-    if (!isLoading && seats.length === 0 && !isCancelingRef.current) {
+    if (!isLoading && !isFetching && seats.length === 0 && !isCancelingRef.current) {
       toast.error("예약된 좌석이 없습니다.");
       router.push("/booking");
     }
-  }, [isLoading, seats.length, router]);
+  }, [isLoading, isFetching, seats.length, router]);
 
   const handleIndividualSeatCancel = useCallback(
     async (seat: Seat) => {
@@ -41,7 +45,8 @@ const MyBookingPage = () => {
 
       const originalSeats = seats;
       const updatedSeats = seats.filter(
-        s => !(s.section === seat.section && s.row === seat.row && s.seatNumber === seat.seatNumber),
+        s =>
+          !(s.section === seat.section && s.row === seat.row && s.seatNumber === seat.seatNumber),
       );
 
       queryClient.setQueryData(["mySeats"], updatedSeats);
@@ -105,7 +110,7 @@ const MyBookingPage = () => {
   }, [seats, isMultiple, router, queryClient]);
 
   return (
-    <div className={cn("w-full max-w-4xl mx-auto p-4 space-y-6")}>
+    <div className={cn("w-full max-w-4xl mx-auto p-16 pb-32 space-y-24")}>
       <BackHeader text="좌석 예매" goto="/home" />
       <div className="w-full">
         <SeatGrid
@@ -126,12 +131,26 @@ const MyBookingPage = () => {
         />
       </div>
 
-      <div className="absolute bottom-[0px] pb-4 left-[50%] -translate-x-1/2 w-[98%] space-y-2">
+      <div className="w-full space-y-12">
+        <Button className="w-full h-[48px]" onClick={() => router.push("/home")}>
+          예매 확정하기
+        </Button>
+
+        {canBookMore && (
+          <Button
+            variant="outline"
+            className="w-full h-[48px]"
+            onClick={() => router.push("/booking")}
+          >
+            좌석 추가로 예매하기
+          </Button>
+        )}
+
         {canSelectIndividualSeats ? (
           <>
             <div
               className={cn(
-                "grid gap-2",
+                "grid gap-12",
                 seats.length === 2
                   ? "grid-cols-2"
                   : seats.length === 3
@@ -142,6 +161,7 @@ const MyBookingPage = () => {
               {seats.map(seat => (
                 <Button
                   key={`${seat.section}-${seat.row}-${seat.seatNumber}`}
+                  variant="outline"
                   className="h-[40px] text-sm"
                   onClick={() => handleIndividualSeatCancel(seat)}
                   disabled={seats.length === 0}
@@ -152,7 +172,8 @@ const MyBookingPage = () => {
             </div>
 
             <Button
-              className="w-full h-[48px] text-white"
+              variant="outline"
+              className="w-full h-[48px]"
               onClick={handleAllCancelClick}
               disabled={seats.length === 0}
             >
@@ -161,6 +182,7 @@ const MyBookingPage = () => {
           </>
         ) : (
           <Button
+            variant="outline"
             className="w-full h-[48px]"
             onClick={handleAllCancelClick}
             disabled={seats.length === 0}

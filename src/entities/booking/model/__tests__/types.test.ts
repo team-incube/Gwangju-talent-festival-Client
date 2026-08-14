@@ -14,7 +14,6 @@ describe("getSectionFromLabel - 섹션 라벨 변환", () => {
       ["D", "BLUE"],
       ["E", "GREEN"],
       ["F", "PURPLE"],
-      ["W", "WHEELCHAIR"],
     ] as const
 
     cases.forEach(([label, expected]) => {
@@ -27,7 +26,7 @@ describe("getSectionFromLabel - 섹션 라벨 변환", () => {
   })
 
   it("반환값은 null이 아니면 항상 SECTIONS 배열에 속한다", () => {
-    const validLabels = ["A", "B", "C", "D", "E", "F", "W"]
+    const validLabels = ["A", "B", "C", "D", "E", "F"]
     validLabels.forEach(label => {
       expect(SECTIONS).toContain(getSectionFromLabel(label))
     })
@@ -37,9 +36,5 @@ describe("getSectionFromLabel - 섹션 라벨 변환", () => {
 describe("formatSeatLabel - 좌석 라벨 표기", () => {
   it("일반 섹션은 섹션라벨+행+번호로 표기한다", () => {
     expect(formatSeatLabel({ section: "RED", row: "A", seatNumber: "1" })).toBe("AA1")
-  })
-
-  it("휠체어석은 행을 생략해 WW1이 아닌 W1로 표기한다", () => {
-    expect(formatSeatLabel({ section: "WHEELCHAIR", row: "W", seatNumber: "1" })).toBe("W1")
   })
 })

@@ -42,29 +42,42 @@ describe("usePerformerSeatSelection - 초기 상태", () => {
 })
 
 describe("usePerformerSeatSelection - maxSelectableSeats", () => {
-  it("existingSeatsCount가 0이면 최대 3석 선택 가능하다", () => {
+  it("existingSeatsCount가 0이면 최대 2석 선택 가능하다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection(0))
-    expect(result.current.maxSelectableSeats).toBe(3)
-  })
-
-  it("existingSeatsCount가 1이면 최대 2석 선택 가능하다", () => {
-    const { result } = renderHook(() => usePerformerSeatSelection(1))
     expect(result.current.maxSelectableSeats).toBe(2)
   })
 
-  it("existingSeatsCount가 3이면 최대 0석 선택 가능하다", () => {
-    const { result } = renderHook(() => usePerformerSeatSelection(3))
+  it("existingSeatsCount가 1이면 최대 1석 선택 가능하다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(1))
+    expect(result.current.maxSelectableSeats).toBe(1)
+  })
+
+  it("existingSeatsCount가 2이면 최대 0석 선택 가능하다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(2))
     expect(result.current.maxSelectableSeats).toBe(0)
   })
 
-  it("existingSeatsCount가 3을 초과해도 maxSelectableSeats는 0이다", () => {
+  it("이미 2석을 예매했으면 선택된 구역의 좌석을 눌러도 선택되지 않는다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(2))
+
+    act(() => {
+      result.current.setSelectedSection("RED")
+    })
+    act(() => {
+      result.current.selectSeat(makeSeat("1"))
+    })
+
+    expect(result.current.selectedSeats).toHaveLength(0)
+  })
+
+  it("existingSeatsCount가 2를 초과해도 maxSelectableSeats는 0이다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection(5))
     expect(result.current.maxSelectableSeats).toBe(0)
   })
 
-  it("인수 없이 호출하면 기본값 0이 적용되어 최대 3석이다", () => {
+  it("인수 없이 호출하면 기본값 0이 적용되어 최대 2석이다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection())
-    expect(result.current.maxSelectableSeats).toBe(3)
+    expect(result.current.maxSelectableSeats).toBe(2)
   })
 })
 
@@ -104,17 +117,15 @@ describe("usePerformerSeatSelection - 링 버퍼 로직", () => {
     act(() => { result.current.selectSeat(makeSeat("1")) })
     act(() => { result.current.selectSeat(makeSeat("2")) })
     act(() => { result.current.selectSeat(makeSeat("3")) })
-    act(() => { result.current.selectSeat(makeSeat("4")) })
 
     const seatNumbers = result.current.selectedSeats.map(s => s.seatNumber)
     expect(seatNumbers).not.toContain("1")
     expect(seatNumbers).toContain("2")
     expect(seatNumbers).toContain("3")
-    expect(seatNumbers).toContain("4")
-    expect(result.current.selectedSeats).toHaveLength(3)
+    expect(result.current.selectedSeats).toHaveLength(2)
   })
 
-  it("링 버퍼가 연속으로 동작해도 항상 최근 3석을 유지한다", () => {
+  it("링 버퍼가 연속으로 동작해도 항상 최근 2석을 유지한다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection(0))
 
     act(() => { result.current.selectSeat(makeSeat("1")) })
@@ -124,7 +135,7 @@ describe("usePerformerSeatSelection - 링 버퍼 로직", () => {
     act(() => { result.current.selectSeat(makeSeat("5")) })
 
     const seatNumbers = result.current.selectedSeats.map(s => s.seatNumber)
-    expect(seatNumbers).toEqual(["3", "4", "5"])
+    expect(seatNumbers).toEqual(["4", "5"])
   })
 })
 
@@ -170,35 +181,33 @@ describe("usePerformerSeatSelection - isSeatSelected", () => {
 })
 
 describe("usePerformerSeatSelection - isComplete", () => {
-  it("섹션 선택 + 3석 선택 시 true다", () => {
+  it("섹션 선택 + 2석 선택 시 true다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection(0))
 
     act(() => { result.current.setSelectedSection("RED") })
     act(() => { result.current.selectSeat(makeSeat("1")) })
     act(() => { result.current.selectSeat(makeSeat("2")) })
-    act(() => { result.current.selectSeat(makeSeat("3")) })
 
     expect(result.current.isComplete).toBe(true)
   })
 
-  it("좌석이 3석 미만이면 false다", () => {
+  it("좌석이 2석 미만이면 false다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection(0))
 
     act(() => { result.current.setSelectedSection("RED") })
     act(() => { result.current.selectSeat(makeSeat("1")) })
-    act(() => { result.current.selectSeat(makeSeat("2")) })
 
     expect(result.current.isComplete).toBe(false)
   })
 
-  it("섹션이 없으면 false다", () => {
+  it("섹션을 고르지 않고 좌석만 눌러도 좌석의 구역이 선택되어 true가 된다", () => {
     const { result } = renderHook(() => usePerformerSeatSelection(0))
 
     act(() => { result.current.selectSeat(makeSeat("1")) })
     act(() => { result.current.selectSeat(makeSeat("2")) })
-    act(() => { result.current.selectSeat(makeSeat("3")) })
 
-    expect(result.current.isComplete).toBe(false)
+    expect(result.current.selectedSection).toBe("RED")
+    expect(result.current.isComplete).toBe(true)
   })
 })
 
@@ -253,16 +262,16 @@ describe("usePerformerSeatSelection - isSeatSelected 엣지 케이스", () => {
 })
 
 describe("usePerformerSeatSelection - maxSelectableSeats = 0 경계 동작", () => {
-  it("existingSeatsCount가 3일 때 좌석 선택 시도해도 canBook은 false다", () => {
-    const { result } = renderHook(() => usePerformerSeatSelection(3))
+  it("existingSeatsCount가 2일 때 좌석 선택 시도해도 canBook은 false다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(2))
 
     act(() => { result.current.selectSeat(makeSeat("1")) })
 
     expect(result.current.canBook).toBe(false)
   })
 
-  it("섹션과 좌석이 있어도 existingSeatsCount가 3이면 isComplete는 false다", () => {
-    const { result } = renderHook(() => usePerformerSeatSelection(3))
+  it("섹션과 좌석이 있어도 existingSeatsCount가 2이면 isComplete는 false다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(2))
 
     act(() => { result.current.setSelectedSection("RED") })
     act(() => { result.current.selectSeat(makeSeat("1")) })
@@ -321,5 +330,28 @@ describe("usePerformerSeatSelection - removeOccupiedSeat", () => {
     act(() => { result.current.removeOccupiedSeat("RED", "B", "1") })
 
     expect(result.current.selectedSeats).toHaveLength(1)
+  })
+})
+
+describe("usePerformerSeatSelection - 전체 지도에서 좌석 직접 선택", () => {
+  it("다른 구역 좌석을 누르면 구역이 바뀌고 그 좌석만 선택된다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(0))
+
+    act(() => { result.current.setSelectedSection("RED") })
+    act(() => { result.current.selectSeat(makeSeat("1", "RED")) })
+    act(() => { result.current.selectSeat(makeSeat("5", "YELLOW")) })
+
+    expect(result.current.selectedSection).toBe("YELLOW")
+    expect(result.current.selectedSeats).toHaveLength(1)
+    expect(result.current.selectedSeats[0].seatNumber).toBe("5")
+  })
+
+  it("남은 예매 가능 좌석이 0이면 다른 구역 좌석을 눌러도 선택되지 않는다", () => {
+    const { result } = renderHook(() => usePerformerSeatSelection(2))
+
+    act(() => { result.current.selectSeat(makeSeat("1", "YELLOW")) })
+
+    expect(result.current.selectedSection).toBe("YELLOW")
+    expect(result.current.selectedSeats).toHaveLength(0)
   })
 })

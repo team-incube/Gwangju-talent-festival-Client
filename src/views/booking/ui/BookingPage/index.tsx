@@ -68,7 +68,12 @@ const BookingPage = () => {
     [queryClient, isPerformer, removeOccupiedSeat],
   );
 
-  useSeatChangeSSE({ onSeatChange: handleSeatChange });
+  const handleReconnect = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["seatState"] });
+    queryClient.invalidateQueries({ queryKey: ["allSectionsSeatState"] });
+  }, [queryClient]);
+
+  useSeatChangeSSE({ onSeatChange: handleSeatChange, onReconnect: handleReconnect });
 
   const handleSectionSelect = useCallback(
     (section: SectionType) => {
@@ -113,6 +118,8 @@ const BookingPage = () => {
 
   const handleBookingClick = useCallback(() => {
     if (isPerformer) {
+      // bulk 요청이 진행 중인 동안의 재클릭은 같은 좌석을 다시 보내게 되므로 막는다
+      if (multipleSeatBookingMutation.isPending) return;
       if (canBook && selectedSeats.length > 0) {
         multipleSeatBookingMutation.mutate(selectedSeats, {
           onSuccess: () => router.push("/booking/my"),
@@ -173,7 +180,7 @@ const BookingPage = () => {
         }
         return `좌석을 선택해주세요 (최대 ${remainingSlots}개 추가 가능)`;
       }
-      return `${selectedSeats.length}개 좌석 예매하기`;
+      return "완료";
     } else {
       if (seatBookingMutation.isPending) {
         return "예매 중...";
@@ -189,7 +196,7 @@ const BookingPage = () => {
   };
 
   return (
-    <main className="w-full max-w-[480px] mx-auto h-screen bg-white flex flex-col overflow-hidden">
+    <main className="w-full max-w-[480px] mx-auto h-dvh bg-white flex flex-col overflow-hidden">
       <div className="px-4">
         <BackHeader goto="/home" text="예매하기" />
       </div>
@@ -201,7 +208,8 @@ const BookingPage = () => {
             onSectionSelect={handleSectionSelect}
           />
         </div>
-        <div className="flex-1 min-h-0">
+        {/* flex-1로 늘리지 않는다 — 지도는 좌석 크기만큼만 차지하고 버튼이 바로 붙는다 */}
+        <div className="min-h-0">
           <SeatSection
             selectedSection={isPerformer ? performerSelectedSection : selectedSection}
             selectedSeat={isPerformer ? null : selectedSeat}
@@ -212,6 +220,7 @@ const BookingPage = () => {
             isPerformerMode={isPerformer}
             myBookedSeats={myBookedSeats}
             allowOccupiedSelect={isAdmin}
+            onSectionSelect={handleSectionSelect}
           />
         </div>
         <div className="shrink-0 pb-4">
@@ -221,8 +230,8 @@ const BookingPage = () => {
               onClick={handleBookingClick}
               disabled={
                 isPerformer
-                  ? !canBook || maxSelectableSeats === 0
-                  : !isComplete || isSelectedSeatOccupied
+                  ? !canBook || maxSelectableSeats === 0 || multipleSeatBookingMutation.isPending
+                  : !isComplete || isSelectedSeatOccupied || seatBookingMutation.isPending
               }
             >
               {getButtonText()}

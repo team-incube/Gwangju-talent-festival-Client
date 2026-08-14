@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { Section, Seat, SelectedSeatInfo, SEAT_STATUS } from "@/entities/booking/model/types";
+import { isReservedSeat } from "@/entities/booking/model/reservedSeats";
 
 const isSameSeat = (a: Seat, b: Seat) =>
   a.seatNumber === b.seatNumber && a.row === b.row && a.section === b.section;
@@ -20,6 +21,8 @@ export const useSeatSelection = ({ allowOccupied = false }: UseSeatSelectionOpti
 
   const selectSeat = useCallback(
     (seat: Seat) => {
+      // 어드민(allowOccupied)도 확보석은 못 건드린다 — 밴 해제로 예매가 열리는 사고 방지
+      if (isReservedSeat(seat)) return;
       if (seat.status === SEAT_STATUS.OCCUPIED && !allowOccupied) return;
 
       if (selectedSeat && isSameSeat(selectedSeat, seat)) {
