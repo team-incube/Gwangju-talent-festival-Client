@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Button from "@/shared/ui/Button";
 import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
-import { cn } from "@/shared/utils/cn";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
 import {
   isTicketOpen,
   daysUntil,
   performerTicketOpenDate,
+  performerTicketCloseDate,
   ticketOpenDate,
   ticketCloseDate,
 } from "@/shared/config/dateConfig";
@@ -80,36 +79,40 @@ const JudgingCtaSection = () => {
   }
 
   const openDate = isPerformer ? performerTicketOpenDate : ticketOpenDate;
+  const closeDate = isPerformer ? performerTicketCloseDate : ticketCloseDate;
 
   return (
     <section
       id="JudgingCtaSection"
-      className="relative w-full overflow-hidden bg-orange-100 py-[80px] mobile:py-[52px]"
+      className="relative w-full overflow-hidden bg-orange-200 py-[80px] mobile:py-[52px]"
     >
-      <div aria-hidden className="pointer-events-none">
-        <div className="absolute left-[1%] top-0 h-full w-[26%] mobile:w-[30%]">
-          <Image src="/images/left_line.png" alt="" fill sizes="30vw" />
-        </div>
-        <div className="absolute right-[4%] top-0 h-full w-[26%] mobile:w-[30%]">
-          <Image src="/images/right_line.png" alt="" fill sizes="30vw" />
-        </div>
-        <div className="absolute left-0 top-1/2 w-[30%] aspect-square translate-y-[-50%] mobile:w-[40%] mobile:left-[-4%]">
-          <Image src="/images/left_star.png" alt="" fill sizes="40vw" />
-        </div>
-        <div className="absolute right-[4%] top-1/2 w-[30%] aspect-square translate-y-[-50%] mobile:w-[40%] mobile:right-[-10%]">
-          <Image src="/images/right_star.png" alt="" fill sizes="40vw" />
-        </div>
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute left-0 top-0 h-full aspect-[1092/1096] bg-[url('/images/left_line.png')] bg-contain bg-left bg-no-repeat hidden desktop:block" />
+        <div className="absolute right-0 top-0 h-full aspect-[1092/1096] bg-[url('/images/right_line.png')] bg-contain bg-right bg-no-repeat hidden desktop:block" />
+        <div className="absolute left-[3%] top-1/2 h-[62%] aspect-[1096/1046] -translate-y-1/2 bg-[url('/images/left_star.png')] bg-contain bg-center bg-no-repeat hidden desktop:block" />
+        <div className="absolute right-[3%] top-1/2 h-[62%] aspect-[1328/1096] -translate-y-1/2 bg-[url('/images/right_star.png')] bg-contain bg-center bg-no-repeat hidden desktop:block" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center gap-32 px-16 mobile:gap-20">
-        <SectionTitle title="공연 관람 좌석 예매" />
+        <SectionTitle title={isPerformer ? "참가자 좌석 사전 예매" : "공연 관람 좌석 예매"} />
 
-        <div
-          className={cn(
-            "w-[280px] rounded-[12px] px-24 py-20 text-center flex flex-col gap-16 mobile:w-full mobile:max-w-[280px]",
-            isOpen ? "bg-white" : "bg-gradient-to-b from-orange-300 to-orange-500 text-white",
-          )}
-        >
+        <div className="w-[280px] rounded-[12px] bg-white px-24 py-20 text-center flex flex-col gap-16 mobile:w-full mobile:max-w-[280px]">
+          <span className="text-caption1b">좌석 예매</span>
+          <strong className="text-title2b text-orange-500 mobile:text-title4b">
+            {hasBookedSeats
+              ? "예매 완료"
+              : isOpen
+                ? "OPEN"
+                : daysLeft > 0
+                  ? `D-${daysLeft}`
+                  : "D-Day"}
+          </strong>
+          <p className="flex items-center justify-center gap-8 text-caption1b">
+            {isOpen ? "티켓마감" : "티켓오픈"}
+            <span className="font-normal text-gray-500">
+              {formatDateTime(isOpen ? closeDate : openDate)}
+            </span>
+          </p>
           {hasBookedSeats ? (
             <Button
               type="button"
@@ -119,28 +122,14 @@ const JudgingCtaSection = () => {
               예매 확인하기
             </Button>
           ) : (
-            <>
-              <span className="text-caption1b">좌석 예매</span>
-              <strong
-                className={cn("text-title2b mobile:text-title4b", isOpen && "text-orange-500")}
-              >
-                {isOpen ? "OPEN" : daysLeft > 0 ? `D-${daysLeft}` : "D-Day"}
-              </strong>
-              <p className="flex items-center justify-center gap-8 text-caption1b">
-                {isOpen ? "티켓마감" : "티켓오픈"}
-                <span className={cn("font-normal", isOpen ? "text-gray-500" : "text-orange-100")}>
-                  {formatDateTime(isOpen ? ticketCloseDate : openDate)}
-                </span>
-              </p>
-              <Button
-                type="button"
-                disabled={!isOpen}
-                onClick={() => router.push("/booking")}
-                className="w-full h-[40px] text-caption1b"
-              >
-                예매 하러가기
-              </Button>
-            </>
+            <Button
+              type="button"
+              disabled={!isOpen}
+              onClick={() => router.push("/booking")}
+              className="w-full h-[40px] text-caption1b"
+            >
+              예매 하러가기
+            </Button>
           )}
         </div>
       </div>

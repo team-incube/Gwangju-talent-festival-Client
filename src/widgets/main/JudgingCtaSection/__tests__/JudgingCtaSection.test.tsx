@@ -21,6 +21,7 @@ vi.mock("@/shared/config/dateConfig", () => ({
   performerTicketOpenDate: new Date("2026-08-14T14:00:00+09:00"),
   ticketOpenDate: new Date("2026-08-20T19:00:00+09:00"),
   ticketCloseDate: new Date("2026-09-04T18:00:00+09:00"),
+  performerTicketCloseDate: new Date("2026-08-19T23:59:00+09:00"),
 }));
 
 import { useRouter } from "next/navigation";
