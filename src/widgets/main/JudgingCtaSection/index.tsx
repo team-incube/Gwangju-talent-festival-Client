@@ -7,12 +7,7 @@ import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
-import {
-  isTicketOpen,
-  isTicketClosed,
-  daysUntil,
-  ticketWindow,
-} from "@/shared/config/dateConfig";
+import { isTicketOpen, isTicketClosed, daysUntil, ticketWindow } from "@/shared/config/dateConfig";
 
 const pad = (value: number) => String(value).padStart(2, "0");
 const formatDateTime = (date: Date) =>
@@ -48,7 +43,7 @@ const JudgingCtaSection = () => {
   }, [userRole]);
 
   const { seats } = useMyBookedSeats();
-  const hasBookedSeats = userRole === "PERFORMER" && seats.length > 0;
+  const hasBookedSeats = seats.length > 0;
 
   const isPerformer = userRole === "PERFORMER";
   // 로그인 전 방문자도 일반 예매 일정을 봐야 하므로 role이 없으면 일반 예매 안내로 취급한다

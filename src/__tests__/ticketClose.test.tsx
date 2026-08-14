@@ -79,9 +79,10 @@ describe("마감 시각 이후 (실제 dateConfig)", () => {
     expect(middleware(req("/booking", "USER")).status).toBe(200);
   });
 
-  it("축제 당일(2026-09-05)에도 예매는 막혀 있다", () => {
+  it("축제 당일(2026-09-05)에는 예매는 막히고 내 좌석 확인은 열려 있다", () => {
     vi.setSystemTime(new Date("2026-09-05T10:00:00+09:00"));
-    expect(isTicketClosed()).toBe(true);
-    expect(middleware(req("/booking/my", "USER")).status).toBe(307);
+    expect(isTicketClosed("USER")).toBe(true);
+    expect(middleware(req("/booking", "USER")).status).toBe(307);
+    expect(middleware(req("/booking/my", "USER")).status).toBe(200);
   });
 });

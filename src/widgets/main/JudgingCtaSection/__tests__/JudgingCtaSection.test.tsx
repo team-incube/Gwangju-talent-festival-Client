@@ -214,6 +214,20 @@ describe("JudgingCtaSection - 좌석 예매 카드", () => {
     expect(screen.queryByText("예매 하러가기")).toBeNull();
   });
 
+  it("일반 유저도 예매한 좌석이 있으면 마감 후에 예매 확인하기를 보여준다", async () => {
+    const push = mockRouter();
+    vi.mocked(getTokenFromCookie).mockReturnValue("USER");
+    vi.mocked(isTicketOpen).mockReturnValue(false);
+    vi.mocked(isTicketClosed).mockReturnValue(true);
+    mockBookedSeats([{ section: "A", row: "D", seatNumber: "7" }]);
+    const user = userEvent.setup();
+
+    render(<JudgingCtaSection />);
+    await user.click(await screen.findByText("예매 확인하기"));
+
+    expect(push).toHaveBeenCalledWith("/booking/my");
+  });
+
   it("PERFORMER가 예매한 좌석이 없으면 예매 확인하기 버튼을 보여주지 않는다", async () => {
     mockRouter();
     vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
