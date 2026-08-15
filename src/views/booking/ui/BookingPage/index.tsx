@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
+import { isTicketClosed, isTicketOpen } from "@/shared/config/dateConfig";
 
 const BookingPage = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -54,6 +55,21 @@ const BookingPage = () => {
     const role = getTokenFromCookie("role");
     setUserRole(role);
   }, []);
+
+  // 페이지를 열어둔 채 예매 기간을 넘긴 사용자가 그대로 예매를 시도할 수 있어 여기서도 막는다
+  const [isClosed, setIsClosed] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
+  useEffect(() => {
+    const sync = () => {
+      setIsClosed(isTicketClosed(userRole));
+      setIsOpen(isTicketOpen(userRole));
+    };
+    sync();
+    const timer = setInterval(sync, 1000);
+    return () => clearInterval(timer);
+  }, [userRole]);
+  // role을 읽기 전에는 일반 예매 일정으로 판정되므로 공연자에게 잠깐 잠긴 버튼이 보이지 않게 미룬다
+  const isBookingBlocked = userRole !== null && !isAdmin && !isOpen;
 
   const queryClient = useQueryClient();
 
@@ -166,6 +182,9 @@ const BookingPage = () => {
   };
 
   const getButtonText = () => {
+    if (isBookingBlocked) {
+      return isClosed ? "예매가 마감되었습니다" : "예매 기간이 아닙니다";
+    }
     if (isPerformer) {
       if (multipleSeatBookingMutation.isPending) {
         return "예매 중...";
@@ -229,9 +248,10 @@ const BookingPage = () => {
               className={`h-[48px] ${isAdmin ? "flex-1" : "w-full"}`}
               onClick={handleBookingClick}
               disabled={
-                isPerformer
+                isBookingBlocked ||
+                (isPerformer
                   ? !canBook || maxSelectableSeats === 0 || multipleSeatBookingMutation.isPending
-                  : !isComplete || isSelectedSeatOccupied || seatBookingMutation.isPending
+                  : !isComplete || isSelectedSeatOccupied || seatBookingMutation.isPending)
               }
             >
               {getButtonText()}

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { publicPages, publicIn27 } from "@/shared/config/authConfig";
-import { festivalDate, sloganStartDate, sloganEndDate, applyStartDate, applyEndDate, preliminaryResultOpenDate, ticketOpenDate, performerTicketOpenDate } from "@/shared/config/dateConfig";
+import {
+  festivalDate,
+  sloganStartDate,
+  sloganEndDate,
+  applyStartDate,
+  applyEndDate,
+  preliminaryResultOpenDate,
+  isTicketOpen,
+  ticketWindow,
+} from "@/shared/config/dateConfig";
 
 export const config = {
   matcher: [
@@ -89,8 +98,10 @@ export function middleware(request: NextRequest) {
 
   // 공연자는 일반 티켓 오픈보다 먼저 선예매 가능
   if (pathname.startsWith("/booking") && role !== "ADMIN") {
-    const openDate = role === "PERFORMER" ? performerTicketOpenDate : ticketOpenDate;
-    if (now < openDate) {
+    const blocked = pathname.startsWith("/booking/my")
+      ? now < ticketWindow(role).open
+      : !isTicketOpen(role);
+    if (blocked) {
       return NextResponse.redirect(new URL("/home", request.url));
     }
   }

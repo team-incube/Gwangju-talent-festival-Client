@@ -7,14 +7,7 @@ import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
-import {
-  isTicketOpen,
-  daysUntil,
-  performerTicketOpenDate,
-  performerTicketCloseDate,
-  ticketOpenDate,
-  ticketCloseDate,
-} from "@/shared/config/dateConfig";
+import { isTicketOpen, isTicketClosed, daysUntil, ticketWindow } from "@/shared/config/dateConfig";
 
 const pad = (value: number) => String(value).padStart(2, "0");
 const formatDateTime = (date: Date) =>
@@ -30,6 +23,7 @@ const JudgingCtaSection = () => {
   const router = useRouter();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
   const [daysLeft, setDaysLeft] = useState(0);
 
   useEffect(() => {
@@ -38,10 +32,10 @@ const JudgingCtaSection = () => {
 
   // 오픈 시각에 페이지를 켜둔 채 기다리는 사용자가 새로고침 없이 예매로 넘어갈 수 있어야 한다
   useEffect(() => {
-    const openDate = userRole === "PERFORMER" ? performerTicketOpenDate : ticketOpenDate;
     const sync = () => {
       setIsOpen(isTicketOpen(userRole));
-      setDaysLeft(daysUntil(openDate));
+      setIsClosed(isTicketClosed(userRole));
+      setDaysLeft(daysUntil(ticketWindow(userRole).open));
     };
     sync();
     const timer = setInterval(sync, 1000);
@@ -49,7 +43,7 @@ const JudgingCtaSection = () => {
   }, [userRole]);
 
   const { seats } = useMyBookedSeats();
-  const hasBookedSeats = userRole === "PERFORMER" && seats.length > 0;
+  const hasBookedSeats = seats.length > 0;
 
   const isPerformer = userRole === "PERFORMER";
   // 로그인 전 방문자도 일반 예매 일정을 봐야 하므로 role이 없으면 일반 예매 안내로 취급한다
@@ -78,8 +72,7 @@ const JudgingCtaSection = () => {
     );
   }
 
-  const openDate = isPerformer ? performerTicketOpenDate : ticketOpenDate;
-  const closeDate = isPerformer ? performerTicketCloseDate : ticketCloseDate;
+  const { open: openDate, close: closeDate } = ticketWindow(userRole);
 
   return (
     <section
@@ -101,16 +94,18 @@ const JudgingCtaSection = () => {
           <strong className="text-title2b text-orange-500 mobile:text-title4b">
             {hasBookedSeats
               ? "예매 완료"
-              : isOpen
-                ? "OPEN"
-                : daysLeft > 0
-                  ? `D-${daysLeft}`
-                  : "D-Day"}
+              : isClosed
+                ? "예매마감"
+                : isOpen
+                  ? "OPEN"
+                  : daysLeft > 0
+                    ? `D-${daysLeft}`
+                    : "D-Day"}
           </strong>
           <p className="flex items-center justify-center gap-8 text-caption1b">
-            {isOpen ? "티켓마감" : "티켓오픈"}
+            {isOpen || isClosed ? "티켓마감" : "티켓오픈"}
             <span className="font-normal text-gray-500">
-              {formatDateTime(isOpen ? closeDate : openDate)}
+              {formatDateTime(isOpen || isClosed ? closeDate : openDate)}
             </span>
           </p>
           {hasBookedSeats ? (
