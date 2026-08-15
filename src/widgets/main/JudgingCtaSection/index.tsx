@@ -7,11 +7,20 @@ import { RightArrow } from "@/shared/asset/svg/RightArrow";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
-import { isTicketOpen, isTicketClosed, daysUntil, ticketWindow } from "@/shared/config/dateConfig";
+import {
+  isTicketOpen,
+  isTicketClosed,
+  daysUntil,
+  ticketWindow,
+  toKst,
+} from "@/shared/config/dateConfig";
 
 const pad = (value: number) => String(value).padStart(2, "0");
-const formatDateTime = (date: Date) =>
-  `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+// 공지된 예매 시각은 KST 기준이라 디바이스 타임존이 달라도 같은 시각을 보여줘야 한다
+const formatDateTime = (date: Date) => {
+  const kst = toKst(date);
+  return `${kst.getUTCFullYear()}.${pad(kst.getUTCMonth() + 1)}.${pad(kst.getUTCDate())} ${pad(kst.getUTCHours())}:${pad(kst.getUTCMinutes())}`;
+};
 
 // ADMIN은 채점 API(JUDGE 전용) 접근 권한이 없어 모니터링 페이지로, JUDGE는 채점 페이지로 안내한다
 const ROLE_CTA: Record<string, { label: string; href: string }> = {
