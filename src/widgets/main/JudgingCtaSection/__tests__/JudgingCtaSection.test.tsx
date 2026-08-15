@@ -20,6 +20,7 @@ vi.mock("@/shared/config/dateConfig", () => ({
   isTicketClosed: vi.fn(),
   daysUntil: vi.fn(),
   ticketWindow: vi.fn(),
+  toKst: (date: Date) => new Date(date.getTime() + 9 * 60 * 60 * 1000),
 }));
 
 const PERFORMER_WINDOW = {
@@ -120,6 +121,23 @@ describe("JudgingCtaSection - 좌석 예매 카드", () => {
     expect(await screen.findByText("D-6")).toBeInTheDocument();
     expect(screen.getByText("티켓오픈")).toBeInTheDocument();
     expect(screen.queryByText("OPEN")).toBeNull();
+  });
+
+  it("디바이스 타임존이 KST가 아니어도 오픈 시각을 KST로 보여준다", async () => {
+    const originalTimeZone = process.env.TZ;
+    process.env.TZ = "UTC";
+    try {
+      mockRouter();
+      vi.mocked(getTokenFromCookie).mockReturnValue("USER");
+      vi.mocked(isTicketOpen).mockReturnValue(false);
+      vi.mocked(daysUntil).mockReturnValue(6);
+
+      render(<JudgingCtaSection />);
+
+      expect(await screen.findByText("2026.08.20 19:00")).toBeInTheDocument();
+    } finally {
+      process.env.TZ = originalTimeZone;
+    }
   });
 
   it("오픈 당일에는 D-Day를 보여준다", async () => {
