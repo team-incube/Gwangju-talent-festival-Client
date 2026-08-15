@@ -88,8 +88,11 @@ describe("티켓 마감 시각", () => {
 });
 
 describe("daysUntil", () => {
+  const originalTimeZone = process.env.TZ;
+
   afterEach(() => {
     vi.useRealTimers();
+    process.env.TZ = originalTimeZone;
   });
 
   it("남은 날짜를 날짜 단위로 센다", () => {
@@ -100,5 +103,27 @@ describe("daysUntil", () => {
   it("오픈 당일 오픈 시각 전이면 0을 반환한다", () => {
     vi.setSystemTime(new Date("2026-08-20T09:00:00+09:00"));
     expect(daysUntil(ticketOpenDate)).toBe(0);
+  });
+
+  it("디바이스 타임존이 KST가 아니어도 KST 날짜 기준으로 센다", () => {
+    process.env.TZ = "UTC";
+    vi.setSystemTime(new Date("2026-08-20T08:00:00+09:00"));
+    expect(daysUntil(ticketOpenDate)).toBe(0);
+
+    vi.setSystemTime(new Date("2026-08-19T23:00:00+09:00"));
+    expect(daysUntil(ticketOpenDate)).toBe(1);
+  });
+});
+
+describe("dateFromEnv", () => {
+  it("오프셋 없는 env 값은 무시하고 폴백 시각을 쓴다", async () => {
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_TICKET_OPEN_DATE", "2026-08-20T19:00:00");
+
+    const { ticketOpenDate: parsed } = await import("../dateConfig");
+
+    expect(parsed.toISOString()).toBe("2026-08-20T10:00:00.000Z");
+    vi.unstubAllEnvs();
+    vi.resetModules();
   });
 });
