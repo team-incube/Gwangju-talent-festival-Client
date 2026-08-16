@@ -18,6 +18,7 @@ export default {
       screens: {
         mobile: { max: "640px" },
         tablet: { min: "641px", max: "1024px" },
+        desktop: { min: "1000px" },
       },
       keyframes: {
         marquee: {

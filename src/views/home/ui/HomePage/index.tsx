@@ -58,9 +58,9 @@ const HomePage = () => {
     <>
       {/* <SloganPosterPopup /> */}
       <IntroFirstSection />
-      <JudgingCtaSection />
       <JudgeInfoSection />
       <SloganSecondSection />
+      <JudgingCtaSection />
 
       <LazySection
         id="PreliminaryLiveSection"

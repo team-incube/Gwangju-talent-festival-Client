@@ -1,4 +1,4 @@
-import { isLoggedIn } from "@/shared/utils/auth";
+import { AUTH_CHANGE_EVENT, isLoggedIn } from "@/shared/utils/auth";
 import { useEffect, useState } from "react";
 
 export function useAuthSync() {
@@ -16,10 +16,12 @@ export function useAuthSync() {
     };
 
     window.addEventListener("focus", updateLoginState);
+    window.addEventListener(AUTH_CHANGE_EVENT, updateLoginState);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("focus", updateLoginState);
+      window.removeEventListener(AUTH_CHANGE_EVENT, updateLoginState);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
