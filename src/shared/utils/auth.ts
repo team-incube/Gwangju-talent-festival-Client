@@ -2,6 +2,14 @@
 
 import { clearCookie, setCookie } from "./cookie";
 
+export const AUTH_CHANGE_EVENT = "authchange";
+
+// 쿠키 변경은 focus/visibilitychange 이벤트를 유발하지 않으므로,
+// 같은 탭에서 클라이언트 라우팅만으로 로그인 상태를 갱신하려면 별도 이벤트가 필요하다
+const notifyAuthChange = () => {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+};
+
 export const setTokens = (
   accessToken: string,
   accessTokenExpiredAt: string,
@@ -10,11 +18,13 @@ export const setTokens = (
 ) => {
   setCookie("accessToken", accessToken, new Date(accessTokenExpiredAt));
   setCookie("refreshToken", refreshToken, new Date(refreshTokenExpiredAt));
+  notifyAuthChange();
 };
 
 export const clearTokens = () => {
   clearCookie("accessToken");
   clearCookie("refreshToken");
+  notifyAuthChange();
 };
 
 // 만료를 주지 않으면 세션 쿠키가 되어 브라우저를 닫으면 사라진다.
