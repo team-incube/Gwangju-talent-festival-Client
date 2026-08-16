@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { setTokens, clearTokens, getTokenFromCookie, isLoggedIn } from "../auth";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { setTokens, clearTokens, getTokenFromCookie, isLoggedIn, AUTH_CHANGE_EVENT } from "../auth";
 
 const FUTURE = new Date(Date.now() + 3_600_000).toISOString();
 
@@ -20,6 +20,16 @@ describe("setTokens", () => {
     expect(getTokenFromCookie("accessToken")).toBe("access-abc");
     expect(getTokenFromCookie("refreshToken")).toBe("refresh-xyz");
   });
+
+  it("authchange 이벤트를 발생시켜 같은 탭의 로그인 상태를 갱신할 수 있게 한다", () => {
+    const listener = vi.fn();
+    window.addEventListener(AUTH_CHANGE_EVENT, listener);
+
+    setTokens("access-abc", FUTURE, "refresh-xyz", FUTURE);
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    window.removeEventListener(AUTH_CHANGE_EVENT, listener);
+  });
 });
 
 describe("clearTokens", () => {
@@ -30,6 +40,18 @@ describe("clearTokens", () => {
     clearTokens();
     expect(getTokenFromCookie("accessToken")).toBeNull();
     expect(getTokenFromCookie("refreshToken")).toBeNull();
+  });
+
+  it("authchange 이벤트를 발생시켜 같은 탭의 로그인 상태를 갱신할 수 있게 한다", () => {
+    setTokens("access-abc", FUTURE, "refresh-xyz", FUTURE);
+
+    const listener = vi.fn();
+    window.addEventListener(AUTH_CHANGE_EVENT, listener);
+
+    clearTokens();
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    window.removeEventListener(AUTH_CHANGE_EVENT, listener);
   });
 });
 
