@@ -21,6 +21,21 @@ describe("isReservedSeat - 확보석 판별", () => {
     expect(isReservedSeat({ section: "PURPLE", row: "S" })).toBe(false)
   })
 
+  it("BLUE 구역 마지막 T열은 전체가 확보석이다", () => {
+    ;["1", "5", "10"].forEach(seatNumber => {
+      expect(isReservedSeat({ section: "BLUE", row: "T", seatNumber })).toBe(true)
+    })
+  })
+
+  it("BLUE 구역 S열은 왼쪽 6석만 확보석이다", () => {
+    ;["1", "2", "3", "4", "5", "6"].forEach(seatNumber => {
+      expect(isReservedSeat({ section: "BLUE", row: "S", seatNumber })).toBe(true)
+    })
+    ;["7", "8", "9", "10"].forEach(seatNumber => {
+      expect(isReservedSeat({ section: "BLUE", row: "S", seatNumber })).toBe(false)
+    })
+  })
+
   it("무대 최전열 A열은 출연팀 좌석이라 예매 불가다", () => {
     ;(["RED", "YELLOW", "TEAL"] as const).forEach(section => {
       expect(isReservedSeat({ section, row: "A" })).toBe(true)
@@ -33,10 +48,10 @@ describe("isReservedSeat - 확보석 판별", () => {
     })
   })
 
-  it("확보석은 좌석배치도 기준 74석이다", () => {
+  it("확보석은 좌석배치도 기준 90석이다", () => {
     const reserved = SECTIONS.flatMap(section =>
       SEAT_LAYOUTS[section].seats.filter(isReservedSeat),
     )
-    expect(reserved).toHaveLength(74)
+    expect(reserved).toHaveLength(90)
   })
 })
