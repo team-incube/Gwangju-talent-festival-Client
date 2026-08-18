@@ -7,7 +7,19 @@ const RESERVED_ROWS: Partial<Record<Section, readonly string[]>> = {
   YELLOW: ["A"],
   TEAL: ["A"],
   GREEN: ["L", "M", "R", "S"],
+  BLUE: ["T"],
 };
 
-export const isReservedSeat = (seat: { section: Section; row: string }): boolean =>
-  RESERVED_ROWS[seat.section]?.includes(seat.row) ?? false;
+const RESERVED_SEAT_NUMBERS: Partial<Record<Section, Readonly<Record<string, readonly string[]>>>> =
+  {
+    BLUE: { S: ["1", "2", "3", "4", "5", "6"] },
+  };
+
+export const isReservedSeat = (seat: {
+  section: Section;
+  row: string;
+  seatNumber?: string;
+}): boolean =>
+  (RESERVED_ROWS[seat.section]?.includes(seat.row) ?? false) ||
+  (seat.seatNumber !== undefined &&
+    (RESERVED_SEAT_NUMBERS[seat.section]?.[seat.row]?.includes(seat.seatNumber) ?? false));
