@@ -14,7 +14,10 @@ export const seatQueryKeys = {
   seatState: (section: Section) => ["seatState", section] as const,
 } as const;
 
-const resolveSeatStatus = (seat: { section: Section; row: string }, isAvailable: boolean) =>
+const resolveSeatStatus = (
+  seat: { section: Section; row: string; seatNumber?: string },
+  isAvailable: boolean,
+) =>
   isAvailable && !isReservedSeat(seat) ? SEAT_STATUS.AVAILABLE : SEAT_STATUS.OCCUPIED;
 
 export function useSectionSeatState(section: Section) {
@@ -106,7 +109,11 @@ export function applySeatChange(
   event: SeatChangeEvent,
 ): void {
   const status = resolveSeatStatus(
-    { section: event.seat_section, row: event.seat_row },
+    {
+      section: event.seat_section,
+      row: event.seat_row,
+      seatNumber: event.seat_number.toString(),
+    },
     event.is_available,
   );
   const matches = (seat: Seat) =>

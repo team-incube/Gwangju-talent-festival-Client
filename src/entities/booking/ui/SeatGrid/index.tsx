@@ -50,6 +50,7 @@ export const SeatGrid = memo<SeatGridProps>(
   }) => {
     const queryClient = useQueryClient();
     const cellSize = layout ? SINGLE_SECTION_CELL : ALL_SECTIONS_CELL;
+    const rowLabels = layout ? getRowLabels(layout.section) : [];
 
     // 전체 구역 지도는 고정 픽셀이라 모바일 폭을 넘긴다. 스크롤은 알아채기 어려워 축소해 맞춘다
     const fitBoxRef = useRef<HTMLDivElement>(null);
@@ -64,9 +65,7 @@ export const SeatGrid = memo<SeatGridProps>(
       const update = () => {
         const { scrollWidth, scrollHeight } = content;
         if (!scrollWidth || !scrollHeight) return;
-        setFitScale(
-          Math.min(1, box.clientWidth / scrollWidth, box.clientHeight / scrollHeight),
-        );
+        setFitScale(Math.min(1, box.clientWidth / scrollWidth, box.clientHeight / scrollHeight));
       };
 
       update();
@@ -131,7 +130,9 @@ export const SeatGrid = memo<SeatGridProps>(
           if (myAllSeats && myAllSeats.length > 1) {
             return myAllSeats.some(
               (s: Seat) =>
-                s.seatNumber === seat.seatNumber && s.row === seat.row && s.section === seat.section,
+                s.seatNumber === seat.seatNumber &&
+                s.row === seat.row &&
+                s.section === seat.section,
             );
           }
           return (
@@ -169,6 +170,15 @@ export const SeatGrid = memo<SeatGridProps>(
       <div className="w-max mx-auto flex flex-col justify-start">
         {seatGrid.map((row, rowIndex) => (
           <div key={rowIndex} className="flex items-center gap-4 mb-4">
+            <div
+              aria-hidden
+              className={cn(
+                cellSize,
+                "flex shrink-0 items-center justify-center font-bold text-white",
+              )}
+            >
+              {rowLabels[rowIndex]}
+            </div>
             {row.map(({ seat, key }) => (
               <div key={key} className={cellSize}>
                 {seat ? (
