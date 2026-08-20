@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import BookingPage from "../index";
-import { ticketCloseDate, performerTicketCloseDate } from "@/shared/config/dateConfig";
+import { ticketCloseDate } from "@/shared/config/dateConfig";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
@@ -73,17 +73,17 @@ describe("BookingPage - 예매 기간 가드", () => {
     expect(await screen.findByRole("button", { name: "예매가 마감되었습니다" })).toBeDisabled();
   });
 
-  it("공연자는 선예매 마감 후 예매 버튼이 잠긴다", async () => {
-    vi.setSystemTime(new Date(performerTicketCloseDate.getTime() + 1000));
+  it("공연자는 일반 예매 기간에도 예매 버튼이 활성화된다", async () => {
+    vi.setSystemTime(new Date("2026-08-25T12:00:00+09:00"));
     vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
 
     render(<BookingPage />);
 
-    expect(await screen.findByRole("button", { name: "예매가 마감되었습니다" })).toBeDisabled();
+    expect(await screen.findByRole("button", { name: "완료" })).toBeEnabled();
   });
 
-  it("공연자는 일반 예매 기간에도 예매 버튼이 잠긴다", async () => {
-    vi.setSystemTime(new Date("2026-08-25T12:00:00+09:00"));
+  it("공연자도 일반 마감 후에는 예매 버튼이 잠긴다", async () => {
+    vi.setSystemTime(new Date(ticketCloseDate.getTime() + 1000));
     vi.mocked(getTokenFromCookie).mockReturnValue("PERFORMER");
 
     render(<BookingPage />);
