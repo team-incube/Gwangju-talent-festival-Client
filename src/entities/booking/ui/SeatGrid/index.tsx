@@ -195,15 +195,6 @@ export const SeatGrid = memo<SeatGridProps>(
                 )}
               </div>
             ))}
-            <div
-              aria-hidden
-              className={cn(
-                cellSize,
-                "flex shrink-0 items-center justify-center font-bold text-white",
-              )}
-            >
-              {rowLabels[rowIndex]}
-            </div>
           </div>
         ))}
       </div>
