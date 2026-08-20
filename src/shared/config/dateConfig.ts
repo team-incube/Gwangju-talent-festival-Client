@@ -25,16 +25,11 @@ export const ticketCloseDate = dateFromEnv(
   process.env.NEXT_PUBLIC_TICKET_CLOSE_DATE,
   "2026-09-04T18:00:00+09:00",
 );
-// 참가자 선예매는 일반 예매가 열리기 전날까지만 진행한다
-export const performerTicketCloseDate = dateFromEnv(
-  process.env.NEXT_PUBLIC_PERFORMER_TICKET_CLOSE_DATE,
-  "2026-08-19T23:59:00+09:00",
-);
-// 공연자는 선예매 기간에만 예매하고, 일반 예매 기간에는 참여하지 않는다
-export const ticketWindow = (role?: string | null) =>
-  role === "PERFORMER"
-    ? { open: performerTicketOpenDate, close: performerTicketCloseDate }
-    : { open: ticketOpenDate, close: ticketCloseDate };
+// 공연자는 더 일찍 열리기만 하고, 마감은 일반 예매와 같이 간다
+export const ticketWindow = (role?: string | null) => ({
+  open: role === "PERFORMER" ? performerTicketOpenDate : ticketOpenDate,
+  close: ticketCloseDate,
+});
 
 export const isTicketOpen = (role?: string | null) => {
   const now = new Date();
