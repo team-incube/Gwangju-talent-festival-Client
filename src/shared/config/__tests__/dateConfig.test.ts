@@ -6,7 +6,6 @@ import {
   isTicketClosed,
   daysUntil,
   ticketWindow,
-  performerTicketCloseDate,
   ticketCloseDate,
 } from "../dateConfig";
 
@@ -64,25 +63,24 @@ describe("티켓 마감 시각", () => {
     expect(isTicketClosed()).toBe(true);
   });
 
-  it("공연자는 선예매 마감 시각까지 열려 있고 1분 뒤에는 닫힌다", () => {
-    vi.setSystemTime(new Date("2026-08-19T23:59:00+09:00"));
+  it("공연자는 일반 예매 기간에도 계속 열려 있다", () => {
+    vi.setSystemTime(new Date("2026-08-20T00:00:00+09:00"));
     expect(isTicketOpen("PERFORMER")).toBe(true);
     expect(isTicketClosed("PERFORMER")).toBe(false);
 
-    vi.setSystemTime(new Date("2026-08-20T00:00:00+09:00"));
-    expect(isTicketOpen("PERFORMER")).toBe(false);
-    expect(isTicketClosed("PERFORMER")).toBe(true);
-  });
-
-  it("공연자는 일반 예매 기간에도 열리지 않는다", () => {
     vi.setSystemTime(new Date("2026-08-25T12:00:00+09:00"));
-    expect(isTicketOpen("PERFORMER")).toBe(false);
-    expect(isTicketClosed("PERFORMER")).toBe(true);
+    expect(isTicketOpen("PERFORMER")).toBe(true);
     expect(isTicketOpen("USER")).toBe(true);
   });
 
-  it("공연자 일정은 항상 선예매 일정이다", () => {
-    expect(ticketWindow("PERFORMER").close).toEqual(performerTicketCloseDate);
+  it("공연자도 일반 마감 시각에 함께 닫힌다", () => {
+    vi.setSystemTime(new Date("2026-09-04T18:01:00+09:00"));
+    expect(isTicketOpen("PERFORMER")).toBe(false);
+    expect(isTicketClosed("PERFORMER")).toBe(true);
+  });
+
+  it("공연자 마감 시각은 일반 마감 시각과 같다", () => {
+    expect(ticketWindow("PERFORMER").close).toEqual(ticketCloseDate);
     expect(ticketWindow("USER").close).toEqual(ticketCloseDate);
   });
 });
