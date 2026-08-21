@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/shared/ui/Button";
 import { RightArrow } from "@/shared/asset/svg/RightArrow";
+import Inform from "@/shared/asset/svg/Inform";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { useMyBookedSeats } from "@/entities/booking/lib/useMySeat";
@@ -135,6 +136,23 @@ const JudgingCtaSection = () => {
               예매 하러가기
             </Button>
           )}
+        </div>
+
+        <div className="flex w-full max-w-[520px] items-start gap-14 rounded-2xl border border-solid border-white bg-white/70 px-20 py-16 backdrop-blur-sm mobile:gap-10 mobile:px-16 mobile:py-14">
+          <span className="flex h-32 w-32 shrink-0 items-center justify-center rounded-full bg-orange-500 mobile:h-28 mobile:w-28">
+            <Inform width={18} height={18} color="#FFFFFF" />
+          </span>
+          <div className="flex flex-col gap-6 text-left">
+            <div className="flex items-center gap-8">
+              <span className="text-caption1b text-black">현장 잔여석 안내</span>
+              <span className="rounded-full bg-orange-500 px-10 py-2 text-caption3b text-white">
+                선착순 13:00~
+              </span>
+            </div>
+            <p className="text-caption1r text-gray-800 break-keep mobile:text-caption2r">
+              온라인 좌석예매가 어려우신 분은 현장에서 선착순으로 잔여석을 배정받으실 수 있습니다
+            </p>
+          </div>
         </div>
       </div>
     </section>
