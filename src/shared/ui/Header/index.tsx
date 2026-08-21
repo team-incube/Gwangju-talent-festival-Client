@@ -3,8 +3,7 @@
 import { Logo } from "@/shared/asset/svg/Logo";
 import { MobileMenuIcon } from "@/shared/asset/svg/MobileMenuIcon";
 import { CloseIcon } from "@/shared/asset/svg/CloseIcon";
-import { bookingLink, isHiddenPath, links } from "@/shared/const/headerValues";
-import { isTicketOpen } from "@/shared/config/dateConfig";
+import { isHiddenPath, links } from "@/shared/const/headerValues";
 import { cn } from "@/shared/utils/cn";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 import { scrollToElement } from "@/shared/utils/scroll";
@@ -32,9 +31,6 @@ export default function Header() {
   }, []);
 
   const isJudge = userRole === "JUDGE";
-  // 스크롤 대상인 홈 CTA가 PERFORMER에게만 예매 버튼을 띄우므로 헤더도 동일 조건으로 맞춘다
-  const showBooking = mounted && userRole === "PERFORMER" && isTicketOpen(userRole);
-  const navLinks = showBooking ? [...links, bookingLink] : links;
 
   const handleClick = useCallback(() => {
     if (isUserLoggedIn) {
@@ -64,7 +60,7 @@ export default function Header() {
         </Link>
         {!isJudge && pathname.startsWith("/home") && (
           <div className={cn("flex gap-[2.5rem] text-body3b mobile:hidden")}>
-            {navLinks.map((link, index) => (
+            {links.map((link, index) => (
               <button key={index} onClick={() => handleScrollToSection(link.section)}>
                 {link.label}
               </button>
@@ -117,7 +113,7 @@ export default function Header() {
           isOpen={isMobileMenuOpen}
           onClose={closeMobileMenu}
           onLinkClick={handleScrollToSection}
-          links={navLinks}
+          links={links}
         />
       )}
     </>
