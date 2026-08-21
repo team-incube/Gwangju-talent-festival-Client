@@ -18,21 +18,22 @@ describe("isReservedSeat - 확보석 판별", () => {
 
   it("다른 구역의 같은 열 이름은 확보석이 아니다", () => {
     expect(isReservedSeat({ section: "BLUE", row: "L" })).toBe(false)
-    expect(isReservedSeat({ section: "PURPLE", row: "S" })).toBe(false)
+    expect(isReservedSeat({ section: "PURPLE", row: "L" })).toBe(false)
   })
 
-  it("BLUE 구역 마지막 T열은 전체가 확보석이다", () => {
-    ;["1", "5", "10"].forEach(seatNumber => {
-      expect(isReservedSeat({ section: "BLUE", row: "T", seatNumber })).toBe(true)
+  it("BLUE·PURPLE 구역 뒤 3열(R·S·T)은 확보석이다", () => {
+    ;(["BLUE", "PURPLE"] as const).forEach(section => {
+      ;["R", "S", "T"].forEach(row => {
+        expect(isReservedSeat({ section, row })).toBe(true)
+      })
     })
   })
 
-  it("BLUE 구역 S열은 왼쪽 6석만 확보석이다", () => {
-    ;["1", "2", "3", "4", "5", "6"].forEach(seatNumber => {
-      expect(isReservedSeat({ section: "BLUE", row: "S", seatNumber })).toBe(true)
-    })
-    ;["7", "8", "9", "10"].forEach(seatNumber => {
-      expect(isReservedSeat({ section: "BLUE", row: "S", seatNumber })).toBe(false)
+  it("BLUE·PURPLE 구역 Q열까지는 예매 가능석이다", () => {
+    ;(["BLUE", "PURPLE"] as const).forEach(section => {
+      ;["N", "O", "P", "Q"].forEach(row => {
+        expect(isReservedSeat({ section, row })).toBe(false)
+      })
     })
   })
 
@@ -52,6 +53,6 @@ describe("isReservedSeat - 확보석 판별", () => {
     const reserved = SECTIONS.flatMap(section =>
       SEAT_LAYOUTS[section].seats.filter(isReservedSeat),
     )
-    expect(reserved).toHaveLength(90)
+    expect(reserved).toHaveLength(134)
   })
 })
