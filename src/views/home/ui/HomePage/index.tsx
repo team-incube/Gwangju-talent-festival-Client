@@ -6,6 +6,7 @@ import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
 import JudgingCtaSection from "@/widgets/main/JudgingCtaSection";
 import JudgeInfoSection from "@/widgets/main/JudgeInfoSection";
+import TicketOpenPopup from "@/widgets/main/TicketOpenPopup";
 
 import LazySection from "@/shared/ui/LazySection";
 import { getTokenFromCookie } from "@/shared/utils/auth";
@@ -57,6 +58,7 @@ const HomePage = () => {
   return (
     <>
       {/* <SloganPosterPopup /> */}
+      <TicketOpenPopup />
       <IntroFirstSection />
       <JudgeInfoSection />
       <SloganSecondSection />
