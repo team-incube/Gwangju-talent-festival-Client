@@ -239,7 +239,7 @@ const FinalsVenueSection = () => {
           </div>
         </div>
 
-        <div className={cn("flex gap-24 mb-90 mobile:mb-38 mobile:flex-col mobile:gap-20")}>
+        <div className={cn("flex gap-24 mb-24 mobile:mb-20 mobile:flex-col mobile:gap-20")}>
           {/* 오시는 길 */}
           <div className={cn("flex w-1/2 mobile:w-full flex-col gap-24")}>
             <div className={cn("flex flex-col gap-12")}>
@@ -289,6 +289,20 @@ const FinalsVenueSection = () => {
               sizes="(max-width: 768px) 100vw, 35vw"
             />
           </div>
+        </div>
+
+        {/* 오시는 길 안내 영상 */}
+        <div className={cn("mb-90 mobile:mb-38 flex flex-col gap-12")}>
+          <h3 className="text-body2b mobile:text-body3b text-black">오시는 길 안내 영상</h3>
+          <video
+            src="/video/광탈페_풍향문화관_오시는길.mp4"
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full rounded-lg border border-gray-100 bg-black"
+          >
+            <track kind="captions" />
+          </video>
         </div>
       </div>
     </section>
