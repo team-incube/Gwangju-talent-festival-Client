@@ -113,6 +113,21 @@ describe("daysUntil", () => {
   });
 });
 
+describe("어드민 예매 기간", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("어드민은 오픈 전에도 열려 있고 마감 후에도 닫히지 않는다", () => {
+    vi.setSystemTime(new Date("2026-01-01T00:00:00+09:00"));
+    expect(isTicketOpen("ADMIN")).toBe(true);
+
+    vi.setSystemTime(new Date("2026-12-31T00:00:00+09:00"));
+    expect(isTicketOpen("ADMIN")).toBe(true);
+    expect(isTicketClosed("ADMIN")).toBe(false);
+  });
+});
+
 describe("dateFromEnv", () => {
   it("오프셋 없는 env 값은 무시하고 폴백 시각을 쓴다", async () => {
     vi.resetModules();
