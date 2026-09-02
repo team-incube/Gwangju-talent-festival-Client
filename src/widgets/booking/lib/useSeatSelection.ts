@@ -21,8 +21,7 @@ export const useSeatSelection = ({ allowOccupied = false }: UseSeatSelectionOpti
 
   const selectSeat = useCallback(
     (seat: Seat) => {
-      // 어드민(allowOccupied)도 확보석은 못 건드린다 — 밴 해제로 예매가 열리는 사고 방지
-      if (isReservedSeat(seat)) return;
+      if (isReservedSeat(seat) && !allowOccupied) return;
       if (seat.status === SEAT_STATUS.OCCUPIED && !allowOccupied) return;
 
       if (selectedSeat && isSameSeat(selectedSeat, seat)) {

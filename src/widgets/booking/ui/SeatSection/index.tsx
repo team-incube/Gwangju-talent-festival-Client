@@ -114,7 +114,7 @@ export const SeatSection = memo<SeatSectionProps>(
           <SelectedSeatDisplay
             selectedSeat={!isPerformerMode ? selectedSeatInfo : null}
             selectedSection={selectedSection}
-            selectedSeats={isPerformerMode ? selectedSeats : undefined}
+            selectedSeats={selectedSeats}
           />
         </div>
       </div>

@@ -32,11 +32,13 @@ export const ticketWindow = (role?: string | null) => ({
 });
 
 export const isTicketOpen = (role?: string | null) => {
+  if (role === "ADMIN") return true;
   const now = new Date();
   const { open, close } = ticketWindow(role);
   return now >= open && now <= close;
 };
-export const isTicketClosed = (role?: string | null) => new Date() > ticketWindow(role).close;
+export const isTicketClosed = (role?: string | null) =>
+  role !== "ADMIN" && new Date() > ticketWindow(role).close;
 
 // D-Day는 시각이 아니라 날짜 단위로 세므로 KST 자정 기준으로 자른 뒤 비교한다
 const kstDayIndex = (date: Date) => Math.floor(toKst(date).getTime() / 86_400_000);
