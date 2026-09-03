@@ -10,8 +10,12 @@ describe("isReservedSeat - 확보석 판별", () => {
     })
   })
 
-  it("GREEN 구역 N·O·P·Q열은 예매 가능석이다", () => {
-    ;["N", "O", "P", "Q"].forEach(row => {
+  it("GREEN 구역 Q열은 심사위원석 앞줄이라 예매 불가다", () => {
+    expect(isReservedSeat({ section: "GREEN", row: "Q" })).toBe(true)
+  })
+
+  it("GREEN 구역 N·O·P열은 예매 가능석이다", () => {
+    ;["N", "O", "P"].forEach(row => {
       expect(isReservedSeat({ section: "GREEN", row })).toBe(false)
     })
   })
@@ -49,10 +53,10 @@ describe("isReservedSeat - 확보석 판별", () => {
     })
   })
 
-  it("확보석은 좌석배치도 기준 90석이다", () => {
+  it("확보석은 좌석배치도 기준 146석이다", () => {
     const reserved = SECTIONS.flatMap(section =>
       SEAT_LAYOUTS[section].seats.filter(isReservedSeat),
     )
-    expect(reserved).toHaveLength(134)
+    expect(reserved).toHaveLength(146)
   })
 })
