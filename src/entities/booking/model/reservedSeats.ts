@@ -6,7 +6,7 @@ const RESERVED_ROWS: Partial<Record<Section, readonly string[]>> = {
   RED: ["A"],
   YELLOW: ["A"],
   TEAL: ["A"],
-  GREEN: ["L", "M", "R", "S"],
+  GREEN: ["L", "M", "Q", "R", "S"],
   BLUE: ["R", "S", "T"],
   PURPLE: ["R", "S", "T"],
 };
