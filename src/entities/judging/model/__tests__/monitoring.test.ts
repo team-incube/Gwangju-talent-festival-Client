@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
   sanitizeMonitoringResponse,
+  sanitizeMonitoringDeltaResponse,
+  sanitizeMonitorCommentResponse,
   mergeMonitoringSnapshot,
+  dirtyCommentKey,
   JudgeMonitoringResponse,
 } from "../monitoring";
 
@@ -24,6 +27,7 @@ const VALID_COMMENT_ROW = {
 describe("sanitizeMonitoringResponse", () => {
   it("구조가 온전한 응답은 그대로 반환한다", () => {
     const raw = {
+      version: 1,
       judges: [{ judgeId: 1, label: "심사위원 A" }],
       scoreRows: [VALID_SCORE_ROW],
       commentRows: [VALID_COMMENT_ROW],
@@ -37,10 +41,15 @@ describe("sanitizeMonitoringResponse", () => {
     expect(sanitizeMonitoringResponse("not an object")).toBeNull();
   });
 
+  it("version이 없으면 0으로 채운다", () => {
+    expect(sanitizeMonitoringResponse({})?.version).toBe(0);
+  });
+
   it("잘려서 아예 없는 최상위 배열(예: commentRows)은 빈 배열로 채워 나머지 필드는 살린다", () => {
-    const raw = { judges: [], scoreRows: [VALID_SCORE_ROW] };
+    const raw = { version: 1, judges: [], scoreRows: [VALID_SCORE_ROW] };
 
     expect(sanitizeMonitoringResponse(raw)).toEqual({
+      version: 1,
       judges: [],
       scoreRows: [VALID_SCORE_ROW],
       commentRows: [],
@@ -49,6 +58,7 @@ describe("sanitizeMonitoringResponse", () => {
 
   it("scores 배열이 잘려 없는 scoreRow는 걸러낸다", () => {
     const raw = {
+      version: 1,
       judges: [],
       scoreRows: [VALID_SCORE_ROW, { teamId: 2, performOrder: 2 }],
       commentRows: [],
@@ -65,6 +75,7 @@ describe("sanitizeMonitoringResponse", () => {
       comments: [{ judgeId: 1, strokes: [{ color: "#000" }] }],
     };
     const raw = {
+      version: 1,
       judges: [],
       scoreRows: [],
       commentRows: [VALID_COMMENT_ROW, brokenRow],
@@ -74,8 +85,81 @@ describe("sanitizeMonitoringResponse", () => {
   });
 });
 
+describe("sanitizeMonitoringDeltaResponse", () => {
+  it("score-only Delta를 그대로 반환한다", () => {
+    const raw = {
+      version: 2,
+      scores: { judges: [{ judgeId: 1, label: "심사위원 A" }], scoreRows: [VALID_SCORE_ROW] },
+      comments: [],
+    };
+
+    expect(sanitizeMonitoringDeltaResponse(raw)).toEqual(raw);
+  });
+
+  it("comment-only Delta는 scores가 null이다", () => {
+    const raw = { version: 3, scores: null, comments: [{ teamId: 1, judgeId: 2 }] };
+
+    expect(sanitizeMonitoringDeltaResponse(raw)).toEqual(raw);
+  });
+
+  it("score와 comment가 섞인 혼합 Delta를 그대로 반환한다", () => {
+    const raw = {
+      version: 4,
+      scores: { judges: [{ judgeId: 1, label: "심사위원 A" }], scoreRows: [VALID_SCORE_ROW] },
+      comments: [{ teamId: 1, judgeId: 2 }],
+    };
+
+    expect(sanitizeMonitoringDeltaResponse(raw)).toEqual(raw);
+  });
+
+  it("version이 없으면 null을 반환한다", () => {
+    expect(sanitizeMonitoringDeltaResponse({ scores: null, comments: [] })).toBeNull();
+  });
+
+  it("객체가 아니면 null을 반환한다", () => {
+    expect(sanitizeMonitoringDeltaResponse(null)).toBeNull();
+  });
+
+  it("scores 구조가 깨지면 null로 걷어낸다", () => {
+    const raw = { version: 5, scores: { judges: [] }, comments: [] };
+
+    expect(sanitizeMonitoringDeltaResponse(raw)?.scores).toBeNull();
+  });
+
+  it("comments 식별자 중 하나라도 깨지면 comments 전체를 빈 배열로 걷어낸다", () => {
+    const raw = { version: 6, scores: null, comments: [{ teamId: 1, judgeId: 2 }, { teamId: 3 }] };
+
+    expect(sanitizeMonitoringDeltaResponse(raw)?.comments).toEqual([]);
+  });
+});
+
+describe("sanitizeMonitorCommentResponse", () => {
+  it("구조가 온전한 응답은 그대로 반환한다", () => {
+    const raw = { teamId: 1, strokes: [{ color: "#000", points: [{ x: 0, y: 0 }] }] };
+
+    expect(sanitizeMonitorCommentResponse(raw)).toEqual(raw);
+  });
+
+  it("teamId가 없으면 null을 반환한다", () => {
+    expect(sanitizeMonitorCommentResponse({ strokes: [] })).toBeNull();
+  });
+
+  it("strokes 중 하나라도 구조가 깨지면 null을 반환한다", () => {
+    expect(
+      sanitizeMonitorCommentResponse({ teamId: 1, strokes: [{ color: "#000" }] }),
+    ).toBeNull();
+  });
+});
+
+describe("dirtyCommentKey", () => {
+  it("teamId와 judgeId를 콜론으로 이어 고유 키를 만든다", () => {
+    expect(dirtyCommentKey(1, 2)).toBe("1:2");
+  });
+});
+
 describe("mergeMonitoringSnapshot", () => {
   const next: JudgeMonitoringResponse = {
+    version: 2,
     judges: [{ judgeId: 1, label: "심사위원 A" }],
     scoreRows: [{ ...VALID_SCORE_ROW, teamId: 2, performOrder: 2, teamName: "밴드팀" }],
     commentRows: [],
@@ -87,6 +171,7 @@ describe("mergeMonitoringSnapshot", () => {
 
   it("새 스냅샷에 없는 팀은 이전 스냅샷 값을 유지한다", () => {
     const prev: JudgeMonitoringResponse = {
+      version: 1,
       judges: [{ judgeId: 1, label: "심사위원 A" }],
       scoreRows: [VALID_SCORE_ROW],
       commentRows: [VALID_COMMENT_ROW],
@@ -94,6 +179,7 @@ describe("mergeMonitoringSnapshot", () => {
 
     const merged = mergeMonitoringSnapshot(prev, next);
 
+    expect(merged.version).toBe(2);
     expect(merged.scoreRows).toEqual(
       expect.arrayContaining([VALID_SCORE_ROW, next.scoreRows[0]]),
     );
@@ -102,6 +188,7 @@ describe("mergeMonitoringSnapshot", () => {
 
   it("결과는 performOrder 순으로 정렬된다", () => {
     const prev: JudgeMonitoringResponse = {
+      version: 1,
       judges: [],
       scoreRows: [{ ...VALID_SCORE_ROW, teamId: 3, performOrder: 3 }],
       commentRows: [],
@@ -114,6 +201,7 @@ describe("mergeMonitoringSnapshot", () => {
 
   it("새 스냅샷에 있는 팀은 새 값으로 갱신된다", () => {
     const prev: JudgeMonitoringResponse = {
+      version: 1,
       judges: [],
       scoreRows: [{ ...VALID_SCORE_ROW, teamId: 2, performOrder: 2, calculatedScore: 10 }],
       commentRows: [],
