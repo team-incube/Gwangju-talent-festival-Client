@@ -32,10 +32,37 @@ export type CommentRow = {
 };
 
 export type JudgeMonitoringResponse = {
+  version: number;
   judges: JudgeHeader[];
   scoreRows: ScoreRow[];
   commentRows: CommentRow[];
 };
+
+export type MonitoringDeltaScores = {
+  judges: JudgeHeader[];
+  scoreRows: ScoreRow[];
+};
+
+export type MonitoringDeltaCommentRef = {
+  teamId: number;
+  judgeId: number;
+};
+
+export type JudgeMonitoringDeltaResponse = {
+  version: number;
+  scores: MonitoringDeltaScores | null;
+  comments: MonitoringDeltaCommentRef[];
+};
+
+export type JudgeMonitorCommentResponse = {
+  teamId: number;
+  strokes: Stroke[];
+};
+
+export type DirtyCommentKey = `${number}:${number}`;
+
+export const dirtyCommentKey = (teamId: number, judgeId: number): DirtyCommentKey =>
+  `${teamId}:${judgeId}`;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -80,10 +107,45 @@ export const sanitizeMonitoringResponse = (raw: unknown): JudgeMonitoringRespons
   if (!isRecord(raw)) return null;
 
   return {
+    version: typeof raw.version === "number" ? raw.version : 0,
     judges: Array.isArray(raw.judges) ? raw.judges.filter(isJudgeHeader) : [],
     scoreRows: Array.isArray(raw.scoreRows) ? raw.scoreRows.filter(isScoreRow) : [],
     commentRows: Array.isArray(raw.commentRows) ? raw.commentRows.filter(isCommentRow) : [],
   };
+};
+
+const isMonitoringDeltaCommentRef = (value: unknown): value is MonitoringDeltaCommentRef =>
+  isRecord(value) && typeof value.teamId === "number" && typeof value.judgeId === "number";
+
+const isMonitoringDeltaScores = (value: unknown): value is MonitoringDeltaScores =>
+  isRecord(value) &&
+  Array.isArray(value.judges) &&
+  value.judges.every(isJudgeHeader) &&
+  Array.isArray(value.scoreRows) &&
+  value.scoreRows.every(isScoreRow);
+
+// scores는 comment-only Delta에서 null이 정상이므로 구조가 깨졌을 때만 null로 걷어낸다.
+// comments 식별자는 하나라도 깨지면 어떤 셀을 dirty로 표시해야 할지 알 수 없어 배열 전체를 비운다
+export const sanitizeMonitoringDeltaResponse = (raw: unknown): JudgeMonitoringDeltaResponse | null => {
+  if (!isRecord(raw)) return null;
+  if (typeof raw.version !== "number") return null;
+
+  return {
+    version: raw.version,
+    scores: isMonitoringDeltaScores(raw.scores) ? raw.scores : null,
+    comments:
+      Array.isArray(raw.comments) && raw.comments.every(isMonitoringDeltaCommentRef)
+        ? raw.comments
+        : [],
+  };
+};
+
+export const sanitizeMonitorCommentResponse = (raw: unknown): JudgeMonitorCommentResponse | null => {
+  if (!isRecord(raw)) return null;
+  if (typeof raw.teamId !== "number") return null;
+  if (!Array.isArray(raw.strokes) || !raw.strokes.every(isStroke)) return null;
+
+  return { teamId: raw.teamId, strokes: raw.strokes };
 };
 
 const mergeRowsByTeam = <T extends { teamId: number; performOrder: number }>(
@@ -103,6 +165,7 @@ export const mergeMonitoringSnapshot = (
   if (!prev) return next;
 
   return {
+    version: next.version,
     judges: next.judges.length > 0 ? next.judges : prev.judges,
     scoreRows: mergeRowsByTeam(prev.scoreRows, next.scoreRows),
     commentRows: mergeRowsByTeam(prev.commentRows, next.commentRows),
