@@ -13,13 +13,22 @@ beforeEach(() => {
 });
 
 describe("getJudgeMonitorComment", () => {
-  it("팀·심사위원 전용 BFF 라우트로 직접 조회한다", async () => {
+  it("팀·심사위원별 필기를 조회한다", async () => {
     const response = { teamId: 1, strokes: [{ color: "#000", points: [{ x: 0, y: 0 }] }] };
     vi.mocked(instance.get).mockResolvedValueOnce({ data: response });
 
     const result = await getJudgeMonitorComment(1, 2);
 
-    expect(instance.get).toHaveBeenCalledWith("/api/judge/monitor/1/comment/2", { baseURL: "" });
+    // "/judge"로 시작해야 axios 인터셉터가 401/403을 리다이렉트 없이 호출부로 전달한다
+    expect(instance.get).toHaveBeenCalledWith("/judge/monitor/1/comment/2");
     expect(result).toEqual(response);
+  });
+
+  it("응답 구조가 깨지면 에러를 던진다", async () => {
+    vi.mocked(instance.get).mockResolvedValueOnce({ data: { teamId: 1 } });
+
+    await expect(getJudgeMonitorComment(1, 2)).rejects.toThrow(
+      "필기 데이터를 불러오는 중 오류가 발생했습니다.",
+    );
   });
 });

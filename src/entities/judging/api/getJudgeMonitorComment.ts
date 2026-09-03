@@ -1,15 +1,16 @@
 import instance from "@/shared/lib/axios";
-import { JudgeMonitorCommentResponse } from "../model/monitoring";
+import { JudgeMonitorCommentResponse, sanitizeMonitorCommentResponse } from "../model/monitoring";
 
 export const getJudgeMonitorComment = async (
   teamId: number,
   judgeId: number,
 ): Promise<JudgeMonitorCommentResponse> => {
-  // 뷰포트 진입마다 조회되는 고빈도 엔드포인트라 공용 /api/server 프록시를 거치지 않고
-  // 전용 BFF 라우트로 직접 보낸다 (baseURL 재정의로 axios 인스턴스의 인증 처리는 그대로 재사용)
-  const res = await instance.get<JudgeMonitorCommentResponse>(
-    `/api/judge/monitor/${teamId}/comment/${judgeId}`,
-    { baseURL: "" },
-  );
-  return res.data;
+  // 요청 경로가 "/judge"로 시작해야 axios 인터셉터가 이 페이지의 401/403을
+  // 리다이렉트 없이 호출부로 그대로 전달한다 (src/shared/lib/axios.ts 참고)
+  const res = await instance.get<unknown>(`/judge/monitor/${teamId}/comment/${judgeId}`);
+  const sanitized = sanitizeMonitorCommentResponse(res.data);
+  if (!sanitized) {
+    throw new Error("필기 데이터를 불러오는 중 오류가 발생했습니다.");
+  }
+  return sanitized;
 };
