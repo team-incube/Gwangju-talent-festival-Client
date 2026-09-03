@@ -17,9 +17,10 @@ type CommentTableProps = {
 };
 
 type SelectedComment = {
+  teamId: number;
+  judgeId: number;
   teamName: string;
   judgeLabel: string;
-  strokes: Stroke[] | null;
 };
 
 const SKELETON_ROW_COUNT = 8;
@@ -34,6 +35,15 @@ const CommentTable = ({
 }: CommentTableProps) => {
   const [selected, setSelected] = useState<SelectedComment | null>(null);
   const columnCount = judges.length + 2;
+
+  // 모달을 스냅샷으로 고정하지 않고 rows에서 매번 다시 찾아, 열려 있는 동안 개별 조회가
+  // 완료돼 필기가 갱신되면 모달도 함께 최신 값을 보여준다
+  const selectedStrokes =
+    selected === null
+      ? null
+      : rows
+          .find(row => row.teamId === selected.teamId)
+          ?.comments.find(comment => comment.judgeId === selected.judgeId)?.strokes ?? null;
 
   if (isLoading) {
     return (
@@ -86,9 +96,10 @@ const CommentTable = ({
                           onResolveComment={onResolveComment}
                           onSelect={() =>
                             setSelected({
+                              teamId: row.teamId,
+                              judgeId: judge.judgeId,
                               teamName: row.teamName,
                               judgeLabel: judge.label,
-                              strokes: cell?.strokes ?? null,
                             })
                           }
                           ariaLabel={`${row.teamName} ${judge.label} 코멘트 확대 보기`}
@@ -108,7 +119,7 @@ const CommentTable = ({
         onClose={() => setSelected(null)}
         teamName={selected?.teamName ?? ""}
         judgeLabel={selected?.judgeLabel ?? ""}
-        strokes={selected?.strokes ?? null}
+        strokes={selectedStrokes}
       />
     </>
   );

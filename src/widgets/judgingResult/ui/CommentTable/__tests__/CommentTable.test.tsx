@@ -75,6 +75,22 @@ describe("CommentTable - 코멘트 확대", () => {
 
     expect(screen.getByText("댄스팀 · 심사위원 A")).toBeInTheDocument();
   });
+
+  it("모달이 열려 있는 동안 rows가 갱신되면(개별 조회 완료) 모달도 최신 필기를 보여준다", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<CommentTable judges={JUDGES} rows={ROWS} />);
+
+    await user.click(screen.getByRole("button", { name: "댄스팀 심사위원 A 코멘트 확대 보기" }));
+    expect(screen.getByText("댄스팀 · 심사위원 A")).toBeInTheDocument();
+    expect(screen.queryByText("작성된 코멘트가 없습니다")).not.toBeInTheDocument();
+
+    const updatedRows: CommentRow[] = [
+      { ...ROWS[0], comments: [{ judgeId: 1, strokes: null }] },
+    ];
+    rerender(<CommentTable judges={JUDGES} rows={updatedRows} />);
+
+    expect(screen.getByText("작성된 코멘트가 없습니다")).toBeInTheDocument();
+  });
 });
 
 describe("CommentTable - dirty 셀", () => {
