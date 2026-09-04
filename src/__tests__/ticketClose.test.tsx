@@ -31,7 +31,7 @@ describe("마감 시각 이후 (실제 dateConfig)", () => {
     render(<JudgingCtaSection />);
     expect(await screen.findByText("예매마감")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "예매 하러가기" })).toBeDisabled();
-    expect(screen.getByText("2026.09.04 18:00")).toBeInTheDocument();
+    expect(screen.getByText("2026.09.06 08:00")).toBeInTheDocument();
   });
 
   it("마감 1초 전: 아직 열려 있다", async () => {
@@ -79,8 +79,12 @@ describe("마감 시각 이후 (실제 dateConfig)", () => {
     expect(middleware(req("/booking", "USER")).status).toBe(200);
   });
 
-  it("축제 당일(2026-09-05)에는 예매는 막히고 내 좌석 확인은 열려 있다", () => {
+  it("축제 당일(2026-09-05)에는 예매가 열려 있고, 익일 마감 이후에는 막히되 내 좌석 확인은 열려 있다", () => {
     vi.setSystemTime(new Date("2026-09-05T10:00:00+09:00"));
+    expect(isTicketOpen("USER")).toBe(true);
+    expect(middleware(req("/booking", "USER")).status).toBe(200);
+
+    vi.setSystemTime(new Date(ticketCloseDate.getTime() + 1000));
     expect(isTicketClosed("USER")).toBe(true);
     expect(middleware(req("/booking", "USER")).status).toBe(307);
     expect(middleware(req("/booking/my", "USER")).status).toBe(200);
