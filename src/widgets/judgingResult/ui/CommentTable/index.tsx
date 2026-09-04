@@ -1,28 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import { JudgeHeader, CommentRow } from "@/entities/judging/model/monitoring";
+import { JudgeHeader, CommentRow, DirtyCommentKey, dirtyCommentKey } from "@/entities/judging/model/monitoring";
 import { Stroke } from "@/entities/judging/model/handwriting";
-import HandwritingPreview from "@/entities/judging/ui/HandwritingPreview";
 import TeamDetailModal from "../TeamDetailModal";
+import CommentCell from "./CommentCell";
+
+type OnCommentResolved = (teamId: number, judgeId: number, strokes: Stroke[], version: number) => void;
 
 type CommentTableProps = {
   judges: JudgeHeader[];
   rows: CommentRow[];
   isLoading?: boolean;
+  dirtyCells?: Map<DirtyCommentKey, number>;
+  onResolveComment?: OnCommentResolved;
 };
 
 type SelectedComment = {
+  teamId: number;
+  judgeId: number;
   teamName: string;
   judgeLabel: string;
-  strokes: Stroke[] | null;
 };
 
 const SKELETON_ROW_COUNT = 8;
+const NOOP_RESOLVE: OnCommentResolved = () => {};
 
-const CommentTable = ({ judges, rows, isLoading = false }: CommentTableProps) => {
+const CommentTable = ({
+  judges,
+  rows,
+  isLoading = false,
+  dirtyCells,
+  onResolveComment = NOOP_RESOLVE,
+}: CommentTableProps) => {
   const [selected, setSelected] = useState<SelectedComment | null>(null);
   const columnCount = judges.length + 2;
+
+  // 모달을 스냅샷으로 고정하지 않고 rows에서 매번 다시 찾아, 열려 있는 동안 개별 조회가
+  // 완료돼 필기가 갱신되면 모달도 함께 최신 값을 보여준다
+  const selectedStrokes =
+    selected === null
+      ? null
+      : rows
+          .find(row => row.teamId === selected.teamId)
+          ?.comments.find(comment => comment.judgeId === selected.judgeId)?.strokes ?? null;
 
   if (isLoading) {
     return (
@@ -67,23 +88,22 @@ const CommentTable = ({ judges, rows, isLoading = false }: CommentTableProps) =>
                     );
                     return (
                       <td key={judge.judgeId} className="px-6 py-6">
-                        <button
-                          type="button"
-                          onClick={() =>
+                        <CommentCell
+                          teamId={row.teamId}
+                          judgeId={judge.judgeId}
+                          strokes={cell?.strokes ?? null}
+                          dirtyVersion={dirtyCells?.get(dirtyCommentKey(row.teamId, judge.judgeId))}
+                          onResolveComment={onResolveComment}
+                          onSelect={() =>
                             setSelected({
+                              teamId: row.teamId,
+                              judgeId: judge.judgeId,
                               teamName: row.teamName,
                               judgeLabel: judge.label,
-                              strokes: cell?.strokes ?? null,
                             })
                           }
-                          className="block w-100 h-56 mx-auto"
-                          aria-label={`${row.teamName} ${judge.label} 코멘트 확대 보기`}
-                        >
-                          <HandwritingPreview
-                            strokes={cell?.strokes}
-                            className="rounded-md border border-gray-100"
-                          />
-                        </button>
+                          ariaLabel={`${row.teamName} ${judge.label} 코멘트 확대 보기`}
+                        />
                       </td>
                     );
                   })}
@@ -99,7 +119,7 @@ const CommentTable = ({ judges, rows, isLoading = false }: CommentTableProps) =>
         onClose={() => setSelected(null)}
         teamName={selected?.teamName ?? ""}
         judgeLabel={selected?.judgeLabel ?? ""}
-        strokes={selected?.strokes ?? null}
+        strokes={selectedStrokes}
       />
     </>
   );
