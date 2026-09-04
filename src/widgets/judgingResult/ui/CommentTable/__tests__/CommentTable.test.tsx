@@ -2,9 +2,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import CommentTable from "../index";
-import { JudgeHeader, CommentRow } from "@/entities/judging/model/monitoring";
+import { JudgeHeader, CommentRow, dirtyCommentKey } from "@/entities/judging/model/monitoring";
 
 class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+class IntersectionObserverMock {
   observe() {}
   unobserve() {}
   disconnect() {}
@@ -13,6 +19,7 @@ class ResizeObserverMock {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.stubGlobal("ResizeObserver", ResizeObserverMock);
+  vi.stubGlobal("IntersectionObserver", IntersectionObserverMock);
 });
 
 afterEach(() => {
@@ -67,5 +74,39 @@ describe("CommentTable - 코멘트 확대", () => {
     await user.click(screen.getByRole("button", { name: "댄스팀 심사위원 A 코멘트 확대 보기" }));
 
     expect(screen.getByText("댄스팀 · 심사위원 A")).toBeInTheDocument();
+  });
+
+  it("모달이 열려 있는 동안 rows가 갱신되면(개별 조회 완료) 모달도 최신 필기를 보여준다", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<CommentTable judges={JUDGES} rows={ROWS} />);
+
+    await user.click(screen.getByRole("button", { name: "댄스팀 심사위원 A 코멘트 확대 보기" }));
+    expect(screen.getByText("댄스팀 · 심사위원 A")).toBeInTheDocument();
+    expect(screen.queryByText("작성된 코멘트가 없습니다")).not.toBeInTheDocument();
+
+    const updatedRows: CommentRow[] = [
+      { ...ROWS[0], comments: [{ judgeId: 1, strokes: null }] },
+    ];
+    rerender(<CommentTable judges={JUDGES} rows={updatedRows} />);
+
+    expect(screen.getByText("작성된 코멘트가 없습니다")).toBeInTheDocument();
+  });
+});
+
+describe("CommentTable - dirty 셀", () => {
+  it("dirtyCells가 전달돼도 뷰포트 진입 전까지는 기존 필기를 그대로 보여준다", () => {
+    const dirtyCells = new Map([[dirtyCommentKey(1, 1), 2]]);
+    render(
+      <CommentTable
+        judges={JUDGES}
+        rows={ROWS}
+        dirtyCells={dirtyCells}
+        onResolveComment={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "댄스팀 심사위원 A 코멘트 확대 보기" }),
+    ).toBeInTheDocument();
   });
 });

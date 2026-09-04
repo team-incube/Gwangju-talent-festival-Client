@@ -54,11 +54,11 @@ describe("티켓 마감 시각", () => {
   });
 
   it("마감 시각까지는 열려 있고 그 뒤에는 닫힌다", () => {
-    vi.setSystemTime(new Date("2026-09-04T18:00:00+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:00:00+09:00"));
     expect(isTicketOpen("USER")).toBe(true);
     expect(isTicketClosed()).toBe(false);
 
-    vi.setSystemTime(new Date("2026-09-04T18:01:00+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:01:00+09:00"));
     expect(isTicketOpen("USER")).toBe(false);
     expect(isTicketClosed()).toBe(true);
   });
@@ -74,7 +74,7 @@ describe("티켓 마감 시각", () => {
   });
 
   it("공연자도 일반 마감 시각에 함께 닫힌다", () => {
-    vi.setSystemTime(new Date("2026-09-04T18:01:00+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:01:00+09:00"));
     expect(isTicketOpen("PERFORMER")).toBe(false);
     expect(isTicketClosed("PERFORMER")).toBe(true);
   });
@@ -110,6 +110,21 @@ describe("daysUntil", () => {
 
     vi.setSystemTime(new Date("2026-08-19T23:00:00+09:00"));
     expect(daysUntil(ticketOpenDate)).toBe(1);
+  });
+});
+
+describe("어드민 예매 기간", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("어드민은 오픈 전에도 열려 있고 마감 후에도 닫히지 않는다", () => {
+    vi.setSystemTime(new Date("2026-01-01T00:00:00+09:00"));
+    expect(isTicketOpen("ADMIN")).toBe(true);
+
+    vi.setSystemTime(new Date("2026-12-31T00:00:00+09:00"));
+    expect(isTicketOpen("ADMIN")).toBe(true);
+    expect(isTicketClosed("ADMIN")).toBe(false);
   });
 });
 

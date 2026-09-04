@@ -130,6 +130,15 @@ describe("useSeatSelection - 좌석 선택 엣지 케이스", () => {
     expect(result.current.selectedSeat).toBeNull()
   })
 
+  it("어드민(allowOccupied)은 확보석인 A열도 선택할 수 있다", () => {
+    const { result } = renderHook(() => useSeatSelection({ allowOccupied: true }))
+    const seat = makeSeat("1", SEAT_STATUS.OCCUPIED, "A")
+
+    act(() => { result.current.selectSeat(seat) })
+
+    expect(result.current.selectedSeat).toEqual(seat)
+  })
+
   it("섹션을 같은 값으로 다시 설정해도 선택 좌석이 초기화된다", () => {
     const { result } = renderHook(() => useSeatSelection())
 

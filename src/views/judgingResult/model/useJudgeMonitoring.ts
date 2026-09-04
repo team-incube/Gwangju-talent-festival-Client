@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
+  DirtyCommentKey,
   JudgeMonitoringResponse,
+  dirtyCommentKey,
   mergeMonitoringSnapshot,
+  sanitizeMonitoringDeltaResponse,
   sanitizeMonitoringResponse,
 } from "@/entities/judging/model/monitoring";
+import { Stroke } from "@/entities/judging/model/handwriting";
 import { parsePartialJson } from "@/shared/utils/partialJson";
 
 const MAX_RETRIES = 5;
@@ -16,9 +20,16 @@ const SSE_ERROR_TOAST_ID = "judge-monitoring-sse-error";
 export const useJudgeMonitoring = () => {
   const [data, setData] = useState<JudgeMonitoringResponse | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  // Delta로 dirty 표시된 (teamId, judgeId) 셀 → 해당 셀을 dirty로 만든 마지막 Delta version.
+  // 같은 셀에 재조회가 겹쳐도 이 값과 응답의 version이 일치할 때만 반영해 오래된 응답을 걸러낸다.
+  // resolveDirtyComment에서 setData 반영 여부를 같은 틱에 동기적으로 판단해야 해서 state 대신
+  // ref로 들고, 변경 시 렌더를 강제로 트리거한다
+  const dirtyCellsRef = useRef<Map<DirtyCommentKey, number>>(new Map());
+  const [, forceRerender] = useReducer((tick: number) => tick + 1, 0);
   const eventSourceRef = useRef<EventSource | null>(null);
   const retryCountRef = useRef(0);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastAppliedVersionRef = useRef(0);
 
   useEffect(() => {
     const connect = () => {
@@ -43,7 +54,41 @@ export const useJudgeMonitoring = () => {
           return;
         }
 
+        lastAppliedVersionRef.current = sanitized.version;
         setData(prev => (parsed.recovered ? mergeMonitoringSnapshot(prev, sanitized) : sanitized));
+        // full snapshot은 그 자체로 최신 진실이므로, 대기 중이던 dirty 표시는 전부 무효가 된다
+        dirtyCellsRef.current = new Map();
+        forceRerender();
+      });
+
+      eventSource.addEventListener("judge-monitoring-delta", event => {
+        const parsed = parsePartialJson<unknown>(event.data);
+        const sanitized = parsed ? sanitizeMonitoringDeltaResponse(parsed.data) : null;
+
+        if (!parsed || !sanitized) {
+          toast.error("심사 모니터링 데이터를 불러오는 중 오류가 발생했습니다.");
+          return;
+        }
+
+        // 이미 적용한 version 이하의 Delta는 중복/역전된 이벤트이므로 무시한다
+        if (sanitized.version <= lastAppliedVersionRef.current) {
+          return;
+        }
+        lastAppliedVersionRef.current = sanitized.version;
+
+        if (sanitized.scores) {
+          const { judges, scoreRows } = sanitized.scores;
+          setData(prev => (prev ? { ...prev, version: sanitized.version, judges, scoreRows } : prev));
+        } else {
+          setData(prev => (prev ? { ...prev, version: sanitized.version } : prev));
+        }
+
+        if (sanitized.comments.length > 0) {
+          sanitized.comments.forEach(({ teamId, judgeId }) => {
+            dirtyCellsRef.current.set(dirtyCommentKey(teamId, judgeId), sanitized.version);
+          });
+          forceRerender();
+        }
       });
 
       eventSource.onopen = () => {
@@ -118,5 +163,35 @@ export const useJudgeMonitoring = () => {
     };
   }, []);
 
-  return { data, isConnected };
+  // 개별 필기 조회 응답을 반영한다. 조회를 시작한 뒤에 더 최신 Delta가 같은 셀을 다시
+  // dirty로 표시했다면(version이 달라짐) 그 사이 값이 또 바뀐 것이므로 이 응답은 버린다
+  const resolveDirtyComment = useCallback(
+    (teamId: number, judgeId: number, strokes: Stroke[], version: number) => {
+      const key = dirtyCommentKey(teamId, judgeId);
+      if (dirtyCellsRef.current.get(key) !== version) return;
+
+      dirtyCellsRef.current.delete(key);
+      forceRerender();
+
+      setData(prev => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          commentRows: prev.commentRows.map(row => {
+            if (row.teamId !== teamId) return row;
+            return {
+              ...row,
+              comments: row.comments.map(comment =>
+                comment.judgeId === judgeId ? { ...comment, strokes } : comment,
+              ),
+            };
+          }),
+        };
+      });
+    },
+    [],
+  );
+
+  return { data, isConnected, dirtyCells: dirtyCellsRef.current, resolveDirtyComment };
 };

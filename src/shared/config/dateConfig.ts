@@ -23,7 +23,7 @@ export const performerTicketOpenDate = dateFromEnv(
 );
 export const ticketCloseDate = dateFromEnv(
   process.env.NEXT_PUBLIC_TICKET_CLOSE_DATE,
-  "2026-09-04T18:00:00+09:00",
+  "2026-09-05T08:00:00+09:00",
 );
 // 공연자는 더 일찍 열리기만 하고, 마감은 일반 예매와 같이 간다
 export const ticketWindow = (role?: string | null) => ({
@@ -32,11 +32,13 @@ export const ticketWindow = (role?: string | null) => ({
 });
 
 export const isTicketOpen = (role?: string | null) => {
+  if (role === "ADMIN") return true;
   const now = new Date();
   const { open, close } = ticketWindow(role);
   return now >= open && now <= close;
 };
-export const isTicketClosed = (role?: string | null) => new Date() > ticketWindow(role).close;
+export const isTicketClosed = (role?: string | null) =>
+  role !== "ADMIN" && new Date() > ticketWindow(role).close;
 
 // D-Day는 시각이 아니라 날짜 단위로 세므로 KST 자정 기준으로 자른 뒤 비교한다
 const kstDayIndex = (date: Date) => Math.floor(toKst(date).getTime() / 86_400_000);

@@ -46,15 +46,17 @@ export function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
   const now = new Date();
-  if (pathname === "/slogan" && (now < sloganStartDate || now > sloganEndDate)) {
+  const isAdmin = role === "ADMIN";
+
+  if (!isAdmin && pathname === "/slogan" && (now < sloganStartDate || now > sloganEndDate)) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
-  if (pathname === "/apply" && (now < applyStartDate || now > applyEndDate)) {
+  if (!isAdmin && pathname === "/apply" && (now < applyStartDate || now > applyEndDate)) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
-  if (pathname === "/preliminary-result" && now < preliminaryResultOpenDate) {
+  if (!isAdmin && pathname === "/preliminary-result" && now < preliminaryResultOpenDate) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
