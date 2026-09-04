@@ -9,11 +9,7 @@ export const isHiddenPath = (pathname: string): boolean => {
   return HIDDEN_PREFIXES.some(prefix => matchesSegment(pathname, prefix));
 };
 
-export type SectionId =
-  | "SloganSecondSection"
-  | "PreliminaryLiveSection"
-  | "FinalsVenueSection"
-  | "JudgingCtaSection";
+export type SectionId = "SloganSecondSection" | "FinalsVenueSection" | "JudgingCtaSection";
 
 export interface HeaderLink {
   section: SectionId;
@@ -22,7 +18,6 @@ export interface HeaderLink {
 
 export const links: HeaderLink[] = [
   { section: "SloganSecondSection", label: "2026 광탈페 슬로건" },
-  { section: "PreliminaryLiveSection", label: "2026 광탈페 예선" },
   { section: "JudgingCtaSection", label: "2026 광탈페 본선 좌석예매" },
   { section: "FinalsVenueSection", label: "2026 광탈페 본선" },
 ];

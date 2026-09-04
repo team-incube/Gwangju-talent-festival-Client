@@ -12,7 +12,7 @@ const renderSidebar = (isOpen: boolean) =>
       isOpen={isOpen}
       onClose={() => {}}
       onLinkClick={() => {}}
-      links={[{ label: "2026 광탈페 예선", section: "PreliminaryLiveSection" }]}
+      links={[{ label: "2026 광탈페 본선", section: "FinalsVenueSection" }]}
     />,
   );
 

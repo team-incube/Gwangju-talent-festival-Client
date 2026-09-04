@@ -11,11 +11,6 @@ import TicketOpenPopup from "@/widgets/main/TicketOpenPopup";
 import LazySection from "@/shared/ui/LazySection";
 import { getTokenFromCookie } from "@/shared/utils/auth";
 
-const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryLiveSection"), {
-  loading: () => <SectionPlaceholder />,
-  ssr: false,
-});
-
 const FinalsVenueSection = dynamic(() => import("@/widgets/main/FinalsVenueSection"), {
   loading: () => <SectionPlaceholder />,
   ssr: false,
@@ -63,14 +58,6 @@ const HomePage = () => {
       <JudgeInfoSection />
       <SloganSecondSection />
       <JudgingCtaSection />
-
-      <LazySection
-        id="PreliminaryLiveSection"
-        fallback={<SectionPlaceholder height="600px" />}
-        rootMargin="200px"
-      >
-        <PreliminaryLiveSection />
-      </LazySection>
 
       <LazySection
         id="FinalsVenueSection"

@@ -6,6 +6,9 @@ import { cn } from "@/shared/utils/cn";
 import { SectionTitle } from "@/shared/ui/SectionTitle";
 import { isFinalsLineupReleased } from "@/shared/config/dateConfig";
 import { TEAM_GENRE_LABELS, type Team } from "@/entities/team/model/types";
+import YouTubeLazyEmbed from "@/shared/ui/YouTubeLazyEmbed";
+
+const FINALS_LIVE_VIDEO_ID = "lfg5purSCOI";
 
 const TEAMS_WITH_EXTRA_SCHOOL = new Set([3, 7, 10]);
 
@@ -80,6 +83,16 @@ const FinalsVenueSection = () => {
           }
           className={cn("mt-66 mobile:mt-[1.7rem] mb-40 mobile:mb-24")}
         />
+
+        {/* 본선 실시간 중계 */}
+        <div className="mb-24 flex flex-col gap-8">
+          <h3 className="text-body2b mobile:text-body3b text-black">실시간 중계</h3>
+          <YouTubeLazyEmbed
+            videoId={FINALS_LIVE_VIDEO_ID}
+            title="2026 광탈페 본선 실시간 중계"
+            autoPlay
+          />
+        </div>
 
         {/* 본선 진출팀 소개 영상 */}
         {isLineupReleased && (
