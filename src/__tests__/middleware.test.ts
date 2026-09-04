@@ -174,19 +174,19 @@ describe("middleware - /booking 티켓 오픈 제한", () => {
   });
 
   it("티켓 마감 후에는 /booking 접근 시 /home으로 리다이렉트한다", () => {
-    vi.setSystemTime(new Date("2026-09-06T08:00:01+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:00:01+09:00"));
     const res = middleware(makeRequest("/booking", loggedIn("USER")));
     expect(res.status).toBe(307);
     expect(getLocation(res)).toContain("/home");
   });
 
   it("공연자도 티켓 마감 후에는 /booking 접근이 차단된다", () => {
-    vi.setSystemTime(new Date("2026-09-06T08:00:01+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:00:01+09:00"));
     expect(middleware(makeRequest("/booking", loggedIn("PERFORMER"))).status).toBe(307);
   });
 
   it("어드민은 티켓 마감 후에도 /booking 접근이 허용된다", () => {
-    vi.setSystemTime(new Date("2026-09-06T08:00:01+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:00:01+09:00"));
     expect(middleware(makeRequest("/booking", loggedIn("ADMIN"))).status).toBe(200);
   });
 
@@ -201,13 +201,13 @@ describe("middleware - /booking 티켓 오픈 제한", () => {
   });
 
   it("마감 후에도 /booking/my로 예매한 좌석은 확인할 수 있다", () => {
-    vi.setSystemTime(new Date("2026-09-06T08:00:01+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:00:01+09:00"));
     expect(middleware(makeRequest("/booking/my", loggedIn("USER"))).status).toBe(200);
     expect(middleware(makeRequest("/booking", loggedIn("USER"))).status).toBe(307);
   });
 
   it("공연자도 일반 마감 후 /booking/my로 좌석을 확인할 수 있다", () => {
-    vi.setSystemTime(new Date("2026-09-06T08:00:01+09:00"));
+    vi.setSystemTime(new Date("2026-09-05T08:00:01+09:00"));
     expect(middleware(makeRequest("/booking/my", loggedIn("PERFORMER"))).status).toBe(200);
     expect(middleware(makeRequest("/booking", loggedIn("PERFORMER"))).status).toBe(307);
   });
