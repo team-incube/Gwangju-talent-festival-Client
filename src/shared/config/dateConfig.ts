@@ -23,7 +23,7 @@ export const performerTicketOpenDate = dateFromEnv(
 );
 export const ticketCloseDate = dateFromEnv(
   process.env.NEXT_PUBLIC_TICKET_CLOSE_DATE,
-  "2026-09-04T18:00:00+09:00",
+  "2026-09-05T08:00:00+09:00",
 );
 // 공연자는 더 일찍 열리기만 하고, 마감은 일반 예매와 같이 간다
 export const ticketWindow = (role?: string | null) => ({
