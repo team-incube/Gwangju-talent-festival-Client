@@ -62,8 +62,10 @@ instance.interceptors.response.use(
     const requestUrl = originalRequest.url ?? "";
 
     // 심사 페이지는 비로그인 상태에서도 화면에 머물러야 해서(스켈레톤 표시),
-    // 이 엔드포인트들의 401/403은 자동 리다이렉트/토큰 갱신 없이 그대로 호출부로 전달한다.
-    if ((status === 401 || status === 403) && requestUrl.startsWith("/judge")) {
+    // 조회(GET) 요청의 401/403은 자동 리다이렉트/토큰 갱신 없이 그대로 호출부로 전달한다.
+    // 저장(PUT 등) 요청까지 여기 걸리면 토큰 만료 시 재발급 없이 저장이 실패하므로 GET만 예외 처리한다.
+    const requestMethod = originalRequest.method?.toLowerCase();
+    if ((status === 401 || status === 403) && requestMethod === "get" && requestUrl.startsWith("/judge")) {
       return Promise.reject(error);
     }
 
