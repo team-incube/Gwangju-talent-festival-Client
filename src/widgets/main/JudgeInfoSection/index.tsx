@@ -75,7 +75,19 @@ const JudgeInfoSection = () => {
     });
   };
 
-  const handleSubmit = () => router.push(JUDGING_HREF);
+  const handleSubmit = () => {
+    // 저장 디바운스(800ms)가 끝나기 전에 페이지를 벗어나면 unmount cleanup이 타이머를 취소해
+    // 마지막 필기가 서버에 저장되지 않으므로, 이동 전에 대기 중인 저장을 즉시 실행한다
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+      const draft = getJudgeProfileDraft();
+      if (draft && (typeof navigator === "undefined" || navigator.onLine)) {
+        saveProfile(draft);
+      }
+    }
+    router.push(JUDGING_HREF);
+  };
 
   if (userRole !== "JUDGE") return null;
 

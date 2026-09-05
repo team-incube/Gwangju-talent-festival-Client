@@ -16,6 +16,9 @@ type PenFieldProps = {
 const LINE_WIDTH = 2;
 const PEN_COLOR = "#121212";
 const MIN_POINT_DISTANCE = 0.003;
+const COORDINATE_PRECISION = 10000;
+
+const roundCoordinate = (value: number) => Math.round(value * COORDINATE_PRECISION) / COORDINATE_PRECISION;
 
 const PenField = ({ value, onChange }: PenFieldProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -96,8 +99,8 @@ const PenField = ({ value, onChange }: PenFieldProps) => {
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     return {
-      x: (e.clientX - rect.left) / rect.width,
-      y: (e.clientY - rect.top) / rect.height,
+      x: roundCoordinate((e.clientX - rect.left) / rect.width),
+      y: roundCoordinate((e.clientY - rect.top) / rect.height),
     };
   };
 
