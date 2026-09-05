@@ -69,8 +69,9 @@ instance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 403(권한 없음)은 토큰 재발급으로 해결되지 않으므로 그대로 호출부에 전달
-    if (status !== 401) return Promise.reject(error);
+    // 백엔드가 토큰 만료를 401 대신 403으로 내려주는 경우가 있어 403도 재발급을 시도한다
+    // (진짜 권한 없음이면 재발급 후 재요청도 동일하게 403이 나므로 안전하다)
+    if (status !== 401 && status !== 403) return Promise.reject(error);
 
     const url = originalRequest.url ?? "";
     if (publicPages.some(p => url.includes(p))) {
