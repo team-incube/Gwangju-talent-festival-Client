@@ -22,6 +22,19 @@ main ← develop ← feat/<name>
 - `<name>`: lowercase + kebab-case
 - 성능 작업은 반드시 `perf/<name>` 브랜치 사용
 
+## 긴급 운영 장애 (hotfix)
+
+실제 운영(main) 서비스가 지금 장애 중이라 develop을 거칠 시간이 없는 경우에만 예외적으로 사용.
+
+```
+main ← hotfix/<name>   (PR base: main)
+```
+
+- 브랜치: `hotfix/<name>`, **`origin/main` 기준**으로 생성
+- PR: base `main`으로 직접 생성 (이 경우에 한해 "main으로 직접 PR 금지" 규칙의 예외)
+- 머지 직후 반드시 후속 조치: `origin/develop` 기준 `fix/sync-<hotfix-name>` 브랜치를 새로 만들어 동일 커밋을 cherry-pick하고, base `develop`으로 별도 PR을 올려 두 브랜치를 동기화한다
+- 장애가 아닌 일반 작업에는 사용 금지 — 애매하면 기본 워크플로우(develop 기준)를 따른다
+
 ## 커밋 규칙
 
 - 포맷: `<type>: <한국어 주제>`

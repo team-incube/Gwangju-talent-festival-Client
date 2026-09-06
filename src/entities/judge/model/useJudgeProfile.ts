@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { getJudgeProfile, putJudgeProfile } from "../api/judgeProfile";
 import { JudgeProfile } from "./types";
 import { readLocalDraft, removeLocalDraft } from "@/shared/utils/localDraft";
+import { isOfflineError } from "@/shared/utils/isOfflineError";
 
 export const judgeProfileQueryKey = ["judgeProfile"];
 export const JUDGE_PROFILE_DRAFT_KEY = "judge-profile-draft";
@@ -29,10 +30,14 @@ export const usePutJudgeProfile = () => {
       removeLocalDraft(JUDGE_PROFILE_DRAFT_KEY);
       hasNotifiedFailureRef.current = false;
     },
-    onError: () => {
+    onError: error => {
       if (hasNotifiedFailureRef.current) return;
       hasNotifiedFailureRef.current = true;
-      toast.error("네트워크 연결이 끊겨 기기에 임시 저장했어요. 연결되면 자동으로 다시 저장할게요.");
+      toast.error(
+        isOfflineError(error)
+          ? "네트워크 연결이 끊겨 기기에 임시 저장했어요. 연결되면 자동으로 다시 저장할게요."
+          : "필기 저장에 실패했어요. 잠시 후 다시 시도해주세요.",
+      );
     },
   });
 };

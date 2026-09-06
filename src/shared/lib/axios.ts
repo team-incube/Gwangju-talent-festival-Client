@@ -20,6 +20,20 @@ type QueueItem = {
 
 let failedQueue: QueueItem[] = [];
 
+// WAF의 SizeRestrictions_BODY 같은 인프라 계층 body 용량 차단은 403으로 내려오지만 토큰 만료와 무관하다.
+// 이 임계값(8KB)에 근접한 요청이 403을 받으면 재발급을 시도해도 같은 body로 재시도해 다시 막히므로 시도 자체를 건너뛴다.
+const LARGE_BODY_BYTE_THRESHOLD = 8 * 1024;
+
+const getRequestBodyByteLength = (data: unknown): number => {
+  if (data === undefined || data === null) return 0;
+  try {
+    const raw = typeof data === "string" ? data : JSON.stringify(data);
+    return new TextEncoder().encode(raw).length;
+  } catch {
+    return 0;
+  }
+};
+
 const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach(({ resolve, reject }) => {
     if (error) reject(error);
@@ -69,8 +83,15 @@ instance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 403(권한 없음)은 토큰 재발급으로 해결되지 않으므로 그대로 호출부에 전달
-    if (status !== 401) return Promise.reject(error);
+    // 백엔드가 토큰 만료를 401 대신 403으로 내려주는 경우가 있어 403도 재발급을 시도한다
+    // (진짜 권한 없음이면 재발급 후 재요청도 동일하게 403이 나므로 안전하다)
+    if (status !== 401 && status !== 403) return Promise.reject(error);
+
+    // body 용량이 큰 요청의 403은 WAF 등 인프라 계층의 차단일 가능성이 높다.
+    // 토큰을 재발급해도 같은 body로 재요청하면 다시 막히므로 재발급 시도 없이 그대로 실패 처리한다.
+    if (status === 403 && getRequestBodyByteLength(originalRequest.data) > LARGE_BODY_BYTE_THRESHOLD) {
+      return Promise.reject(error);
+    }
 
     const url = originalRequest.url ?? "";
     if (publicPages.some(p => url.includes(p))) {
