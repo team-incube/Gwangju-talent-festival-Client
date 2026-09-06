@@ -5,6 +5,13 @@ Claude가 작업 중 발견한 패턴을 반영한 변경 내역.
 
 ---
 
+## 2026-09-05 — git-workflow.md
+- **변경**: "긴급 운영 장애 (hotfix)" 섹션 추가 — `main` 기준 `hotfix/<name>` 브랜치, base `main` PR, 머지 후 `fix/sync-<name>` 브랜치로 develop 동기화하는 절차를 명문화
+- **이유**: 심사위원 정보 저장 장애 대응 중 실제로 `hotfix/data-max`, `hotfix/token-403-refresh` 두 브랜치를 `main` 기준으로 만들고 develop에는 별도 동기화 PR(#337, #339)을 올리는 패턴이 반복됐는데, 기존 git-workflow.md에는 "모든 feature 브랜치는 develop에서 생성", "main으로 직접 PR 금지"만 있어 이 패턴이 규칙 위반처럼 보였음(branch-agent가 실제로 이 충돌을 감지해 진행을 보류함)
+- **효과**: 향후 운영 장애 대응 시 브랜치/PR 에이전트가 이 패턴을 규칙 위반으로 오인해 멈추지 않고, 정해진 절차(hotfix → main, 이후 develop 동기화)를 그대로 따름
+
+---
+
 ## 2026-07-14 — coding-standards.md
 - **변경**: "인라인 스타일 절대 금지" 규칙에 예외 조항 추가 — 외부 스타일시트 로드 전 `:root` CSS 변수가 아직 정의되지 않아 above-the-fold 엘리먼트에 레이아웃 점프(FOUC)가 생기는 경우, `var(--x, fallback)` 폴백값을 인라인 style로 주는 건 허용
 - **이유**: fix/font-flash-on-refresh 작업 중 Header의 `h-[var(--header-height)]`가 globals.css 로드 전 `height:auto`(123px)로 그렸다가 74px로 스냅되는 실제 레이아웃 점프를 Playwright로 실측. Tailwind 임의값 클래스로는 같은 외부 스타일시트에 정의가 있어 해결이 안 되고, 인라인 style만이 SSR HTML에 값을 즉시 박아넣을 수 있어 불가피한 예외였음

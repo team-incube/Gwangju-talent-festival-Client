@@ -7,6 +7,7 @@ import { saveJudgeComment } from "../api/saveJudgeComment";
 import { Stroke } from "@/entities/judging/model/handwriting";
 import { judgeCommentQueryKey } from "./queryKeys";
 import { readLocalDraft, removeLocalDraft, writeLocalDraft } from "@/shared/utils/localDraft";
+import { isOfflineError } from "@/shared/utils/isOfflineError";
 import { useOnlineStatus } from "@/shared/hooks/useOnlineStatus";
 
 const SAVE_DEBOUNCE_MS = 500;
@@ -30,10 +31,14 @@ export const useSaveJudgeComment = (teamId: number | null) => {
       removeLocalDraft(draftKey(teamId));
       hasNotifiedFailureRef.current = false;
     },
-    onError: () => {
+    onError: error => {
       if (hasNotifiedFailureRef.current) return;
       hasNotifiedFailureRef.current = true;
-      toast.error("네트워크 연결이 끊겨 기기에 임시 저장했어요. 연결되면 자동으로 다시 저장할게요.");
+      toast.error(
+        isOfflineError(error)
+          ? "네트워크 연결이 끊겨 기기에 임시 저장했어요. 연결되면 자동으로 다시 저장할게요."
+          : "심사평 저장에 실패했어요. 잠시 후 다시 시도해주세요.",
+      );
     },
   });
 
