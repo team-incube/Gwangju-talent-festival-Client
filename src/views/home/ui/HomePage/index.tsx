@@ -4,12 +4,15 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import IntroFirstSection from "@/widgets/main/IntroFirstSection";
 import SloganSecondSection from "@/widgets/main/SloganSecondSection";
-import JudgingCtaSection from "@/widgets/main/JudgingCtaSection";
 import JudgeInfoSection from "@/widgets/main/JudgeInfoSection";
-import TicketOpenPopup from "@/widgets/main/TicketOpenPopup";
 
 import LazySection from "@/shared/ui/LazySection";
 import { getTokenFromCookie } from "@/shared/utils/auth";
+
+const PreliminaryLiveSection = dynamic(() => import("@/widgets/main/PreliminaryLiveSection"), {
+  loading: () => <SectionPlaceholder />,
+  ssr: false,
+});
 
 const FinalsVenueSection = dynamic(() => import("@/widgets/main/FinalsVenueSection"), {
   loading: () => <SectionPlaceholder />,
@@ -53,11 +56,17 @@ const HomePage = () => {
   return (
     <>
       {/* <SloganPosterPopup /> */}
-      <TicketOpenPopup />
       <IntroFirstSection />
       <JudgeInfoSection />
       <SloganSecondSection />
-      <JudgingCtaSection />
+
+      <LazySection
+        id="PreliminaryLiveSection"
+        fallback={<SectionPlaceholder height="600px" />}
+        rootMargin="200px"
+      >
+        <PreliminaryLiveSection />
+      </LazySection>
 
       <LazySection
         id="FinalsVenueSection"
